@@ -100,7 +100,7 @@ footer{text-align:center;padding:28px 16px;background:linear-gradient(120deg,#f2
 .ticker-text{display:inline-block;min-width:100%;animation:tickerMove 18s linear infinite}
 .ticker-window.paused .ticker-text{animation-play-state:paused}
 @keyframes tickerMove{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.admin-launch{position:fixed;left:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,#8a43b7,#633091);color:white;font-weight:700;box-shadow:0 8px 24px #39234d33;cursor:pointer}
+.admin-launch{display:none!important;position:fixed;left:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,#8a43b7,#633091);color:white;font-weight:700;box-shadow:0 8px 24px #39234d33;cursor:pointer}
 .admin-panel{position:fixed;inset:0;z-index:1100;background:#21152dcc;display:none;align-items:center;justify-content:center;padding:14px}
 .admin-card{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:24px;padding:22px;box-shadow:0 20px 60px #0003}
 .admin-card h2{margin-top:0;color:#6c35a0}
@@ -319,6 +319,11 @@ function closeAdmin(){
  const panel=document.getElementById('adminPanel');
  if(panel){panel.style.display='none';panel.setAttribute('aria-hidden','true');}
 }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ if(location.hash==='#teacher-panel') openAdmin();
+});
 </script>
 <button class="admin-launch" type="button" onclick="openAdmin()">لوحة تحكم المعلمة ⚙️</button>
 <div class="admin-panel" id="adminPanel" role="dialog" aria-modal="true" aria-label="لوحة تحكم المعلمة">
