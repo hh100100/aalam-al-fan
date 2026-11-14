@@ -310,6 +310,16 @@ function previewArtwork(event){
 
 </script>
 
+<script>
+function openAdmin(){
+ const panel=document.getElementById('adminPanel');
+ if(panel){panel.style.display='flex';panel.setAttribute('aria-hidden','false');}
+}
+function closeAdmin(){
+ const panel=document.getElementById('adminPanel');
+ if(panel){panel.style.display='none';panel.setAttribute('aria-hidden','true');}
+}
+</script>
 <button class="admin-launch" type="button" onclick="openAdmin()">لوحة تحكم المعلمة ⚙️</button>
 <div class="admin-panel" id="adminPanel" role="dialog" aria-modal="true" aria-label="لوحة تحكم المعلمة">
  <div class="admin-card">
