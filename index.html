@@ -344,6 +344,18 @@ document.addEventListener('DOMContentLoaded',()=>{
    <label for="adminEmail">البريد الإلكتروني</label><input id="adminEmail" type="email" autocomplete="username" placeholder="البريد المسجل في Supabase">
    <label for="adminPassword">كلمة المرور</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="كلمة مرور حساب المعلمة">
    <div class="admin-actions"><button type="button" onclick="adminSignIn()">دخول</button></div>
+   <p class="admin-note">نسيتِ كلمة المرور؟</p>
+   <div class="admin-actions"><button class="secondary" type="button" onclick="sendRecoveryCode()">إرسال رمز استعادة</button></div>
+  </div>
+  <div id="otpRecoveryBox" style="display:none">
+   <h3>استعادة كلمة المرور بالرمز</h3>
+   <label for="recoveryOtp">رمز التحقق المرسل إلى بريدك</label>
+   <input id="recoveryOtp" inputmode="numeric" autocomplete="one-time-code" placeholder="أدخلي الرمز المكوّن من 6 أرقام">
+   <label for="otpNewPassword">كلمة المرور الجديدة</label>
+   <input id="otpNewPassword" type="password" autocomplete="new-password" placeholder="8 أحرف على الأقل">
+   <label for="otpConfirmPassword">تأكيد كلمة المرور</label>
+   <input id="otpConfirmPassword" type="password" autocomplete="new-password" placeholder="أعيدي كتابة كلمة المرور">
+   <div class="admin-actions"><button type="button" onclick="completeOtpRecovery()">تأكيد الرمز وحفظ كلمة المرور</button></div>
   </div>
   <div id="adminTools" style="display:none">
    <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button></div>
@@ -440,6 +452,35 @@ async function saveRecoveredPassword(){
  alert('تم تغيير كلمة المرور بنجاح. سجّلي الدخول بالبريد وكلمة المرور الجديدة.');
 }
 
+async function sendRecoveryCode(){
+ if(!supabaseReady()){alert('تعذر الاتصال بخدمة الحسابات.');return}
+ const email=document.getElementById('adminEmail').value.trim();
+ if(!email){alert('اكتبي البريد الإلكتروني المسجل أولًا.');return}
+ const {error}=await sbClient.auth.resetPasswordForEmail(email);
+ if(error){alert('تعذر إرسال رمز الاستعادة: '+error.message);return}
+ document.getElementById('otpRecoveryBox').style.display='block';
+ updateDbStatus('أُرسل طلب الاستعادة. أدخلي رمز التحقق الذي وصلك في البريد.');
+ alert('تحققي من بريدك. إذا كانت رسالة الاستعادة تعرض رمزًا رقميًا، أدخليه هنا.');
+}
+async function completeOtpRecovery(){
+ if(!sbClient){alert('تعذر الاتصال بخدمة الحسابات.');return}
+ const email=document.getElementById('adminEmail').value.trim();
+ const token=document.getElementById('recoveryOtp').value.trim();
+ const password=document.getElementById('otpNewPassword').value;
+ const confirm=document.getElementById('otpConfirmPassword').value;
+ if(!email||!token){alert('أدخلي البريد الإلكتروني ورمز التحقق.');return}
+ if(password.length<8){alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');return}
+ if(password!==confirm){alert('كلمتا المرور غير متطابقتين.');return}
+ const {error:verifyError}=await sbClient.auth.verifyOtp({email,token,type:'recovery'});
+ if(verifyError){alert('تعذر التحقق من الرمز: '+verifyError.message);return}
+ const {error:updateError}=await sbClient.auth.updateUser({password});
+ if(updateError){alert('تم التحقق من الرمز لكن تعذر تحديث كلمة المرور: '+updateError.message);return}
+ document.getElementById('otpRecoveryBox').style.display='none';
+ document.getElementById('adminAuthBox').style.display='block';
+ document.getElementById('adminPassword').value=password;
+ updateDbStatus('تم تغيير كلمة المرور. يمكنك تسجيل الدخول الآن.');
+ alert('تم تغيير كلمة المرور بنجاح.');
+}
 async function adminSignIn(){
  if(!supabaseReady()){alert('أضيفي رابط المشروع ومفتاح Publishable في إعدادات الملف أولًا.');return}
  const email=document.getElementById('adminEmail').value.trim();
