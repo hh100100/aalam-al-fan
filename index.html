@@ -347,8 +347,8 @@ document.addEventListener('DOMContentLoaded',()=>{
    <label for="adminEmail">البريد الإلكتروني</label><input id="adminEmail" type="email" autocomplete="username" placeholder="البريد المسجل في Supabase">
    <label for="adminPassword">كلمة المرور</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="كلمة مرور حساب المعلمة">
    <div class="admin-actions"><button type="button" onclick="adminSignIn()">دخول</button></div>
-   <p class="admin-note">نسيتِ كلمة المرور؟</p>
-   <div class="admin-actions"><button class="secondary" type="button" onclick="sendRecoveryCode()">إرسال رمز استعادة</button></div>
+   <p class="admin-note">نسيتِ كلمة المرور؟ أرسلي رابط استعادة إلى بريدك</p>
+   <div class="admin-actions"><button class="secondary" type="button" onclick="sendRecoveryCode()">إرسال رابط استعادة</button></div>
   </div>
   <div id="otpRecoveryBox" style="display:none">
    <h3>استعادة كلمة المرور بالرمز</h3>
@@ -459,11 +459,11 @@ async function sendRecoveryCode(){
  if(!supabaseReady()){alert('تعذر الاتصال بخدمة الحسابات.');return}
  const email=document.getElementById('adminEmail').value.trim();
  if(!email){alert('اكتبي البريد الإلكتروني المسجل أولًا.');return}
- const {error}=await sbClient.auth.resetPasswordForEmail(email);
- if(error){alert('تعذر إرسال رمز الاستعادة: '+error.message);return}
- document.getElementById('otpRecoveryBox').style.display='block';
- updateDbStatus('أُرسل طلب الاستعادة. أدخلي رمز التحقق الذي وصلك في البريد.');
- alert('تحققي من بريدك. إذا كانت رسالة الاستعادة تعرض رمزًا رقميًا، أدخليه هنا.');
+ const {error}=await sbClient.auth.resetPasswordForEmail(email,{redirectTo:'https://hh100100.github.io/aalam-al-fan/'});
+ if(error){alert('تعذر إرسال رابط الاستعادة: '+error.message);return}
+ document.getElementById('otpRecoveryBox').style.display='none';
+ updateDbStatus('تم إرسال رابط الاستعادة. افتحي الرسالة واضغطي رابط Reset password، ثم عيّني كلمة مرور جديدة هنا.');
+ alert('تم طلب رابط استعادة كلمة المرور. افتحي أحدث رسالة واضغطي Reset password.');
 }
 async function completeOtpRecovery(){
  if(!sbClient){alert('تعذر الاتصال بخدمة الحسابات.');return}
