@@ -330,6 +330,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  <div class="admin-card">
   <h2>لوحة تحكم المعلمة</h2>
   <div class="admin-note" id="dbStatus">حالة الربط: لم تُضف بيانات Supabase بعد.</div>
+  <div class="admin-actions" style="margin:12px 0">
+   <button class="secondary" type="button" onclick="document.getElementById('adminAuthBox').style.display='block';document.getElementById('otpRecoveryBox').style.display='block';">استعادة كلمة المرور</button>
+  </div>
   <div id="passwordRecoveryBox" style="display:none">
    <h3>تعيين كلمة مرور جديدة</h3>
    <label for="newAdminPassword">كلمة المرور الجديدة</label>
