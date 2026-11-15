@@ -606,15 +606,23 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// التقاط جلسة استعادة كلمة المرور بعد تحميل مكتبة Supabase
+// التقاط رابط استعادة كلمة المرور بعد تحميل مكتبة Supabase
 window.addEventListener('DOMContentLoaded',()=>{
  const waitForSupabase=()=>{
   if(!supabaseReady()){setTimeout(waitForSupabase,150);return}
   if(!sbClient)sbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  const params=new URLSearchParams(location.hash.replace(/^#/,''));
+  const recovery=params.get('type')==='recovery' || params.has('access_token') || params.has('code');
   sbClient.auth.onAuthStateChange((event)=>{
    if(event==='PASSWORD_RECOVERY')showRecoveryForm();
   });
-  if(location.hash.includes('type=recovery'))showRecoveryForm();
+  if(recovery){
+   showRecoveryForm();
+   sbClient.auth.getSession().then(({data,error})=>{
+    if(error)updateDbStatus('تعذر التحقق من رابط الاستعادة. اطلبي رابطًا جديدًا.');
+    else if(data && data.session)showRecoveryForm();
+   });
+  }
  };
  waitForSupabase();
 });
