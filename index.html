@@ -330,6 +330,15 @@ document.addEventListener('DOMContentLoaded',()=>{
  <div class="admin-card">
   <h2>لوحة تحكم المعلمة</h2>
   <div class="admin-note" id="dbStatus">حالة الربط: لم تُضف بيانات Supabase بعد.</div>
+  <div id="passwordRecoveryBox" style="display:none">
+   <h3>تعيين كلمة مرور جديدة</h3>
+   <label for="newAdminPassword">كلمة المرور الجديدة</label>
+   <input id="newAdminPassword" type="password" autocomplete="new-password" placeholder="اكتبي كلمة مرور جديدة">
+   <label for="confirmAdminPassword">تأكيد كلمة المرور</label>
+   <input id="confirmAdminPassword" type="password" autocomplete="new-password" placeholder="أعيدي كتابة كلمة المرور">
+   <div class="admin-actions"><button type="button" onclick="saveRecoveredPassword()">حفظ كلمة المرور</button></div>
+   <p class="admin-note">إذا انتهت صلاحية الرابط، اطلبي رسالة استعادة جديدة.</p>
+  </div>
   <div id="adminAuthBox">
    <h3>دخول المعلمة</h3>
    <label for="adminEmail">البريد الإلكتروني</label><input id="adminEmail" type="email" autocomplete="username" placeholder="البريد المسجل في Supabase">
@@ -405,6 +414,32 @@ async function loadSectionsFromCloud(){
  localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSectionsCache));
  renderCustomSections();renderAdminLists();
 }
+
+// استعادة كلمة المرور عبر رابط البريد الإلكتروني
+function showRecoveryForm(){
+ const box=document.getElementById('passwordRecoveryBox');
+ const auth=document.getElementById('adminAuthBox');
+ if(box)box.style.display='block';
+ if(auth)auth.style.display='none';
+ const panel=document.getElementById('adminPanel');
+ if(panel){panel.style.display='flex';panel.setAttribute('aria-hidden','false');}
+ updateDbStatus('أدخلي كلمة المرور الجديدة مرتين ثم اضغطي حفظ.');
+}
+async function saveRecoveredPassword(){
+ if(!sbClient){alert('تعذر الاتصال بخدمة الحسابات. حدّثي الصفحة وحاولي فتح رابط البريد مرة أخرى.');return}
+ const p=document.getElementById('newAdminPassword').value;
+ const c=document.getElementById('confirmAdminPassword').value;
+ if(p.length<8){alert('اختاري كلمة مرور من 8 أحرف على الأقل.');return}
+ if(p!==c){alert('كلمتا المرور غير متطابقتين.');return}
+ const {error}=await sbClient.auth.updateUser({password:p});
+ if(error){alert('تعذر تحديث كلمة المرور: '+error.message);return}
+ document.getElementById('passwordRecoveryBox').style.display='none';
+ document.getElementById('adminAuthBox').style.display='block';
+ document.getElementById('adminPassword').value=p;
+ updateDbStatus('تم تحديث كلمة المرور. يمكنك الآن تسجيل الدخول.');
+ alert('تم تغيير كلمة المرور بنجاح. سجّلي الدخول بالبريد وكلمة المرور الجديدة.');
+}
+
 async function adminSignIn(){
  if(!supabaseReady()){alert('أضيفي رابط المشروع ومفتاح Publishable في إعدادات الملف أولًا.');return}
  const email=document.getElementById('adminEmail').value.trim();
@@ -568,6 +603,20 @@ window.addEventListener('DOMContentLoaded',()=>{
  const initial=decodeURIComponent(location.hash.replace('#',''));
  if(initial && document.getElementById(initial)) showSiteSection(initial,false);
  else showSiteSection('home',false);
+});
+
+
+// التقاط جلسة استعادة كلمة المرور بعد تحميل مكتبة Supabase
+window.addEventListener('DOMContentLoaded',()=>{
+ const waitForSupabase=()=>{
+  if(!supabaseReady()){setTimeout(waitForSupabase,150);return}
+  if(!sbClient)sbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  sbClient.auth.onAuthStateChange((event)=>{
+   if(event==='PASSWORD_RECOVERY')showRecoveryForm();
+  });
+  if(location.hash.includes('type=recovery'))showRecoveryForm();
+ };
+ waitForSupabase();
 });
 
 </script>
