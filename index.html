@@ -668,8 +668,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div id="legacyGallerySubmissionsPanel" class="admin-list" aria-live="polite"></div>
     <div id="legacyReadingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
    <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button></div>
-  </div>
-  <p class="admin-note">بعد تسجيل الدخول ستعودين إلى الموقع نفسه، وستظهر أدوات التحرير بجانب المحتوى مباشرة.</p>
+  <p class="admin-note">أدوات إدارة الموقع تظهر هنا بعد التحقق من حساب المعلمة.</p>
   <div class="admin-grid">
    <div><label for="sectionName">اسم القسم</label><input id="sectionName" placeholder="مثال: أنشطة إضافية"></div>
    <div><label for="sectionIcon">الأيقونة</label><select id="sectionIcon"><option>🎨</option><option>🖌️</option><option>🧵</option><option>🌈</option><option>⭐</option><option>📚</option><option>🧩</option><option>💡</option><option>🖼️</option><option>🎯</option><option>🌷</option><option>🏆</option></select></div>
@@ -686,6 +685,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <div class="admin-actions"><button onclick="addCardToSection()">إضافة البطاقة</button></div>
   <h3 style="margin-top:22px">الأقسام التي أضفتِها</h3>
   <div id="customSectionList" class="admin-list"></div>
+  </div>
  </div>
 </div>
 <script>
@@ -795,6 +795,11 @@ async function adminSignIn(){
  if(!email||!password){alert('اكتبي البريد الإلكتروني وكلمة المرور.');return}
  const {data,error}=await sbClient.auth.signInWithPassword({email,password});
  if(error){alert('تعذر تسجيل الدخول: '+error.message);return}
+ if(!data.user || !data.user.app_metadata || data.user.app_metadata.role!=='teacher'){
+  await sbClient.auth.signOut();
+  alert('تم تسجيل الدخول، لكن هذا الحساب غير مفعّل كحساب معلمة. يلزم تعيين role=teacher له في إعدادات Supabase.');
+  return;
+ }
  currentAdmin=data.user;
  document.getElementById('adminAuthBox').style.display='none';
  document.getElementById('adminTools').style.display='block';
@@ -902,12 +907,16 @@ document.addEventListener('DOMContentLoaded',async()=>{
   updateDbStatus('تم إعداد الاتصال. جارٍ تحميل الأقسام المنشورة...');
   await loadSectionsFromCloud(); // يقرأها الزوار دون تسجيل دخول
   const {data:{session}}=await sbClient.auth.getSession();
-  if(session){
+  if(session && session.user && session.user.app_metadata && session.user.app_metadata.role==='teacher'){
    currentAdmin=session.user;
    document.getElementById('adminAuthBox').style.display='none';
    document.getElementById('adminTools').style.display='block';
    await loadSectionsFromCloud();
    await enableInlineEditor();
+  }else{
+   currentAdmin=null;
+   document.getElementById('adminAuthBox').style.display='block';
+   document.getElementById('adminTools').style.display='none';
   }
  }else{
   updateDbStatus('بانتظار إضافة رابط Supabase ومفتاح Publishable لإتاحة الحفظ المشترك.');
