@@ -595,6 +595,7 @@ async function saveSectionLive(section){
   section_id:section.id,html_content:clone.innerHTML,updated_at:new Date().toISOString()
  },{onConflict:'section_id'});
  if(error){alert('تعذر حفظ التعديلات: '+error.message);return}
+ content.querySelectorAll('[contenteditable="true"]').forEach(el=>el.removeAttribute('contenteditable'));
  toggleSectionEdit(section,false);
  alert('تم حفظ التعديلات ونشرها في الموقع لجميع الزوار.');
 }
@@ -661,8 +662,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   <div id="adminTools" style="display:none">
     <div class="admin-actions"><button type="button" onclick="loadReadingSubmissions()">مراجعة إجابات الفهم القرائي</button></div>
     <div class="admin-actions"><button type="button" onclick="loadGallerySubmissions()">مراجعة الأعمال الفنية الواردة</button></div>
-    <div id="gallerySubmissionsPanel" class="admin-list" aria-live="polite"></div>
-    <div id="readingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
+    <div id="legacyGallerySubmissionsPanel" class="admin-list" aria-live="polite"></div>
+    <div id="legacyReadingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
    <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button></div>
   </div>
   <p class="admin-note">بعد تسجيل الدخول ستعودين إلى الموقع نفسه، وستظهر أدوات التحرير بجانب المحتوى مباشرة.</p>
