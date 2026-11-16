@@ -180,6 +180,10 @@ body>*{position:relative;z-index:1}
 .artwork-preview-card img{width:100%;height:145px;object-fit:cover;border-radius:11px;display:block}
 .artwork-preview-card p{font-size:12px;margin:5px 0 0;overflow-wrap:anywhere}
 .gallery-note{font-size:12px;margin-top:14px}
+.gallery-review-note{font-size:13px;color:#806b91}
+#gallerySubmissionsPanel .admin-list-item{background:#fffaff}
+#gallerySubmissionsPanel input{max-width:100%}
+#publishedArtworks{margin-top:12px}
 </style></head>
 <body>
 <header class="site-header">
@@ -274,9 +278,17 @@ body>*{position:relative;z-index:1}
 <p class="muted">اختاروا صورة العمل الفني من الجهاز، ثم أضيفوها إلى مساحة العرض.</p>
 <label class="upload-art-label" for="artworkFile">＋ إضافة صورة العمل الفني</label>
 <input id="artworkFile" type="file" accept="image/*" onchange="previewArtwork(event)" style="display:none">
+<div class="admin-grid">
+ <div><label for="artworkStudentName">اسم الطالب أو الطالبة</label><input id="artworkStudentName" maxlength="80" placeholder="الاسم"></div>
+ <div><label for="artworkClassName">الصف / الفصل</label><input id="artworkClassName" maxlength="40" placeholder="مثال: ثاني / ٣"></div>
+</div>
+<label for="artworkTitle">عنوان العمل الفني</label><input id="artworkTitle" maxlength="100" placeholder="اكتب عنوان العمل">
 <div id="artworkPreview" class="artwork-preview-grid"></div>
+<div class="admin-actions"><button type="button" id="submitArtworkButton" onclick="submitArtwork()">إرسال العمل إلى المعلمة</button></div>
+<p id="artworkSubmitStatus" class="muted" aria-live="polite"></p>
 <p class="muted gallery-note">تظهر الصور هنا كمعاينة على هذا الجهاز. قبل النشر للطلاب والطالبات من أجهزتهم، سنربط الإضافة بتخزين سحابي ومراجعة المعلمة حتى تظهر الأعمال للجميع.</p>
 </div>
+<h3 style="margin-top:22px">الأعمال التي اعتمدتها المعلمة</h3><div id="publishedArtworks" class="artwork-preview-grid"></div>
 <p class="muted">جميع الأعمال تمر بمراجعة المعلمة قبل ظهورها في المعرض العام.</p></section>
 <section class="section" id="quiz"><h2>🎯 اختبر إبداعك</h2><p>اختر الإجابة الصحيحة:</p><p><b>ما الألوان الأساسية؟</b></p><div class="tabs"><button onclick="answer(this,false)">الأخضر والبرتقالي والبنفسجي</button><button onclick="answer(this,true)">الأحمر والأصفر والأزرق</button><button onclick="answer(this,false)">الأبيض والأسود والرمادي</button></div><p id="quiz-result" aria-live="polite" class="muted">اختر إجابتك ثم شاهد التغذية الراجعة.</p></section>
 <section class="section" id="ask"><h2>💌 اسأل معلمتي</h2><p>اكتب سؤالك الدراسي دون مشاركة معلومات شخصية حساسة.</p><label>السؤال</label><textarea placeholder="اكتب سؤالك هنا..."></textarea><p class="muted">هذه نسخة عرض تجريبية؛ لا يُرسل السؤال إلى المعلمة من هذا الملف.</p></section>
@@ -357,16 +369,116 @@ function closeGalleryCategory(){
 }
 function previewArtwork(event){
  const file=event.target.files&&event.target.files[0];
+ const host=document.getElementById('artworkPreview');host.replaceChildren();
  if(!file)return;
- if(!file.type.startsWith('image/')){alert('فضلاً اختاروا صورة فقط.');return;}
- const reader=new FileReader();
- reader.onload=function(e){
-  const card=document.createElement('div');card.className='artwork-preview-card';
-  const img=document.createElement('img');img.src=e.target.result;img.alt=galleryNames[activeGalleryCategory]||'عمل فني';
-  const caption=document.createElement('p');caption.textContent=file.name+' — بانتظار مراجعة المعلمة';
-  card.appendChild(img);card.appendChild(caption);document.getElementById('artworkPreview').prepend(card);
- };
- reader.readAsDataURL(file);
+ if(!file.type.startsWith('image/')){alert('فضلاً اختاروا صورة فقط.');event.target.value='';return;}
+ if(file.size>5*1024*1024){alert('حجم الصورة يجب ألا يتجاوز 5 ميجابايت.');event.target.value='';return;}
+ const card=document.createElement('div');card.className='artwork-preview-card';
+ const img=document.createElement('img');img.src=URL.createObjectURL(file);img.alt='معاينة العمل الفني';
+ const caption=document.createElement('p');caption.textContent=file.name+' — سترسل للمعلمة للمراجعة';
+ card.appendChild(img);card.appendChild(caption);host.appendChild(card);
+}
+function safeArtworkText(value){return String(value||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function setArtworkStatus(message){const el=document.getElementById('artworkSubmitStatus');if(el)el.textContent=message}
+async function submitArtwork(){
+ const fileInput=document.getElementById('artworkFile');
+ const file=fileInput&&fileInput.files&&fileInput.files[0];
+ const studentName=document.getElementById('artworkStudentName').value.trim();
+ const className=document.getElementById('artworkClassName').value.trim();
+ const title=document.getElementById('artworkTitle').value.trim();
+ const button=document.getElementById('submitArtworkButton');
+ if(!sbClient){setArtworkStatus('جارٍ الاتصال بالخدمة. انتظر قليلًا ثم حاول مرة أخرى.');return}
+ if(!activeGalleryCategory||!file||!studentName||!className||!title){setArtworkStatus('أكمل الاسم والصف وعنوان العمل واختر صورة قبل الإرسال.');return}
+ if(!file.type.startsWith('image/')||file.size>5*1024*1024){setArtworkStatus('اختر صورة لا يتجاوز حجمها 5 ميجابايت.');return}
+ button.disabled=true;setArtworkStatus('جارٍ إرسال العمل إلى مساحة المعلمة...');
+ const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+ const path='pending/'+crypto.randomUUID()+'.'+ext;
+ const upload=await sbClient.storage.from('student-artworks-pending').upload(path,file,{upsert:false,contentType:file.type});
+ if(upload.error){button.disabled=false;setArtworkStatus('تعذر رفع الصورة. تأكدي من إعداد مساحة التخزين ثم حاولي مجددًا.');return}
+ const insert=await sbClient.from('gallery_submissions').insert([{
+  student_name:studentName,class_name:className,title:title,category:activeGalleryCategory,
+  storage_path:path,status:'pending'
+ }]);
+ if(insert.error){
+  await sbClient.storage.from('student-artworks-pending').remove([path]);
+  button.disabled=false;setArtworkStatus('تعذر حفظ بيانات المشاركة. لم يتم إرسالها؛ يرجى المحاولة لاحقًا.');return;
+ }
+ document.getElementById('artworkStudentName').value='';
+ document.getElementById('artworkClassName').value='';
+ document.getElementById('artworkTitle').value='';
+ fileInput.value='';document.getElementById('artworkPreview').replaceChildren();
+ button.disabled=false;setArtworkStatus('وصل عملك إلى المعلمة بنجاح 🌟 لن يظهر في المعرض إلا بعد اعتماده.');
+}
+async function loadPublishedArtworks(){
+ const host=document.getElementById('publishedArtworks');
+ if(!host||!sbClient)return;
+ const result=await sbClient.from('gallery_submissions').select('id,title,category,published_path,created_at').eq('status','published').order('created_at',{ascending:false});
+ host.replaceChildren();
+ if(result.error){host.textContent='تعذر تحميل المعرض حاليًا.';return}
+ (result.data||[]).forEach(function(item){
+  if(!item.published_path)return;
+  const url=sbClient.storage.from('student-artworks-public').getPublicUrl(item.published_path).data.publicUrl;
+  const card=document.createElement('article');card.className='artwork-preview-card';
+  const img=document.createElement('img');img.src=url;img.alt='عمل فني معتمد';img.loading='lazy';
+  const caption=document.createElement('p');caption.textContent=(item.title||'عمل فني')+' — '+(galleryNames[item.category]||'إبداع فني');
+  card.appendChild(img);card.appendChild(caption);host.appendChild(card);
+ });
+ if(!host.children.length)host.textContent='سيظهر هنا ما تعتمده المعلمة من أعمالكم الفنية.';
+}
+async function loadGallerySubmissions(){
+ const host=document.getElementById('gallerySubmissionsPanel');if(!host)return;
+ host.textContent='جارٍ تحميل المشاركات...';
+ if(!sbClient||!currentAdmin){host.textContent='سجّلي الدخول بحساب المعلمة أولًا.';return}
+ const result=await sbClient.from('gallery_submissions').select('id,student_name,class_name,title,category,storage_path,status,created_at,teacher_note').order('created_at',{ascending:false});
+ if(result.error){host.textContent='تعذر تحميل المشاركات. تحققي من تشغيل ملف إعداد قاعدة البيانات.';return}
+ host.replaceChildren();
+ const items=result.data||[];
+ if(!items.length){host.textContent='لا توجد مشاركات حتى الآن.';return}
+ for(const item of items){
+  const card=document.createElement('article');card.className='admin-list-item';card.style.display='block';
+  const head=document.createElement('strong');head.textContent=(item.student_name||'طالب/طالبة')+' — '+(item.class_name||'');card.appendChild(head);
+  const title=document.createElement('p');title.textContent=(item.title||'عمل فني')+' · '+(galleryNames[item.category]||'');card.appendChild(title);
+  const state=document.createElement('p');state.className='muted';state.textContent='الحالة: '+({pending:'بانتظار المراجعة',revision:'يحتاج إلى تعديل',private:'محفوظ بشكل خاص',published:'منشور في المعرض'}[item.status]||item.status);card.appendChild(state);
+  if(item.created_at){const date=document.createElement('small');date.textContent=new Date(item.created_at).toLocaleString('ar-SA');card.appendChild(date)}
+  if(item.storage_path){
+   const signed=await sbClient.storage.from('student-artworks-pending').createSignedUrl(item.storage_path,300);
+   if(!signed.error&&signed.data&&signed.data.signedUrl){const link=document.createElement('a');link.href=signed.data.signedUrl;link.target='_blank';link.rel='noopener';link.textContent='فتح صورة العمل';link.style.display='block';link.style.margin='8px 0';card.appendChild(link)}
+  }
+  const note=document.createElement('input');note.placeholder='ملاحظة للمعلمة (اختياري)';note.value=item.teacher_note||'';card.appendChild(note);
+  const actions=document.createElement('div');actions.className='admin-actions';
+  const approve=document.createElement('button');approve.type='button';approve.textContent='اعتماد ونشر';approve.disabled=item.status==='published';approve.onclick=()=>publishArtwork(item,note.value);actions.appendChild(approve);
+  const revise=document.createElement('button');revise.type='button';revise.className='secondary';revise.textContent='يحتاج إلى تعديل';revise.onclick=()=>setArtworkReview(item.id,'revision',note.value);actions.appendChild(revise);
+  const keep=document.createElement('button');keep.type='button';keep.className='secondary';keep.textContent='احتفاظ خاص';keep.onclick=()=>setArtworkReview(item.id,'private',note.value);actions.appendChild(keep);
+  const remove=document.createElement('button');remove.type='button';remove.className='secondary';remove.textContent='حذف';remove.onclick=()=>deleteArtwork(item);actions.appendChild(remove);
+  card.appendChild(actions);host.appendChild(card);
+ }
+}
+async function setArtworkReview(id,status,note){
+ if(!currentAdmin)return;
+ const result=await sbClient.from('gallery_submissions').update({status:status,teacher_note:note||null}).eq('id',id);
+ if(result.error){alert('تعذر تحديث حالة المشاركة.');return}
+ loadGallerySubmissions();loadPublishedArtworks();
+}
+async function publishArtwork(item,note){
+ if(!currentAdmin)return;
+ const source=await sbClient.storage.from('student-artworks-pending').download(item.storage_path);
+ if(source.error){alert('تعذر فتح الصورة الأصلية.');return}
+ const ext=(item.storage_path.split('.').pop()||'jpg').toLowerCase();
+ const publicPath='approved/'+item.id+'.'+ext;
+ const upload=await sbClient.storage.from('student-artworks-public').upload(publicPath,source.data,{upsert:true,contentType:source.data.type||'image/jpeg'});
+ if(upload.error){alert('تعذر نقل الصورة إلى المعرض المنشور.');return}
+ const update=await sbClient.from('gallery_submissions').update({status:'published',published_path:publicPath,teacher_note:note||null}).eq('id',item.id);
+ if(update.error){await sbClient.storage.from('student-artworks-public').remove([publicPath]);alert('تعذر اعتماد المشاركة.');return}
+ await sbClient.storage.from('student-artworks-pending').remove([item.storage_path]);
+ loadGallerySubmissions();loadPublishedArtworks();
+}
+async function deleteArtwork(item){
+ if(!currentAdmin||!confirm('هل تريدين حذف هذه المشاركة نهائيًا؟'))return;
+ if(item.storage_path)await sbClient.storage.from('student-artworks-pending').remove([item.storage_path]);
+ if(item.published_path)await sbClient.storage.from('student-artworks-public').remove([item.published_path]);
+ const result=await sbClient.from('gallery_submissions').delete().eq('id',item.id);
+ if(result.error){alert('تعذر حذف المشاركة من قاعدة البيانات.');return}
+ loadGallerySubmissions();loadPublishedArtworks();
 }
 
 </script>
@@ -423,6 +535,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   </div>
   <div id="adminTools" style="display:none">
     <div class="admin-actions"><button type="button" onclick="loadReadingSubmissions()">مراجعة إجابات الفهم القرائي</button></div>
+    <div class="admin-actions"><button type="button" onclick="loadGallerySubmissions()">مراجعة الأعمال الفنية الواردة</button></div>
+    <div id="gallerySubmissionsPanel" class="admin-list" aria-live="polite"></div>
     <div id="readingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
    <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button></div>
   </div>
@@ -663,7 +777,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
  }else{
   updateDbStatus('بانتظار إضافة رابط Supabase ومفتاح Publishable لإتاحة الحفظ المشترك.');
  }
- renderCustomSections();renderAdminLists();
+ renderCustomSections();renderAdminLists();loadPublishedArtworks();
 });
 </script>
 
