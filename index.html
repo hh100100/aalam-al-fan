@@ -198,7 +198,7 @@ body>*{position:relative;z-index:1}
 .admin-launch{display:none!important}
 .admin-panel{display:none;position:fixed;inset:0;z-index:1100;background:#21152dcc;align-items:center;justify-content:center;padding:14px}
 .admin-card{width:min(480px,100%);max-height:88vh;overflow:auto}
-#adminTools{display:none!important}
+#adminTools{display:none}
 .teacher-edit-mode .inline-editor-toolbar{display:flex}
 .teacher-edit-mode .inline-element-toolbar{display:inline-flex}
 .teacher-edit-mode .inline-editor-toolbar{position:relative;z-index:3}
@@ -914,6 +914,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
    await loadSectionsFromCloud();
    await enableInlineEditor();
   }else{
+   if(session)await sbClient.auth.signOut();
    currentAdmin=null;
    document.getElementById('adminAuthBox').style.display='block';
    document.getElementById('adminTools').style.display='none';
