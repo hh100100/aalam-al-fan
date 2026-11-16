@@ -508,22 +508,21 @@ const INLINE_EDIT_TABLE='site_page_edits';
 let inlineEditMode=false;
 async function enableInlineEditor(){
  if(!currentAdmin||!sbClient)return;
- const {data,error}=await sbClient.from(INLINE_EDIT_TABLE).select('section_id,html_content');
- if(error){updateDbStatus('تعذر تحميل تعديلات الصفحات. شغّلي إعداد قاعدة البيانات المرفق.');return}
- (data||[]).forEach(row=>{
+ let savedRows=[];
+ const loaded=await sbClient.from(INLINE_EDIT_TABLE).select('section_id,html_content');
+ if(!loaded.error)savedRows=loaded.data||[];
+ // حمّل المحتوى المحفوظ إن كانت قاعدة بيانات التحرير جاهزة.
+ savedRows.forEach(row=>{
   const target=document.getElementById(row.section_id);
-  if(target && target.matches('section.section')) {
-   const content=target.querySelector('.section-editable-content');
-   if(content)content.innerHTML=row.html_content;
-   else {
-    const wrapper=document.createElement('div');wrapper.className='section-editable-content';
-    while(target.firstChild)wrapper.appendChild(target.firstChild);
-    target.appendChild(wrapper);
-   }
+  if(target&&target.matches('section.section')){
+   let content=target.querySelector('.section-editable-content');
+   if(!content){content=document.createElement('div');content.className='section-editable-content';while(target.firstChild)content.appendChild(target.firstChild);target.appendChild(content)}
+   content.innerHTML=row.html_content;
   }
  });
- document.querySelectorAll('main > section.section').forEach(section=>{
-  if(section.id==='adminPanel')return;
+ // أظهر أدوات التحرير حتى لو لم يُنشأ جدول الحفظ بعد.
+ const sections=[...document.querySelectorAll('main > section.section'),...document.querySelectorAll('#customSectionsHost > .added-section')];
+ sections.forEach(section=>{
   if(!section.querySelector('.section-editable-content')){
    const wrapper=document.createElement('div');wrapper.className='section-editable-content';
    while(section.firstChild)wrapper.appendChild(section.firstChild);
@@ -532,8 +531,8 @@ async function enableInlineEditor(){
   addSectionEditorControls(section);
   addInlineElementControls(section);
  });
- inlineEditMode=true;
  document.body.classList.add('teacher-edit-mode');
+ inlineEditMode=true;
  const gallery=document.getElementById('gallery');
  if(gallery&&!document.getElementById('teacherGalleryReview')){
   const review=document.createElement('div');review.id='teacherGalleryReview';review.className='teacher-inline-review';
@@ -546,8 +545,12 @@ async function enableInlineEditor(){
   review.innerHTML='<h3>📖 مراجعة إجابات الفهم القرائي</h3><div id="readingSubmissionsPanel" class="admin-list"></div>';
   reading.appendChild(review);
  }
- loadGallerySubmissions();loadReadingSubmissions();
- updateDbStatus('أنتِ الآن تتصفحين الموقع نفسه بوضع المعلمة. أدوات التعديل والمراجعة ظاهرة لكِ فقط.');
+ if(!loaded.error){
+  loadGallerySubmissions();loadReadingSubmissions();
+  updateDbStatus('وضع المعلمة مفعّل. أدوات التعديل ظاهرة داخل الموقع.');
+ }else{
+  updateDbStatus('ظهرت أدوات التحرير، لكن يلزم إعداد جدول site_page_edits لحفظ التغييرات بشكل دائم.');
+ }
 }
 function addSectionEditorControls(section){
  if(section.querySelector('.inline-editor-toolbar'))return;
