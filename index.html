@@ -240,7 +240,26 @@ body>*{position:relative;z-index:1}
 </div></section>
 <section class="section" id="plans"><h2>🗓️ الخطط والمهام الأسبوعية والملخص اليومي</h2><div class="notice">تُضاف هنا خطة الأسبوع، ورابط الدرس، والمهام المطلوبة، وملخص قصير لما تم تعلمه.</div><p>مثال مهمة فنية: ابحث عن ثلاثة أشياء في منزلك تحمل أشكالًا هندسية، ثم ارسمها في دفترك.</p></section>
 <section class="section" id="worksheets"><h2>📝 الاختبارات وأوراق العمل</h2><p>مساحة لأوراق العمل والاختبارات القصيرة المرتبطة بالدروس. يمكن للمعلمة إضافة ملفات وروابط الدروس عند تجهيز النسخة المنشورة.</p></section>
-<section class="section" id="reading"><h2>📖 الفهم القرائي</h2><article class="lesson"><h3>الألوان من حولنا</h3><p>نرى الألوان في الطبيعة؛ فالعشب أخضر، والسماء زرقاء، وبعض الأزهار حمراء أو صفراء. تساعدنا الألوان على التعبير عن أفكارنا ومشاعرنا في الأعمال الفنية.</p><b>فكّر وأجب:</b><ol><li>اذكر لونًا تراه في الطبيعة.</li><li>ما اللونان اللذان نمزجهما لنحصل على الأخضر؟</li></ol></article></section>
+<section class="section" id="reading">
+<h2>📖 الفهم القرائي</h2>
+<article class="lesson">
+<h3>الألوان من حولنا</h3>
+<p>نرى الألوان في الطبيعة؛ فالعشب أخضر، والسماء زرقاء، وبعض الأزهار حمراء أو صفراء. تساعدنا الألوان على التعبير عن أفكارنا ومشاعرنا في الأعمال الفنية.</p>
+<b>فكّر وأجب:</b>
+<form id="readingAnswersForm" onsubmit="event.preventDefault();submitReadingAnswers()">
+<label for="readingStudentName">اسم الطالب / الطالبة</label>
+<input id="readingStudentName" maxlength="100" required placeholder="اكتب اسمك">
+<label for="readingClass">الصف</label>
+<input id="readingClass" maxlength="50" required placeholder="مثال: ثاني / ٣">
+<label for="readingAnswerOne">١. اذكر لونًا تراه في الطبيعة.</label>
+<textarea id="readingAnswerOne" required maxlength="1500" placeholder="اكتب إجابتك هنا..."></textarea>
+<label for="readingAnswerTwo">٢. ما اللونان اللذان نمزجهما لنحصل على الأخضر؟</label>
+<textarea id="readingAnswerTwo" required maxlength="1500" placeholder="اكتب إجابتك هنا..."></textarea>
+<button type="submit" id="readingSubmitButton">إرسال الإجابات</button>
+<p id="readingSubmitStatus" class="notice" role="status" aria-live="polite">اكتب إجاباتك ثم اضغط إرسال.</p>
+</form>
+</article>
+</section>
 <section class="section" id="gallery"><h2>🖼️ معرض إبداعاتنا</h2>
 <p>اختاروا ركن العمل الفني المناسب، ثم أضيفوا صورة العمل الخاص بكم لعرضه في المعرض بعد مراجعته واعتماده من المعلمة.</p>
 <div class="gallery-categories">
@@ -277,6 +296,48 @@ function toggleTicker(btn){
  btn.textContent=paused?'▶ تشغيل':'⏸ إيقاف';
 }
 function answer(btn,correct){document.getElementById('quiz-result').textContent=correct?'أحسنت! إجابة صحيحة 🌟':'حاول مرة أخرى. تذكّر الألوان الأساسية الثلاثة.'}
+async function submitReadingAnswers(){
+ const status=document.getElementById('readingSubmitStatus');
+ const button=document.getElementById('readingSubmitButton');
+ if(!sbClient){status.textContent='جارٍ الاتصال، انتظر قليلًا ثم حاول مرة أخرى.';return}
+ const studentName=document.getElementById('readingStudentName').value.trim();
+ const className=document.getElementById('readingClass').value.trim();
+ const answerOne=document.getElementById('readingAnswerOne').value.trim();
+ const answerTwo=document.getElementById('readingAnswerTwo').value.trim();
+ if(!studentName||!className||!answerOne||!answerTwo){status.textContent='فضلاً أكمل جميع الخانات قبل الإرسال.';return}
+ button.disabled=true;status.textContent='جارٍ إرسال إجاباتك...';
+ const {error}=await sbClient.from('reading_submissions').insert([{student_name:studentName,class_name:className,answer_one:answerOne,answer_two:answerTwo}]);
+ button.disabled=false;
+ if(error){status.textContent='لم نتمكن من حفظ الإجابات الآن. يرجى المحاولة لاحقًا.';return}
+ document.getElementById('readingAnswersForm').reset();
+ status.textContent='وصلت إجاباتك بنجاح 🌟 شكرًا لمشاركتك.';
+}
+async function loadReadingSubmissions(){
+ const host=document.getElementById('readingSubmissionsPanel');
+ if(!host)return;
+ host.textContent='جارٍ تحميل الإجابات...';
+ if(!sbClient||!currentAdmin){host.textContent='سجّلي الدخول بحساب المعلمة أولًا.';return}
+ const {data,error}=await sbClient.from('reading_submissions').select('id,student_name,class_name,answer_one,answer_two,created_at,reviewed').order('created_at',{ascending:false});
+ if(error){host.textContent='تعذر تحميل الإجابات. تأكدي من تنفيذ إعدادات قاعدة البيانات.';return}
+ host.replaceChildren();
+ if(!data||!data.length){host.textContent='لا توجد إجابات مرسلة حتى الآن.';return}
+ data.forEach(item=>{
+  const card=document.createElement('article');card.className='admin-list-item';card.style.display='block';
+  const heading=document.createElement('strong');heading.textContent=(item.student_name||'طالب/طالبة')+' — '+(item.class_name||'');card.appendChild(heading);
+  const date=document.createElement('p');date.className='muted';date.textContent=item.created_at?new Date(item.created_at).toLocaleString('ar-SA'):'';card.appendChild(date);
+  const q1=document.createElement('p');q1.textContent='السؤال الأول: '+(item.answer_one||'');card.appendChild(q1);
+  const q2=document.createElement('p');q2.textContent='السؤال الثاني: '+(item.answer_two||'');card.appendChild(q2);
+  const state=document.createElement('p');state.textContent=item.reviewed?'تمت المراجعة':'بانتظار المراجعة';card.appendChild(state);
+  if(!item.reviewed){const mark=document.createElement('button');mark.type='button';mark.textContent='تحديد كمراجعة';mark.addEventListener('click',()=>markReadingReviewed(item.id));card.appendChild(mark)}
+  host.appendChild(card);
+ });
+}
+async function markReadingReviewed(id){
+ if(!sbClient||!currentAdmin)return;
+ const {error}=await sbClient.from('reading_submissions').update({reviewed:true}).eq('id',id);
+ if(error){alert('تعذر تحديث حالة الإجابة.');return}
+ loadReadingSubmissions();
+}
 function rate(n){document.querySelectorAll('#stars-input button').forEach((b,i)=>b.classList.toggle('on',i<n))}
 const galleryNames={weaving:'أعمال النسيج',printing:'أعمال الطباعة',ornament:'أعمال الزخرفة',drawing:'أعمال الرسم'};
 let activeGalleryCategory='';
@@ -361,6 +422,8 @@ document.addEventListener('DOMContentLoaded',()=>{
    <div class="admin-actions"><button type="button" onclick="completeOtpRecovery()">تأكيد الرمز وحفظ كلمة المرور</button></div>
   </div>
   <div id="adminTools" style="display:none">
+    <div class="admin-actions"><button type="button" onclick="loadReadingSubmissions()">مراجعة إجابات الفهم القرائي</button></div>
+    <div id="readingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
    <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button></div>
   </div>
   <p class="admin-note">يمكنك إضافة قسم جديد أو بطاقة فرعية مع اختيار الأيقونة. تُحفظ التعديلات في هذا المتصفح حاليًا. لعرضها لجميع الزوار من أجهزتهم، نكمل ربط الحفظ الآمن بقاعدة بيانات Supabase بعد إدخال بيانات المشروع داخل الملف.</p>
