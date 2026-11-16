@@ -100,7 +100,7 @@ footer{text-align:center;padding:28px 16px;background:linear-gradient(120deg,#f2
 .ticker-text{display:inline-block;min-width:100%;animation:tickerMove 18s linear infinite}
 .ticker-window.paused .ticker-text{animation-play-state:paused}
 @keyframes tickerMove{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.admin-launch{display:block;position:fixed;left:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,#8a43b7,#633091);color:white;font-weight:700;box-shadow:0 8px 24px #39234d33;cursor:pointer}
+.admin-launch{display:none!important;position:fixed;left:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,#8a43b7,#633091);color:white;font-weight:700;box-shadow:0 8px 24px #39234d33;cursor:pointer}
 .admin-panel{position:fixed;inset:0;z-index:1100;background:#21152dcc;display:none;align-items:center;justify-content:center;padding:14px}
 .admin-card{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:24px;padding:22px;box-shadow:0 20px 60px #0003}
 .admin-card h2{margin-top:0;color:#6c35a0}
@@ -184,6 +184,11 @@ body>*{position:relative;z-index:1}
 #gallerySubmissionsPanel .admin-list-item{background:#fffaff}
 #gallerySubmissionsPanel input{max-width:100%}
 #publishedArtworks{margin-top:12px}
+.inline-editor-toolbar{display:none;gap:7px;flex-wrap:wrap;justify-content:flex-start;margin:0 0 14px;padding:9px;background:#f5effa;border:1px dashed #c9a9df;border-radius:14px}
+.teacher-edit-mode .inline-editor-toolbar{display:flex}
+.inline-editor-toolbar button{border:0;border-radius:10px;padding:8px 12px;background:#6c35a0;color:#fff;font:inherit;cursor:pointer}
+.section-editable-content.section-editing{outline:2px dashed #9b54d4;outline-offset:5px;border-radius:10px;padding:8px;min-height:70px}
+.new-admin-content{background:#fff8d9;border:1px dashed #c49b32;padding:10px;border-radius:9px}
 </style></head>
 <body>
 <header class="site-header">
@@ -484,6 +489,74 @@ async function deleteArtwork(item){
 </script>
 
 <script>
+
+// وضع التحرير المباشر: لا تظهر أدواته إلا بعد تسجيل دخول المعلمة.
+const INLINE_EDIT_TABLE='site_page_edits';
+let inlineEditMode=false;
+async function enableInlineEditor(){
+ if(!currentAdmin||!sbClient)return;
+ const {data,error}=await sbClient.from(INLINE_EDIT_TABLE).select('section_id,html_content');
+ if(error){updateDbStatus('تعذر تحميل تعديلات الصفحات. شغّلي إعداد قاعدة البيانات المرفق.');return}
+ (data||[]).forEach(row=>{
+  const target=document.getElementById(row.section_id);
+  if(target && target.matches('section.section')) {
+   const content=target.querySelector('.section-editable-content');
+   if(content)content.innerHTML=row.html_content;
+   else {
+    const wrapper=document.createElement('div');wrapper.className='section-editable-content';
+    while(target.firstChild)wrapper.appendChild(target.firstChild);
+    target.appendChild(wrapper);
+   }
+  }
+ });
+ document.querySelectorAll('body > section.section').forEach(section=>{
+  if(section.id==='adminPanel')return;
+  if(!section.querySelector('.section-editable-content')){
+   const wrapper=document.createElement('div');wrapper.className='section-editable-content';
+   while(section.firstChild)wrapper.appendChild(section.firstChild);
+   section.appendChild(wrapper);
+  }
+  addSectionEditorControls(section);
+ });
+ inlineEditMode=true;
+ document.body.classList.add('teacher-edit-mode');
+ updateDbStatus('وضع التحرير المباشر مفعّل. استخدمي أدوات التعديل بجانب كل قسم ثم احفظي أو انشري.');
+}
+function addSectionEditorControls(section){
+ if(section.querySelector('.inline-editor-toolbar'))return;
+ const bar=document.createElement('div');bar.className='inline-editor-toolbar';
+ const edit=document.createElement('button');edit.type='button';edit.textContent='✏️ تعديل';edit.onclick=()=>toggleSectionEdit(section,true);
+ const add=document.createElement('button');add.type='button';add.textContent='＋ إضافة نص';add.onclick=()=>addSectionText(section);
+ const save=document.createElement('button');save.type='button';save.textContent='💾 حفظ ونشر';save.onclick=()=>saveSectionLive(section);
+ bar.append(edit,add,save);section.insertBefore(bar,section.firstChild);
+}
+function toggleSectionEdit(section,enabled){
+ const content=section.querySelector('.section-editable-content');if(!content)return;
+ content.contentEditable=enabled?'true':'false';
+ content.classList.toggle('section-editing',enabled);
+ const b=section.querySelector('.inline-editor-toolbar button');
+ if(b)b.textContent=enabled?'✓ انتهيت من التعديل':'✏️ تعديل';
+ if(enabled)content.focus();
+}
+function addSectionText(section){
+ const content=section.querySelector('.section-editable-content');if(!content)return;
+ const p=document.createElement('p');p.textContent='اكتبي النص الجديد هنا...';p.contentEditable='true';p.className='new-admin-content';
+ content.appendChild(p);p.focus();
+}
+async function saveSectionLive(section){
+ if(!currentAdmin||!sbClient)return;
+ const content=section.querySelector('.section-editable-content');if(!content)return;
+ const clone=content.cloneNode(true);
+ clone.querySelectorAll('[contenteditable="true"]').forEach(el=>el.removeAttribute('contenteditable'));
+ clone.querySelectorAll('.new-admin-content').forEach(el=>el.classList.remove('new-admin-content'));
+ const {error}=await sbClient.from(INLINE_EDIT_TABLE).upsert({
+  section_id:section.id,html_content:clone.innerHTML,updated_at:new Date().toISOString()
+ },{onConflict:'section_id'});
+ if(error){alert('تعذر حفظ التعديلات: '+error.message);return}
+ toggleSectionEdit(section,false);
+ alert('تم حفظ التعديلات ونشرها في الموقع لجميع الزوار.');
+}
+
 function openAdmin(){
  const panel=document.getElementById('adminPanel');
  if(panel){panel.style.display='flex';panel.setAttribute('aria-hidden','false');}
@@ -669,8 +742,9 @@ async function adminSignIn(){
  currentAdmin=data.user;
  document.getElementById('adminAuthBox').style.display='none';
  document.getElementById('adminTools').style.display='block';
- updateDbStatus('تم تسجيل الدخول. جارٍ تحميل الأقسام من قاعدة البيانات...');
+ updateDbStatus('تم تسجيل الدخول. جارٍ تفعيل أدوات التحرير داخل الموقع...');
  await loadSectionsFromCloud();
+ await enableInlineEditor();
 }
 async function adminSignOut(){
  if(sbClient)await sbClient.auth.signOut();
@@ -773,6 +847,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
    document.getElementById('adminAuthBox').style.display='none';
    document.getElementById('adminTools').style.display='block';
    await loadSectionsFromCloud();
+   await enableInlineEditor();
   }
  }else{
   updateDbStatus('بانتظار إضافة رابط Supabase ومفتاح Publishable لإتاحة الحفظ المشترك.');
