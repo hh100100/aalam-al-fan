@@ -628,64 +628,56 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 <button class="admin-launch" type="button" onclick="openAdmin()">لوحة تحكم المعلمة ⚙️</button>
-<div class="admin-panel" id="adminPanel" role="dialog" aria-modal="true" aria-label="لوحة تحكم المعلمة">
+<div class="admin-panel" id="adminPanel" role="dialog" aria-modal="true" aria-label="دخول المعلمة">
  <div class="admin-card">
   <h2>دخول المعلمة</h2>
-  <div class="admin-note" id="dbStatus">حالة الربط: لم تُضف بيانات Supabase بعد.</div>
-  <div class="admin-actions" style="margin:12px 0">
-   <button class="secondary" type="button" onclick="document.getElementById('adminAuthBox').style.display='block';document.getElementById('otpRecoveryBox').style.display='block';">استعادة كلمة المرور</button>
+  <div class="admin-note" id="dbStatus">أدخلي بيانات حساب المعلمة للدخول إلى أدوات التحرير.</div>
+  <div id="adminAuthBox">
+   <label for="adminEmail">البريد الإلكتروني</label>
+   <input id="adminEmail" type="email" autocomplete="username" placeholder="البريد المسجل لحساب المعلمة">
+   <label for="adminPassword">كلمة المرور</label>
+   <input id="adminPassword" type="password" autocomplete="current-password" placeholder="كلمة مرور حساب المعلمة">
+   <div class="admin-actions"><button type="button" onclick="adminSignIn()">دخول</button><button class="secondary" type="button" onclick="closeAdmin()">إغلاق</button></div>
+   <p class="admin-note">إذا نسيتِ كلمة المرور يمكنك طلب رابط استعادة.</p>
+   <div class="admin-actions"><button class="secondary" type="button" onclick="sendRecoveryCode()">إرسال رابط استعادة</button></div>
   </div>
   <div id="passwordRecoveryBox" style="display:none">
    <h3>تعيين كلمة مرور جديدة</h3>
-   <label for="newAdminPassword">كلمة المرور الجديدة</label>
-   <input id="newAdminPassword" type="password" autocomplete="new-password" placeholder="اكتبي كلمة مرور جديدة">
-   <label for="confirmAdminPassword">تأكيد كلمة المرور</label>
-   <input id="confirmAdminPassword" type="password" autocomplete="new-password" placeholder="أعيدي كتابة كلمة المرور">
+   <label for="newAdminPassword">كلمة المرور الجديدة</label><input id="newAdminPassword" type="password" autocomplete="new-password">
+   <label for="confirmAdminPassword">تأكيد كلمة المرور</label><input id="confirmAdminPassword" type="password" autocomplete="new-password">
    <div class="admin-actions"><button type="button" onclick="saveRecoveredPassword()">حفظ كلمة المرور</button></div>
-   <p class="admin-note">إذا انتهت صلاحية الرابط، اطلبي رسالة استعادة جديدة.</p>
-  </div>
-  <div id="adminAuthBox">
-   <h3>دخول المعلمة</h3>
-   <label for="adminEmail">البريد الإلكتروني</label><input id="adminEmail" type="email" autocomplete="username" placeholder="البريد المسجل في Supabase">
-   <label for="adminPassword">كلمة المرور</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="كلمة مرور حساب المعلمة">
-   <div class="admin-actions"><button type="button" onclick="adminSignIn()">دخول</button></div>
-   <p class="admin-note">نسيتِ كلمة المرور؟ أرسلي رابط استعادة إلى بريدك</p>
-   <div class="admin-actions"><button class="secondary" type="button" onclick="sendRecoveryCode()">إرسال رابط استعادة</button></div>
   </div>
   <div id="otpRecoveryBox" style="display:none">
    <h3>استعادة كلمة المرور بالرمز</h3>
-   <label for="recoveryOtp">رمز التحقق المرسل إلى بريدك</label>
-   <input id="recoveryOtp" inputmode="numeric" autocomplete="one-time-code" placeholder="أدخلي الرمز المكوّن من 6 أرقام">
-   <label for="otpNewPassword">كلمة المرور الجديدة</label>
-   <input id="otpNewPassword" type="password" autocomplete="new-password" placeholder="8 أحرف على الأقل">
-   <label for="otpConfirmPassword">تأكيد كلمة المرور</label>
-   <input id="otpConfirmPassword" type="password" autocomplete="new-password" placeholder="أعيدي كتابة كلمة المرور">
+   <label for="recoveryOtp">رمز التحقق</label><input id="recoveryOtp" inputmode="numeric" autocomplete="one-time-code">
+   <label for="otpNewPassword">كلمة المرور الجديدة</label><input id="otpNewPassword" type="password" autocomplete="new-password">
+   <label for="otpConfirmPassword">تأكيد كلمة المرور</label><input id="otpConfirmPassword" type="password" autocomplete="new-password">
    <div class="admin-actions"><button type="button" onclick="completeOtpRecovery()">تأكيد الرمز وحفظ كلمة المرور</button></div>
   </div>
   <div id="adminTools" style="display:none">
-    <div class="admin-actions"><button type="button" onclick="loadReadingSubmissions()">مراجعة إجابات الفهم القرائي</button></div>
-    <div class="admin-actions"><button type="button" onclick="loadGallerySubmissions()">مراجعة الأعمال الفنية الواردة</button></div>
-    <div id="legacyGallerySubmissionsPanel" class="admin-list" aria-live="polite"></div>
-    <div id="legacyReadingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
-   <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button>
-  <p class="admin-note">أدوات إدارة الموقع تظهر هنا بعد التحقق من حساب المعلمة.</p>
-  <div class="admin-grid">
-   <div><label for="sectionName">اسم القسم</label><input id="sectionName" placeholder="مثال: أنشطة إضافية"></div>
-   <div><label for="sectionIcon">الأيقونة</label><select id="sectionIcon"><option>🎨</option><option>🖌️</option><option>🧵</option><option>🌈</option><option>⭐</option><option>📚</option><option>🧩</option><option>💡</option><option>🖼️</option><option>🎯</option><option>🌷</option><option>🏆</option></select></div>
-  </div>
-  <label for="sectionDesc">وصف مختصر للقسم (اختياري)</label><input id="sectionDesc" placeholder="اكتبي وصفًا بسيطًا يظهر أسفل العنوان">
-  <div class="admin-actions"><button onclick="addCustomSection()">إضافة القسم</button><button class="secondary" onclick="closeAdmin()">إغلاق</button></div>
-  <hr style="border:0;border-top:1px solid #eadff2;margin:20px 0">
-  <h3>إضافة بطاقة داخل قسم</h3>
-  <div class="admin-grid">
-   <div><label for="parentSection">القسم</label><select id="parentSection"></select></div>
-   <div><label for="cardTitle">عنوان البطاقة</label><input id="cardTitle" placeholder="مثال: نشاط الألوان"></div>
-  </div>
-  <label for="cardText">وصف البطاقة أو رابط المورد</label><textarea id="cardText" rows="2" placeholder="اكتبي وصفًا أو رابطًا يبدأ بـ https://"></textarea>
-  <div class="admin-actions"><button onclick="addCardToSection()">إضافة البطاقة</button></div>
-  <h3 style="margin-top:22px">الأقسام التي أضفتِها</h3>
-  <div id="customSectionList" class="admin-list"></div>
-  </div>
+   <hr>
+   <h3>مراجعة المشاركات</h3>
+   <div class="admin-actions"><button type="button" onclick="loadReadingSubmissions()">مراجعة إجابات الفهم القرائي</button><button type="button" onclick="loadGallerySubmissions()">مراجعة الأعمال الفنية الواردة</button></div>
+   <div id="legacyGallerySubmissionsPanel" class="admin-list" aria-live="polite"></div>
+   <div id="legacyReadingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
+   <hr>
+   <h3>إضافة قسم للموقع</h3>
+   <div class="admin-grid">
+    <div><label for="sectionName">اسم القسم</label><input id="sectionName" placeholder="مثال: أنشطة إضافية"></div>
+    <div><label for="sectionIcon">الأيقونة</label><select id="sectionIcon"><option>🎨</option><option>🖌️</option><option>🧵</option><option>🌈</option><option>⭐</option><option>📚</option><option>🧩</option><option>💡</option><option>🖼️</option><option>🎯</option><option>🌷</option><option>🏆</option></select></div>
+   </div>
+   <label for="sectionDesc">وصف مختصر للقسم (اختياري)</label><input id="sectionDesc" placeholder="وصف يظهر أسفل العنوان">
+   <div class="admin-actions"><button type="button" onclick="addCustomSection()">إضافة القسم</button></div>
+   <hr>
+   <h3>إضافة بطاقة داخل قسم</h3>
+   <div class="admin-grid">
+    <div><label for="parentSection">القسم</label><select id="parentSection"></select></div>
+    <div><label for="cardTitle">عنوان البطاقة</label><input id="cardTitle" placeholder="مثال: نشاط الألوان"></div>
+   </div>
+   <label for="cardText">وصف البطاقة أو رابط المورد</label><textarea id="cardText" rows="2" placeholder="اكتبي وصفًا أو رابطًا يبدأ بـ https://"></textarea>
+   <div class="admin-actions"><button type="button" onclick="addCardToSection()">إضافة البطاقة</button></div>
+   <h3>الأقسام التي أضفتِها</h3><div id="customSectionList" class="admin-list"></div>
+   <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button><button class="secondary" type="button" onclick="closeAdmin()">إغلاق</button></div>
   </div>
  </div>
 </div>
