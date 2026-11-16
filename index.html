@@ -189,6 +189,10 @@ body>*{position:relative;z-index:1}
 .inline-editor-toolbar button{border:0;border-radius:10px;padding:8px 12px;background:#6c35a0;color:#fff;font:inherit;cursor:pointer}
 .section-editable-content.section-editing{outline:2px dashed #9b54d4;outline-offset:5px;border-radius:10px;padding:8px;min-height:70px}
 .new-admin-content{background:#fff8d9;border:1px dashed #c49b32;padding:10px;border-radius:9px}
+.inline-element-toolbar{display:none;gap:5px;margin:4px 0;vertical-align:middle}
+.teacher-edit-mode .inline-element-toolbar{display:inline-flex}
+.inline-element-toolbar button{border:1px solid #dfc9ec;border-radius:8px;background:#fff;color:#633091;padding:4px 7px;font-size:13px;cursor:pointer}
+.teacher-edit-mode .section-editable-content>*{position:relative}
 </style></head>
 <body>
 <header class="site-header">
@@ -517,6 +521,7 @@ async function enableInlineEditor(){
    section.appendChild(wrapper);
   }
   addSectionEditorControls(section);
+  addInlineElementControls(section);
  });
  inlineEditMode=true;
  document.body.classList.add('teacher-edit-mode');
@@ -529,6 +534,20 @@ function addSectionEditorControls(section){
  const add=document.createElement('button');add.type='button';add.textContent='＋ إضافة نص';add.onclick=()=>addSectionText(section);
  const save=document.createElement('button');save.type='button';save.textContent='💾 حفظ ونشر';save.onclick=()=>saveSectionLive(section);
  bar.append(edit,add,save);section.insertBefore(bar,section.firstChild);
+}
+function addInlineElementControls(section){
+ const content=section.querySelector('.section-editable-content');if(!content)return;
+ [...content.children].forEach(el=>{
+  if(el.matches('[data-inline-control],.inline-editor-toolbar'))return;
+  if(el.dataset.inlineReady==='1')return;
+  el.dataset.inlineReady='1';
+  const bar=document.createElement('span');bar.className='inline-element-toolbar';bar.dataset.inlineControl='1';
+  const edit=document.createElement('button');edit.type='button';edit.textContent='✏️';edit.title='تعديل هذا الجزء';
+  edit.onclick=()=>{el.contentEditable='true';el.classList.add('section-editing');el.focus()};
+  const remove=document.createElement('button');remove.type='button';remove.textContent='🗑️';remove.title='حذف هذا الجزء';
+  remove.onclick=()=>{if(confirm('هل تريدين حذف هذا الجزء من الصفحة؟')){bar.remove();el.remove()}};
+  bar.append(edit,remove);el.parentNode.insertBefore(bar,el);
+ });
 }
 function toggleSectionEdit(section,enabled){
  const content=section.querySelector('.section-editable-content');if(!content)return;
@@ -548,6 +567,7 @@ async function saveSectionLive(section){
  const content=section.querySelector('.section-editable-content');if(!content)return;
  const clone=content.cloneNode(true);
  clone.querySelectorAll('[contenteditable="true"]').forEach(el=>el.removeAttribute('contenteditable'));
+ clone.querySelectorAll('[data-inline-control]').forEach(el=>el.remove());
  clone.querySelectorAll('.new-admin-content').forEach(el=>el.classList.remove('new-admin-content'));
  const {error}=await sbClient.from(INLINE_EDIT_TABLE).upsert({
   section_id:section.id,html_content:clone.innerHTML,updated_at:new Date().toISOString()
