@@ -615,14 +615,14 @@ function closeAdmin(){
 <script>
 // دخول المعلمة من نفس واجهة الموقع: الضغط خمس مرات على عنوان الموقع.
 document.addEventListener('DOMContentLoaded',()=>{
+ // مدخل خاص للمعلمة: لا يظهر أي زر للزوار، وتبقى المعلمة داخل واجهة الموقع.
+ const params=new URLSearchParams(location.search);
+ if(params.get('teacher')==='1'){openAdmin();return}
  const brand=document.querySelector('.brand-copy h1');
  if(!brand)return;
  let taps=0,timer;
- brand.style.cursor='default';
  brand.addEventListener('click',()=>{
-  taps++;
-  clearTimeout(timer);
-  timer=setTimeout(()=>{taps=0},1800);
+  taps++;clearTimeout(timer);timer=setTimeout(()=>{taps=0},2200);
   if(taps>=5){taps=0;openAdmin()}
  });
 });
