@@ -193,6 +193,15 @@ body>*{position:relative;z-index:1}
 .teacher-edit-mode .inline-element-toolbar{display:inline-flex}
 .inline-element-toolbar button{border:1px solid #dfc9ec;border-radius:8px;background:#fff;color:#633091;padding:4px 7px;font-size:13px;cursor:pointer}
 .teacher-edit-mode .section-editable-content>*{position:relative}
+
+/* تجربة المعلمة تبقى داخل الموقع نفسه؛ نافذة الدخول فقط عند طلبها */
+.admin-launch{display:none!important}
+.admin-panel{display:none;position:fixed;inset:0;z-index:1100;background:#21152dcc;align-items:center;justify-content:center;padding:14px}
+.admin-card{width:min(480px,100%);max-height:88vh;overflow:auto}
+#adminTools{display:none!important}
+.teacher-edit-mode .inline-editor-toolbar{display:flex}
+.teacher-edit-mode .inline-element-toolbar{display:inline-flex}
+.teacher-edit-mode .inline-editor-toolbar{position:relative;z-index:3}
 </style></head>
 <body>
 <header class="site-header">
@@ -587,14 +596,24 @@ function closeAdmin(){
 }
 </script>
 <script>
+// دخول المعلمة من نفس واجهة الموقع: الضغط خمس مرات على عنوان الموقع.
 document.addEventListener('DOMContentLoaded',()=>{
- if(location.hash==='#teacher-panel') openAdmin();
+ const brand=document.querySelector('.brand-copy h1');
+ if(!brand)return;
+ let taps=0,timer;
+ brand.style.cursor='default';
+ brand.addEventListener('click',()=>{
+  taps++;
+  clearTimeout(timer);
+  timer=setTimeout(()=>{taps=0},1800);
+  if(taps>=5){taps=0;openAdmin()}
+ });
 });
 </script>
 <button class="admin-launch" type="button" onclick="openAdmin()">لوحة تحكم المعلمة ⚙️</button>
 <div class="admin-panel" id="adminPanel" role="dialog" aria-modal="true" aria-label="لوحة تحكم المعلمة">
  <div class="admin-card">
-  <h2>لوحة تحكم المعلمة</h2>
+  <h2>دخول المعلمة</h2>
   <div class="admin-note" id="dbStatus">حالة الربط: لم تُضف بيانات Supabase بعد.</div>
   <div class="admin-actions" style="margin:12px 0">
    <button class="secondary" type="button" onclick="document.getElementById('adminAuthBox').style.display='block';document.getElementById('otpRecoveryBox').style.display='block';">استعادة كلمة المرور</button>
@@ -633,7 +652,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div id="readingSubmissionsPanel" class="admin-list" aria-live="polite"></div>
    <div class="admin-actions"><button class="secondary" type="button" onclick="adminSignOut()">تسجيل الخروج</button></div>
   </div>
-  <p class="admin-note">يمكنك إضافة قسم جديد أو بطاقة فرعية مع اختيار الأيقونة. تُحفظ التعديلات في هذا المتصفح حاليًا. لعرضها لجميع الزوار من أجهزتهم، نكمل ربط الحفظ الآمن بقاعدة بيانات Supabase بعد إدخال بيانات المشروع داخل الملف.</p>
+  <p class="admin-note">بعد تسجيل الدخول ستعودين إلى الموقع نفسه، وستظهر أدوات التحرير بجانب المحتوى مباشرة.</p>
   <div class="admin-grid">
    <div><label for="sectionName">اسم القسم</label><input id="sectionName" placeholder="مثال: أنشطة إضافية"></div>
    <div><label for="sectionIcon">الأيقونة</label><select id="sectionIcon"><option>🎨</option><option>🖌️</option><option>🧵</option><option>🌈</option><option>⭐</option><option>📚</option><option>🧩</option><option>💡</option><option>🖼️</option><option>🎯</option><option>🌷</option><option>🏆</option></select></div>
@@ -765,13 +784,17 @@ async function adminSignIn(){
  updateDbStatus('تم تسجيل الدخول. جارٍ تفعيل أدوات التحرير داخل الموقع...');
  await loadSectionsFromCloud();
  await enableInlineEditor();
+ closeAdmin();
 }
 async function adminSignOut(){
  if(sbClient)await sbClient.auth.signOut();
  currentAdmin=null;
+ document.body.classList.remove('teacher-edit-mode');
+ document.querySelectorAll('.inline-editor-toolbar,.inline-element-toolbar').forEach(el=>el.remove());
+ inlineEditMode=false;
  document.getElementById('adminAuthBox').style.display='block';
  document.getElementById('adminTools').style.display='none';
- updateDbStatus('تم تسجيل الخروج. يمكن للزوار مشاهدة الأقسام المنشورة.');
+ updateDbStatus('تم تسجيل الخروج.');
 }
 function addCustomSection(){
  const name=document.getElementById('sectionName').value.trim();
