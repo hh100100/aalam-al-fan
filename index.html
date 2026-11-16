@@ -412,8 +412,6 @@ async function persistAllSections(){
   id:x.id,name:x.name,icon:x.icon||'🎨',description:x.desc||'',
   cards:Array.isArray(x.cards)?x.cards:[],sort_order:i
  }));
- const {error:delError}=await sbClient.from('site_sections').delete().neq('id','__never_match__');
- if(delError){updateDbStatus('تعذر تحديث قاعدة البيانات: '+delError.message);alert('لم يتم الحفظ في قاعدة البيانات. '+delError.message);return}
  if(rows.length){
   const {error}=await sbClient.from('site_sections').upsert(rows,{onConflict:'id'});
   if(error){updateDbStatus('تعذر الحفظ: '+error.message);alert('تعذر الحفظ: '+error.message);return}
@@ -549,9 +547,14 @@ function moveCustomSection(id,delta){
  [items[i],items[j]]=[items[j],items[i]];
  saveCustomSections(items);renderCustomSections();renderAdminLists();persistAllSections();
 }
-function removeCustomSection(id){
+async function removeCustomSection(id){
  if(!confirm('هل تريدين حذف هذا القسم؟'))return;
- saveCustomSections(readCustomSections().filter(x=>x.id!==id));renderCustomSections();renderAdminLists();persistAllSections();
+ if(sbClient && currentAdmin){
+  const {error}=await sbClient.from('site_sections').delete().eq('id',id);
+  if(error){updateDbStatus('تعذر حذف القسم: '+error.message);alert('تعذر حذف القسم: '+error.message);return}
+ }
+ saveCustomSections(readCustomSections().filter(x=>x.id!==id));
+ renderCustomSections();renderAdminLists();persistAllSections();
 }
 function renderAdminLists(){
  const items=readCustomSections();
