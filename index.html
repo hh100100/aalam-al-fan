@@ -202,7 +202,7 @@ body>*{position:relative;z-index:1}
 .teacher-edit-mode .inline-editor-toolbar{display:flex}
 .teacher-edit-mode .inline-element-toolbar{display:inline-flex}
 .teacher-edit-mode .inline-editor-toolbar{position:relative;z-index:3}
-</style></head>
+.teacher-inline-review{display:none;margin:20px 0;padding:16px;border:2px dashed #b68bd1;border-radius:18px;background:#fbf7ff}\n.teacher-edit-mode .teacher-inline-review{display:block}\n.teacher-inline-review h3{color:#693b8d}\n.teacher-inline-review .admin-list-item{background:#fff}\n</style></head>
 <body>
 <header class="site-header">
  <div class="brand-row">
@@ -522,7 +522,7 @@ async function enableInlineEditor(){
    }
   }
  });
- document.querySelectorAll('body > section.section').forEach(section=>{
+ document.querySelectorAll('main > section.section').forEach(section=>{
   if(section.id==='adminPanel')return;
   if(!section.querySelector('.section-editable-content')){
    const wrapper=document.createElement('div');wrapper.className='section-editable-content';
@@ -534,7 +534,20 @@ async function enableInlineEditor(){
  });
  inlineEditMode=true;
  document.body.classList.add('teacher-edit-mode');
- updateDbStatus('وضع التحرير المباشر مفعّل. استخدمي أدوات التعديل بجانب كل قسم ثم احفظي أو انشري.');
+ const gallery=document.getElementById('gallery');
+ if(gallery&&!document.getElementById('teacherGalleryReview')){
+  const review=document.createElement('div');review.id='teacherGalleryReview';review.className='teacher-inline-review';
+  review.innerHTML='<h3>📥 مراجعة الأعمال الفنية الواردة</h3><p>هذه القائمة تظهر لكِ وحدك بعد تسجيل الدخول.</p><div id="gallerySubmissionsPanel" class="admin-list"></div>';
+  gallery.appendChild(review);
+ }
+ const reading=document.getElementById('reading');
+ if(reading&&!document.getElementById('teacherReadingReview')){
+  const review=document.createElement('div');review.id='teacherReadingReview';review.className='teacher-inline-review';
+  review.innerHTML='<h3>📖 مراجعة إجابات الفهم القرائي</h3><div id="readingSubmissionsPanel" class="admin-list"></div>';
+  reading.appendChild(review);
+ }
+ loadGallerySubmissions();loadReadingSubmissions();
+ updateDbStatus('أنتِ الآن تتصفحين الموقع نفسه بوضع المعلمة. أدوات التعديل والمراجعة ظاهرة لكِ فقط.');
 }
 function addSectionEditorControls(section){
  if(section.querySelector('.inline-editor-toolbar'))return;
