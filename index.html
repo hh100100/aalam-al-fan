@@ -533,6 +533,8 @@ async function enableInlineEditor(){
    content.innerHTML=row.html_content;
   }
  });
+ // أعد إظهار الأيقونات المضافة بعد تحميل نسخة محتوى الصفحة المحفوظة، حتى لا تختفي عند دخول المعلمة.
+ renderCustomSections();
  // أظهر أدوات التحرير حتى لو لم يُنشأ جدول الحفظ بعد.
  const sections=[...document.querySelectorAll('main > section.section'),...document.querySelectorAll('#customSectionsHost > .added-section')];
  sections.forEach(section=>{
@@ -940,8 +942,9 @@ document.addEventListener('DOMContentLoaded',async()=>{
  if(supabaseReady()){
   sbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   updateDbStatus('تم إعداد الاتصال. جارٍ تحميل الأقسام المنشورة...');
-  await loadSectionsFromCloud(); // يقرأها الزوار دون تسجيل دخول
+  // حمّل تعديلات الصفحة أولاً، ثم أضف الأقسام المحفوظة؛ حتى لا يستبدل HTML المحفوظ الأيقونات الجديدة.
   await loadPublishedPageEdits(); // يعرض التعديلات المنشورة للطلاب والطالبات أيضًا
+  await loadSectionsFromCloud(); // يقرأها الزوار دون تسجيل دخول ويعيد رسم الأيقونات بعد تحميل التعديلات
   const {data:{session}}=await sbClient.auth.getSession();
   if(session && session.user && session.user.app_metadata && session.user.app_metadata.role==='teacher'){
    currentAdmin=session.user;
