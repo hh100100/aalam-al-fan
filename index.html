@@ -603,30 +603,38 @@ function toggleSectionEdit(section,enabled){
  if(enabled)content.focus();
 }
 async function addHomeTile(section){
- const grid=section.querySelector('.section-editable-content .grid, .grid');
- if(!grid){alert('لم أجد شبكة الأقسام في الصفحة الرئيسية.');return}
+ const main=document.getElementById('main-sections');
+ const grid=main&&main.querySelector('.section-editable-content .grid, .grid');
+ if(!main||!grid){alert('لم أجد شبكة الأقسام في الصفحة الرئيسية. حدّثي الصفحة وحاولي مرة أخرى.');return}
  const name=prompt('اكتبي اسم القسم الجديد الذي تريدين إضافته:');
- if(!name||!name.trim())return;
+ if(name===null||!name.trim())return;
  const icon=prompt('اختاري رمز الأيقونة، مثل ⭐ أو 🎨 أو 💜:','⭐');
  if(icon===null)return;
  if(!sbClient||!currentAdmin){alert('انتهت جلسة المعلمة. سجّلي الدخول مرة أخرى ثم أعيدي المحاولة.');return}
- const items=readCustomSections();
+ const items=readCustomSections().slice();
  const id='section-'+Date.now();
  items.push({id,name:name.trim(),icon:icon.trim()||'⭐',desc:'',cards:[]});
- saveCustomSections(items);
- renderCustomSections();renderAdminLists();
- const a=document.createElement('a');a.className='tile';a.href='#'+id;
- const iconSpan=document.createElement('span');iconSpan.textContent=icon.trim()||'⭐';
- const label=document.createElement('strong');label.textContent=name.trim();
- a.append(iconSpan,label);grid.appendChild(a);
  try{
-  await persistAllSections();
-  await saveSectionLive(section);
-  const {data,error}=await sbClient.from('site_sections').select('id').eq('id',id).maybeSingle();
-  if(error||!data)throw new Error(error?.message||'لم يتم العثور على القسم بعد الحفظ.');
-  alert('تم حفظ القسم والأيقونة بنجاح. افتحي صفحة الطلاب بعد تحديثها للتأكد من ظهورهما.');
+  updateDbStatus('جارٍ حفظ الأيقونة الجديدة في قاعدة البيانات...');
+  const rows=items.map((x,i)=>({id:x.id,name:x.name,icon:x.icon||'🎨',description:x.desc||'',cards:Array.isArray(x.cards)?x.cards:[],sort_order:i}));
+  const {data,error}=await sbClient.from('site_sections').upsert(rows,{onConflict:'id'}).select('id,name,icon');
+  if(error)throw new Error(error.message);
+  if(!data||!data.some(row=>row.id===id))throw new Error('لم يصل تأكيد حفظ الأيقونة من قاعدة البيانات.');
+  customSectionsCache=items;
+  localStorage.setItem(CUSTOM_KEY,JSON.stringify(items));
+  renderCustomSections();
+  renderAdminLists();
+  const saved=await sbClient.from('site_sections').select('id,name,icon').eq('id',id).maybeSingle();
+  if(saved.error)throw new Error(saved.error.message);
+  if(!saved.data)throw new Error('لم يتم العثور على الأيقونة عند التحقق بعد الحفظ.');
+  updateDbStatus('تم حفظ الأيقونة والتحقق من وجودها في قاعدة البيانات.');
+  alert('تم حفظ الأيقونة بنجاح. ستظهر في الصفحة الرئيسية للطلاب والطالبات بعد تحديث الموقع.');
  }catch(e){
-  alert('لم يكتمل النشر: '+(e.message||'حدث خطأ غير معروف')+' . لم تظهر رسالة نجاح.');
+  customSectionsCache=items.filter(x=>x.id!==id);
+  localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSectionsCache));
+  renderCustomSections();
+  updateDbStatus('تعذر حفظ الأيقونة: '+(e.message||'خطأ غير معروف'));
+  alert('لم تُحفظ الأيقونة. سبب المشكلة: '+(e.message||'خطأ غير معروف'));
  }
 }
 
