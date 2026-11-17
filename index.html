@@ -915,9 +915,22 @@ function renderAdminLists(){
  </div>`).join(''):'<p>لم تتم إضافة أقسام بعد.</p>'
 }
 function renderCustomSections(){
- const host=document.getElementById('customSectionsHost');if(!host)return;
+ const host=document.getElementById('customSectionsHost');
+ if(!host)return;
  const items=readCustomSections();
  host.innerHTML=items.map(x=>`<section class="added-section" id="${safeText(x.id)}"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الأقسام</button><h2>${safeText(x.icon)} ${safeText(x.name)}</h2><p>${safeText(x.desc||'')}</p><div class="cards">${x.cards.map((c,i)=>`<article class="card"><h3>${safeText(c.title)}</h3><p>${safeText(c.body)}</p></article>`).join('')}</div></section>`).join('');
+ const main=document.getElementById('main-sections');
+ const grid=main&&main.querySelector('.section-editable-content .grid, .grid');
+ if(grid){
+  grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(el=>el.remove());
+  items.forEach(x=>{
+   const tile=document.createElement('a');
+   tile.className='tile';tile.href='#'+x.id;tile.dataset.customSectionTile='1';
+   const ico=document.createElement('span');ico.textContent=x.icon||'🎨';
+   const label=document.createElement('strong');label.textContent=x.name;
+   tile.append(ico,label);grid.appendChild(tile);
+  });
+ }
  if(typeof addSectionBackButtons==='function')addSectionBackButtons();
 }
 document.addEventListener('DOMContentLoaded',async()=>{
