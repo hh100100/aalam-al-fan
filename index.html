@@ -507,6 +507,18 @@ async function deleteArtwork(item){
 // وضع التحرير المباشر: لا تظهر أدواته إلا بعد تسجيل دخول المعلمة.
 const INLINE_EDIT_TABLE='site_page_edits';
 let inlineEditMode=false;
+async function loadPublishedPageEdits(){
+ if(!sbClient)return;
+ const {data,error}=await sbClient.from(INLINE_EDIT_TABLE).select('section_id,html_content');
+ if(error){console.warn('تعذر تحميل تعديلات الصفحة المنشورة:',error.message);return}
+ (data||[]).forEach(row=>{
+  const target=document.getElementById(row.section_id);
+  if(!target||!target.matches('section.section'))return;
+  let content=target.querySelector('.section-editable-content');
+  if(!content){content=document.createElement('div');content.className='section-editable-content';while(target.firstChild)content.appendChild(target.firstChild);target.appendChild(content)}
+  content.innerHTML=row.html_content;
+ });
+}
 async function enableInlineEditor(){
  if(!currentAdmin||!sbClient)return;
  let savedRows=[];
@@ -912,6 +924,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   sbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   updateDbStatus('تم إعداد الاتصال. جارٍ تحميل الأقسام المنشورة...');
   await loadSectionsFromCloud(); // يقرأها الزوار دون تسجيل دخول
+  await loadPublishedPageEdits(); // يعرض التعديلات المنشورة للطلاب والطالبات أيضًا
   const {data:{session}}=await sbClient.auth.getSession();
   if(session && session.user && session.user.app_metadata && session.user.app_metadata.role==='teacher'){
    currentAdmin=session.user;
