@@ -559,7 +559,11 @@ function addSectionEditorControls(section){
  const edit=document.createElement('button');edit.type='button';edit.textContent='✏️ تعديل';edit.onclick=()=>toggleSectionEdit(section,true);
  const add=document.createElement('button');add.type='button';add.textContent='＋ إضافة نص';add.onclick=()=>addSectionText(section);
  const save=document.createElement('button');save.type='button';save.textContent='💾 حفظ ونشر';save.onclick=()=>saveSectionLive(section);
- bar.append(edit,add,save);section.insertBefore(bar,section.firstChild);
+ bar.append(edit,add);
+  const media=[['🖼️ صورة','image/*'],['🎥 فيديو','video/mp4,video/webm'],['📎 ملف PDF','application/pdf']];
+  media.forEach(([label,accept])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=()=>chooseSectionMedia(section,accept);bar.appendChild(b)});
+  const link=document.createElement('button');link.type='button';link.textContent='🔗 رابط';link.onclick=()=>addSectionLink(section);bar.appendChild(link);
+  bar.append(save);section.insertBefore(bar,section.firstChild);
 }
 function addInlineElementControls(section){
  const content=section.querySelector('.section-editable-content');if(!content)return;
@@ -978,4 +982,53 @@ window.addEventListener('DOMContentLoaded',()=>{
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// أدوات وسائط محرر المعلمة — الرفع إلى Supabase Storage مع ضغط الصور تلقائياً.
+function chooseSectionMedia(section, accept){
+ if(!currentAdmin||!sbClient){alert('سجّلي الدخول بحساب المعلمة أولاً.');return}
+ const input=document.createElement('input');input.type='file';input.accept=accept;input.style.display='none';
+ input.onchange=async()=>{
+  const file=input.files&&input.files[0];if(!file)return;
+  try{
+   let uploadFile=file;
+   if(file.type.startsWith('image/')) uploadFile=await compressSiteImage(file);
+   if(uploadFile.size>5*1024*1024){alert('حجم الملف بعد التجهيز أكبر من 5 ميجابايت. اختاري ملفاً أصغر.');return}
+   const ext=(uploadFile.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
+   const path='site/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   updateDbStatus('جارٍ رفع الملف...');
+   const {error}=await sbClient.storage.from('aalam-site-media').upload(path,uploadFile,{contentType:uploadFile.type,upsert:false});
+   if(error)throw error;
+   const {data}=sbClient.storage.from('aalam-site-media').getPublicUrl(path);
+   const content=section.querySelector('.section-editable-content');
+   let node;
+   if(uploadFile.type.startsWith('image/')){node=document.createElement('figure');const img=document.createElement('img');img.src=data.publicUrl;img.alt=uploadFile.name;img.loading='lazy';img.style.cssText='max-width:100%;height:auto;border-radius:14px';node.appendChild(img)}
+   else if(uploadFile.type.startsWith('video/')){node=document.createElement('figure');const video=document.createElement('video');video.src=data.publicUrl;video.controls=true;video.preload='metadata';video.style.cssText='max-width:100%;width:100%;border-radius:14px';node.appendChild(video)}
+   else {node=document.createElement('p');const a=document.createElement('a');a.href=data.publicUrl;a.target='_blank';a.rel='noopener';a.textContent='📄 '+uploadFile.name;node.appendChild(a)}
+   node.dataset.siteMediaPath=path;content.appendChild(node);addInlineElementControls(section);
+   updateDbStatus('تم رفع الملف. اضغطي «حفظ ونشر» لحفظه في القسم.');
+  }catch(e){console.error(e);alert('تعذر رفع الملف: '+(e.message||'تحققي من إعدادات التخزين'));updateDbStatus('تعذر رفع الملف.')}
+  finally{input.remove()}
+ };
+ document.body.appendChild(input);input.click();
+}
+async function compressSiteImage(file){
+ if(!file.type.startsWith('image/'))return file;
+ const image=await new Promise((resolve,reject)=>{const url=URL.createObjectURL(file);const im=new Image();im.onload=()=>{URL.revokeObjectURL(url);resolve(im)};im.onerror=reject;im.src=url});
+ const scale=Math.min(1,1600/Math.max(image.naturalWidth,image.naturalHeight));
+ const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+ const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0,canvas.width,canvas.height);
+ const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.78));
+ if(!blob)throw new Error('لم نتمكن من تجهيز الصورة');
+ return new File([blob],(file.name.replace(/\.[^.]+$/,'')||'artwork')+'.jpg',{type:'image/jpeg'});
+}
+function addSectionLink(section){
+ const url=prompt('الصقي الرابط هنا:');if(!url)return;
+ let parsed;try{parsed=new URL(url)}catch(e){alert('الرابط غير صحيح.');return}
+ if(!['http:','https:'].includes(parsed.protocol)){alert('يسمح بروابط http وhttps فقط.');return}
+ const label=prompt('اكتبي عنوان الرابط:','افتحي المورد')||parsed.hostname;
+ const a=document.createElement('a');a.href=parsed.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent='🔗 '+label;
+ const p=document.createElement('p');p.appendChild(a);section.querySelector('.section-editable-content').appendChild(p);addInlineElementControls(section);
+}
+</script>
 </body></html>
