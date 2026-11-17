@@ -589,22 +589,17 @@ function toggleSectionEdit(section,enabled){
  if(enabled)content.focus();
 }
 function addHomeTile(section){
- const grid=section.querySelector('.section-editable-content .grid, .grid');if(!grid){alert('لم أجد شبكة الأقسام في الصفحة الرئيسية.');return}
- const title=prompt('اكتبي اسم الأيقونة الجديدة:');if(!title||!title.trim())return;
- const emoji=prompt('اكتبي رمز الأيقونة، مثل 🎨 أو 📚:','🎨');if(emoji===null)return;
- const builtins=[...document.querySelectorAll('main>.section:not(#announcements):not(#main-sections)')].map(x=>({id:x.id,name:(x.querySelector('h2')?.textContent||x.id).trim()})).filter(x=>x.id);
- const customs=readCustomSections().map(x=>({id:x.id,name:x.name}));
- const choices=[...builtins,...customs].filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
- if(!choices.length){alert('لم أجد أقسامًا يمكن ربط الأيقونة بها.');return}
- const menu=choices.map((x,i)=>(i+1)+'. '+x.name).join('\n');
- const answer=prompt('اختاري رقم القسم الذي تفتحينه عند الضغط على الأيقونة:\n'+menu);
- if(answer===null)return;
- const choice=choices[Number(answer)-1];if(!choice){alert('الرقم غير صحيح.');return}
- const a=document.createElement('a');a.className='tile';a.href='#'+choice.id;
- const icon=document.createElement('span');icon.textContent=emoji.trim()||'🎨';
- const name=document.createElement('strong');name.textContent=title.trim();
+ const grid=section.querySelector('.section-editable-content .grid, .grid');
+ if(!grid){alert('لم أجد شبكة الأقسام في الصفحة الرئيسية.');return}
+ const items=readCustomSections();
+ if(!items.length){alert('أضيفي القسم الجديد أولًا من أدوات المعلمة، ثم اضغطي إضافة أيقونة للرئيسية.');return}
+ const latest=items[items.length-1];
+ if(grid.querySelector('a[href="#'+CSS.escape(latest.id)+'"]')){alert('أيقونة هذا القسم موجودة بالفعل في الصفحة الرئيسية.');return}
+ const a=document.createElement('a');a.className='tile';a.href='#'+latest.id;
+ const icon=document.createElement('span');icon.textContent=latest.icon||'🎨';
+ const name=document.createElement('strong');name.textContent=latest.name;
  a.append(icon,name);grid.appendChild(a);
- alert('أُضيفت الأيقونة. اضغطي «حفظ ونشر» لحفظها للطلاب والطالبات.');
+ alert('تمت إضافة أيقونة «'+latest.name+'» إلى الصفحة الرئيسية. اضغطي «حفظ ونشر» لحفظها.');
 }
 
 function addSectionText(section){
