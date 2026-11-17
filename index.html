@@ -591,15 +591,22 @@ function toggleSectionEdit(section,enabled){
 function addHomeTile(section){
  const grid=section.querySelector('.section-editable-content .grid, .grid');
  if(!grid){alert('لم أجد شبكة الأقسام في الصفحة الرئيسية.');return}
+ const name=prompt('اكتبي اسم القسم الجديد الذي تريدين إضافته:');
+ if(!name||!name.trim())return;
+ const icon=prompt('اختاري رمز الأيقونة، مثل ⭐ أو 🎨 أو 💜:','⭐');
+ if(icon===null)return;
  const items=readCustomSections();
- if(!items.length){alert('أضيفي القسم الجديد أولًا من أدوات المعلمة، ثم اضغطي إضافة أيقونة للرئيسية.');return}
- const latest=items[items.length-1];
- if(grid.querySelector('a[href="#'+CSS.escape(latest.id)+'"]')){alert('أيقونة هذا القسم موجودة بالفعل في الصفحة الرئيسية.');return}
- const a=document.createElement('a');a.className='tile';a.href='#'+latest.id;
- const icon=document.createElement('span');icon.textContent=latest.icon||'🎨';
- const name=document.createElement('strong');name.textContent=latest.name;
- a.append(icon,name);grid.appendChild(a);
- alert('تمت إضافة أيقونة «'+latest.name+'» إلى الصفحة الرئيسية. اضغطي «حفظ ونشر» لحفظها.');
+ const id='section-'+Date.now();
+ items.push({id,name:name.trim(),icon:icon.trim()||'⭐',desc:'',cards:[]});
+ saveCustomSections(items);
+ renderCustomSections();
+ renderAdminLists();
+ const a=document.createElement('a');a.className='tile';a.href='#'+id;
+ const iconSpan=document.createElement('span');iconSpan.textContent=icon.trim()||'⭐';
+ const label=document.createElement('strong');label.textContent=name.trim();
+ a.append(iconSpan,label);grid.appendChild(a);
+ if(typeof persistAllSections==='function')persistAllSections();
+ alert('تم إنشاء قسم «'+name.trim()+'» وإضافة أيقونته للرئيسية. اضغطي «حفظ ونشر» لحفظ بقية تعديلات الصفحة.');
 }
 
 function addSectionText(section){
