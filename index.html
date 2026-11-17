@@ -592,15 +592,21 @@ function addHomeTile(section){
  const grid=section.querySelector('.section-editable-content .grid, .grid');if(!grid){alert('لم أجد شبكة الأقسام في الصفحة الرئيسية.');return}
  const title=prompt('اكتبي اسم الأيقونة الجديدة:');if(!title||!title.trim())return;
  const emoji=prompt('اكتبي رمز الأيقونة، مثل 🎨 أو 📚:','🎨');if(emoji===null)return;
- const targetId=prompt('اكتبي معرّف القسم الذي تفتحينه عند الضغط على الأيقونة (مثل gallery أو reading):');if(!targetId||!targetId.trim())return;
- const target=document.getElementById(targetId.trim());
- if(!target||target===section){alert('معرّف القسم غير موجود. اكتبي معرّف قسم موجودًا بالموقع.');return}
- const a=document.createElement('a');a.className='tile';a.href='#'+targetId.trim();
+ const builtins=[...document.querySelectorAll('main>.section:not(#announcements):not(#main-sections)')].map(x=>({id:x.id,name:(x.querySelector('h2')?.textContent||x.id).trim()})).filter(x=>x.id);
+ const customs=readCustomSections().map(x=>({id:x.id,name:x.name}));
+ const choices=[...builtins,...customs].filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
+ if(!choices.length){alert('لم أجد أقسامًا يمكن ربط الأيقونة بها.');return}
+ const menu=choices.map((x,i)=>(i+1)+'. '+x.name).join('\n');
+ const answer=prompt('اختاري رقم القسم الذي تفتحينه عند الضغط على الأيقونة:\n'+menu);
+ if(answer===null)return;
+ const choice=choices[Number(answer)-1];if(!choice){alert('الرقم غير صحيح.');return}
+ const a=document.createElement('a');a.className='tile';a.href='#'+choice.id;
  const icon=document.createElement('span');icon.textContent=emoji.trim()||'🎨';
  const name=document.createElement('strong');name.textContent=title.trim();
  a.append(icon,name);grid.appendChild(a);
  alert('أُضيفت الأيقونة. اضغطي «حفظ ونشر» لحفظها للطلاب والطالبات.');
 }
+
 function addSectionText(section){
  const content=section.querySelector('.section-editable-content');if(!content)return;
  const p=document.createElement('p');p.textContent='اكتبي النص الجديد هنا...';p.contentEditable='true';p.className='new-admin-content';
