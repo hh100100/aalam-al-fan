@@ -559,6 +559,7 @@ function addSectionEditorControls(section){
  const edit=document.createElement('button');edit.type='button';edit.textContent='✏️ تعديل';edit.onclick=()=>toggleSectionEdit(section,true);
  const add=document.createElement('button');add.type='button';add.textContent='＋ إضافة نص';add.onclick=()=>addSectionText(section);
  const save=document.createElement('button');save.type='button';save.textContent='💾 حفظ ونشر';save.onclick=()=>saveSectionLive(section);
+ if(section.id==='main-sections'){const tile=document.createElement('button');tile.type='button';tile.textContent='➕ إضافة أيقونة للرئيسية';tile.onclick=()=>addHomeTile(section);bar.appendChild(tile)}
  bar.append(edit,add);
   const media=[['🖼️ صورة','image/*'],['🎥 فيديو','video/mp4,video/webm'],['📎 ملف PDF','application/pdf']];
   media.forEach(([label,accept])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=()=>chooseSectionMedia(section,accept);bar.appendChild(b)});
@@ -586,6 +587,19 @@ function toggleSectionEdit(section,enabled){
  const b=section.querySelector('.inline-editor-toolbar button');
  if(b)b.textContent=enabled?'✓ انتهيت من التعديل':'✏️ تعديل';
  if(enabled)content.focus();
+}
+function addHomeTile(section){
+ const grid=section.querySelector('.section-editable-content .grid, .grid');if(!grid){alert('لم أجد شبكة الأقسام في الصفحة الرئيسية.');return}
+ const title=prompt('اكتبي اسم الأيقونة الجديدة:');if(!title||!title.trim())return;
+ const emoji=prompt('اكتبي رمز الأيقونة، مثل 🎨 أو 📚:','🎨');if(emoji===null)return;
+ const targetId=prompt('اكتبي معرّف القسم الذي تفتحينه عند الضغط على الأيقونة (مثل gallery أو reading):');if(!targetId||!targetId.trim())return;
+ const target=document.getElementById(targetId.trim());
+ if(!target||target===section){alert('معرّف القسم غير موجود. اكتبي معرّف قسم موجودًا بالموقع.');return}
+ const a=document.createElement('a');a.className='tile';a.href='#'+targetId.trim();
+ const icon=document.createElement('span');icon.textContent=emoji.trim()||'🎨';
+ const name=document.createElement('strong');name.textContent=title.trim();
+ a.append(icon,name);grid.appendChild(a);
+ alert('أُضيفت الأيقونة. اضغطي «حفظ ونشر» لحفظها للطلاب والطالبات.');
 }
 function addSectionText(section){
  const content=section.querySelector('.section-editable-content');if(!content)return;
