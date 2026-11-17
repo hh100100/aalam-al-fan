@@ -734,21 +734,18 @@ function updateDbStatus(msg){const el=document.getElementById('dbStatus');if(el)
 function readCustomSections(){return customSectionsCache}
 function saveCustomSections(items){customSectionsCache=items;localStorage.setItem(CUSTOM_KEY,JSON.stringify(items))}
 async function persistAllSections(){
- if(!sbClient || !currentAdmin) {
-  saveCustomSections(customSectionsCache);
-  updateDbStatus('التعديلات محفوظة على هذا المتصفح فقط؛ سجّلي الدخول بعد إعداد الربط للحفظ المشترك.');
-  return;
- }
+ if(!sbClient || !currentAdmin) throw new Error('يجب تسجيل الدخول بحساب المعلمة قبل النشر.');
  const rows=customSectionsCache.map((x,i)=>({
   id:x.id,name:x.name,icon:x.icon||'🎨',description:x.desc||'',
   cards:Array.isArray(x.cards)?x.cards:[],sort_order:i
  }));
- if(rows.length){
-  const {error}=await sbClient.from('site_sections').upsert(rows,{onConflict:'id'});
-  if(error){updateDbStatus('تعذر الحفظ: '+error.message);alert('تعذر الحفظ: '+error.message);return}
- }
+ if(!rows.length) throw new Error('لا توجد أقسام لحفظها.');
+ const {data,error}=await sbClient.from('site_sections').upsert(rows,{onConflict:'id'}).select('id');
+ if(error) throw new Error('تعذر حفظ الأقسام في قاعدة البيانات: '+error.message);
+ if(!data || data.length!==rows.length) throw new Error('لم نتأكد من حفظ جميع الأقسام. راجعي إعداد جدول site_sections في Supabase.');
  localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSectionsCache));
- updateDbStatus('متصل: تم حفظ التعديلات في قاعدة البيانات وتظهر لجميع الزوار.');
+ updateDbStatus('تم تأكيد حفظ الأقسام في قاعدة البيانات.');
+ return true;
 }
 async function loadSectionsFromCloud(){
  if(!sbClient)return;
