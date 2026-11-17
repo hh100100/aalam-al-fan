@@ -925,11 +925,29 @@ function renderAdminLists(){
   </div>`).join('')}
  </div>`).join(''):'<p>لم تتم إضافة أقسام بعد.</p>'
 }
+async function addCardToCustomSection(id){
+ const items=readCustomSections();const sec=items.find(x=>x.id===id);if(!sec)return;
+ const title=prompt('اكتبي عنوان المحتوى الجديد:');if(title===null||!title.trim())return;
+ const body=prompt('اكتبي النص أو الصقي الرابط هنا:');if(body===null)return;
+ if(!Array.isArray(sec.cards))sec.cards=[];
+ sec.cards.push({title:title.trim(),body:body.trim()});
+ saveCustomSections(items);renderCustomSections();renderAdminLists();
+ try{await persistAllSections();alert('تمت إضافة المحتوى ونشره بنجاح.')}
+ catch(e){alert('تعذر نشر المحتوى: '+e.message)}
+}
 function renderCustomSections(){
  const host=document.getElementById('customSectionsHost');
  if(!host)return;
  const items=readCustomSections();
- host.innerHTML=items.map(x=>`<section class="added-section" id="${safeText(x.id)}"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الأقسام</button><h2>${safeText(x.icon)} ${safeText(x.name)}</h2><p>${safeText(x.desc||'')}</p><div class="cards">${x.cards.map((c,i)=>`<article class="card"><h3>${safeText(c.title)}</h3><p>${safeText(c.body)}</p></article>`).join('')}</div></section>`).join('');
+ host.innerHTML=items.map(x=>`<section class="added-section" id="${safeText(x.id)}">
+ <button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الأقسام</button>
+ <h2>${safeText(x.icon)} ${safeText(x.name)}</h2>
+ <p>${safeText(x.desc||'')}</p>
+ ${currentAdmin?`<div class="custom-section-admin-tools" style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0">
+ <button type="button" onclick="addCardToCustomSection('${safeText(x.id)}')">＋ إضافة محتوى</button>
+ <button type="button" onclick="editCustomSection('${safeText(x.id)}')">✏️ تعديل القسم</button>
+ </div>`:''}
+ <div class="cards">${x.cards.map((c,i)=>`<article class="card"><h3>${safeText(c.title)}</h3><p>${safeText(c.body)}</p>${currentAdmin?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button type="button" onclick="editSectionCard('${safeText(x.id)}',${i})">تعديل</button><button type="button" onclick="deleteSectionCard('${safeText(x.id)}',${i})">حذف</button></div>`:''}</article>`).join('')}</div></section>`).join('');
  const main=document.getElementById('main-sections');
  const grid=main&&main.querySelector('.section-editable-content .grid, .grid');
  if(grid){
