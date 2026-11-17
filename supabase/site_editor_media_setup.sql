@@ -1,4 +1,29 @@
 -- إعداد محرر عالم الفن الرقمي (GitHub Pages + Supabase)
+
+-- جدول الأقسام التي تضيفها المعلمة، ويقرأه الطلاب والطالبات.
+create table if not exists public.site_sections (
+  id text primary key,
+  name text not null,
+  icon text not null default '🎨',
+  description text not null default '',
+  cards jsonb not null default '[]'::jsonb,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table public.site_sections enable row level security;
+
+drop policy if exists "Public can read site sections" on public.site_sections;
+create policy "Public can read site sections"
+on public.site_sections for select to anon, authenticated
+using (true);
+
+drop policy if exists "Teacher manages site sections" on public.site_sections;
+create policy "Teacher manages site sections"
+on public.site_sections for all to authenticated
+using (public.is_art_teacher())
+with check (public.is_art_teacher());
+
 -- نفّذي هذا الملف مرة واحدة في Supabase > SQL Editor > New query > Run.
 
 create or replace function public.is_art_teacher()
