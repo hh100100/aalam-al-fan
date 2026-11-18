@@ -1171,4 +1171,38 @@ document.addEventListener('DOMContentLoaded',()=>{
 })();
 </script>
 
+<script>
+(function(){
+function addHiddenField(id){if(!document.getElementById(id)){const x=document.createElement('input');x.type='hidden';x.id=id;const form=document.getElementById('galleryCategoryPanel');form.appendChild(x)}}
+document.addEventListener('DOMContentLoaded',()=>{
+ addHiddenField('artworkStudentName');addHiddenField('artworkClassName');
+ const original=window.submitArtwork;
+ window.submitArtwork=async function(){
+  const sel=document.getElementById('artworkStudentSelect'),opt=sel&&sel.selectedOptions[0];
+  if(!opt||!opt.value){setArtworkStatus('اختاري اسم الطالب أو الطالبة من القائمة.');return}
+  document.getElementById('artworkStudentName').value=opt.textContent.split(' — ')[0];
+  document.getElementById('artworkClassName').value=opt.textContent.split(' — ').slice(1).join(' — ');
+  await original();
+  const status=document.getElementById('artworkSubmitStatus');
+  if(status&&status.textContent.includes('وصل عملك إلى المعلمة')){
+   const {error}=await sbClient.from('weekly_engagement').insert({student_id:opt.value,activity_type:'artwork',source_key:'artwork-'+crypto.randomUUID()});
+   if(error)console.warn('تعذر تسجيل التفاعل الأسبوعي',error.message);
+  }
+ };
+});
+window.submitReadingAnswers=async function(){
+ const status=document.getElementById('readingSubmitStatus'),button=document.getElementById('readingSubmitButton');
+ const sel=document.getElementById('readingStudentSelect'),opt=sel&&sel.selectedOptions[0];
+ const a=document.getElementById('readingAnswerOne').value.trim(),b=document.getElementById('readingAnswerTwo').value.trim();
+ if(!opt||!opt.value||!a||!b){status.textContent='اختاري الاسم وأكملي الإجابتين.';return}
+ button.disabled=true;status.textContent='جارٍ إرسال الإجابات...';
+ const parts=opt.textContent.split(' — '),name=parts[0],cls=parts.slice(1).join(' — ');
+ const {error}=await sbClient.from('reading_submissions').insert({student_name:name,class_name:cls,answer_one:a,answer_two:b});
+ if(error){status.textContent='تعذر إرسال الإجابات: '+error.message;button.disabled=false;return}
+ const track=await sbClient.from('weekly_engagement').insert({student_id:opt.value,activity_type:'reading',source_key:'reading-'+crypto.randomUUID()});
+ if(track.error)console.warn('تعذر تسجيل التفاعل الأسبوعي',track.error.message);
+ document.getElementById('readingAnswersForm').reset();status.textContent='وصلت إجاباتك بنجاح 🌟 شكرًا لمشاركتك.';button.disabled=false;
+};
+})();
+</script>
 </body></html>
