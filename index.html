@@ -234,7 +234,7 @@ body>*{position:relative;z-index:1}
 @keyframes honorFloat{50%{transform:translateY(-9px) rotate(4deg)}}
 @keyframes podiumRise{from{opacity:0;transform:translateY(45px) rotateY(-8deg)}to{opacity:1;transform:translateY(0) rotateY(-8deg)}}
 @keyframes honorPop{from{opacity:.2;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-@keyframes firework{0%{transform:translate(0,0) scale(.3);opacity:0}25%{opacity:1}100%{transform:translate(calc((var(--n)%5 - 2)*22px),calc(55px + (var(--n)%4)*24px)) scale(0);opacity:0}}
+@keyframes firework{0%{transform:translateY(0) scale(.3);opacity:0}25%{opacity:1}100%{transform:translateY(110px) scale(0);opacity:0}}
 @media(max-width:520px){.podium-wrap{gap:6px;padding-inline:2px}.podium-card{padding-inline:4px;min-height:165px}.podium-card.place-1{min-height:215px}.podium-card.place-2{min-height:180px}.podium-card.place-3{min-height:155px}.podium-base{font-size:10px}.honor-row{gap:6px;padding:10px}.honor-row span{font-size:11px}}
 </style><!-- teacher-login-form-fix-2026-11-17 -->
 </head>
@@ -1193,7 +1193,7 @@ window.revealHonorRoll=async function(){
  const medals=['🥇','🥈','🥉'];
  const podium=top.map((x,i)=>'<div class="podium-card place-'+(i+1)+'"><div class="medal">'+medals[i]+'</div><div class="student-crown">👑</div><strong>'+E(x.student_name)+'</strong><span>'+E(x.class_name)+'</span><b>'+x.activity_count+' تفاعلات</b><div class="podium-base">'+(i===0?'المركز الأول':i===1?'المركز الثاني':'المركز الثالث')+'</div></div>').join('');
  const others=rest.map(x=>'<div class="honor-row"><span class="honor-rank">#'+x.rank+'</span><strong>'+E(x.student_name)+'</strong><span>'+E(x.class_name)+'</span><b>⭐ '+x.activity_count+'</b></div>').join('');
- host.innerHTML='<div class="fireworks" aria-hidden="true">'+Array.from({length:18},(_,i)=>'<i style="--n:'+i+'"></i>').join('')+'</div><div class="podium-wrap">'+podium+'</div>'+(others?'<h3 class="honor-others-title">🌟 بقية المتميزين</h3><div class="honor-others">'+others+'</div>':'');
+ host.innerHTML='<div class="fireworks" aria-hidden="true">'+Array.from({length:18},(_,i)=>'<i style="left:'+((i*37+9)%100)+'%;--n:'+i+'"></i>').join('')+'</div><div class="podium-wrap">'+podium+'</div>'+(others?'<h3 class="honor-others-title">🌟 بقية المتميزين</h3><div class="honor-others">'+others+'</div>':'');
  host.classList.remove('honor-pop');void host.offsetWidth;host.classList.add('honor-pop');
 };
 window.renderCustomSections=function(){
