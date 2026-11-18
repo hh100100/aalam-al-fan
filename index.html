@@ -236,6 +236,14 @@ body>*{position:relative;z-index:1}
 @keyframes honorPop{from{opacity:.2;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 @keyframes firework{0%{transform:translateY(0) scale(.3);opacity:0}25%{opacity:1}100%{transform:translateY(110px) scale(0);opacity:0}}
 @media(max-width:520px){.podium-wrap{gap:6px;padding-inline:2px}.podium-card{padding-inline:4px;min-height:165px}.podium-card.place-1{min-height:215px}.podium-card.place-2{min-height:180px}.podium-card.place-3{min-height:155px}.podium-base{font-size:10px}.honor-row{gap:6px;padding:10px}.honor-row span{font-size:11px}}
+
+/* ترتيب نقاط الطلاب تلقائيًا */
+.points-rank-row{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:9px 0;border-radius:16px;background:linear-gradient(110deg,#fff,#f2eaff);box-shadow:0 5px 13px #49305f17;border:1px solid #eadcf6}
+.points-rank-medal{min-width:42px;text-align:center;font-size:23px;font-weight:900;color:#79519a}
+.points-student{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.points-student b{color:#49305f;overflow-wrap:anywhere}
+.points-student small{color:#806b91}
+.points-total{white-space:nowrap;color:#76519a;font-size:14px}
 </style><!-- teacher-login-form-fix-2026-11-17 -->
 </head>
 <body>
@@ -1179,7 +1187,7 @@ async function refreshStudentFeatures(){
  ['pointStudent','readingStudentSelect','artworkStudentSelect'].forEach(id=>{const el=document.getElementById(id);if(el&&el.innerHTML!==opts)el.innerHTML=opts});
  const {data:points}=await sbClient.from('student_points').select('student_id,points');
  const sums={};(points||[]).forEach(p=>sums[p.student_id]=(sums[p.student_id]||0)+p.points);
- const ph=document.getElementById('publicPointsList');if(ph)ph.innerHTML=(roster||[]).map(s=>'<p class="admin-list-item"><b>'+E(s.student_name)+'</b> — '+E(s.class_name)+' <strong style="float:left">⭐ '+(sums[s.id]||0)+'</strong></p>').join('')||'لم تُضف أسماء الطلاب بعد.';
+ const ph=document.getElementById('publicPointsList');if(ph){const ranked=(roster||[]).map(s=>({...s,total:sums[s.id]||0})).sort((a,b)=>b.total-a.total||a.student_name.localeCompare(b.student_name,'ar'));ph.innerHTML=ranked.map((s,i)=>'<div class="points-rank-row"><span class="points-rank-medal">'+(i===0&&s.total>0?'🥇':i===1&&s.total>0?'🥈':i===2&&s.total>0?'🥉':'#'+(i+1))+'</span><div class="points-student"><b>'+E(s.student_name)+'</b><small>'+E(s.class_name)+'</small></div><strong class="points-total">⭐ '+s.total+' نقطة</strong></div>').join('')||'لا توجد أسماء مضافة حتى الآن.';}
  const {data:honor,error}=await sbClient.from('weekly_honor_roll').select('*').gt('activity_count',0).order('rank').limit(10);
  const hh=document.getElementById('honorRollList');if(hh)hh.innerHTML=error?'تعذر تحميل لوحة الشرف.':(honor||[]).map(s=>'<p class="admin-list-item"><b>'+s.rank+'. '+E(s.student_name)+'</b> — '+E(s.class_name)+' <strong style="float:left">🏅 '+s.activity_count+'</strong></p>').join('')||'ستظهر الأسماء بعد بدء التفاعل.';
 }
