@@ -1113,4 +1113,62 @@ function addSectionLink(section){
  const p=document.createElement('p');p.appendChild(a);section.querySelector('.section-editable-content').appendChild(p);addInlineElementControls(section);
 }
 </script>
+
+<script>
+(function(){
+const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sec=id=>customSectionsCache.find(x=>x.id===id);
+async function save(){saveCustomSections(customSectionsCache);await persistAllSections();renderCustomSections();renderAdminLists();}
+function cardHtml(c){let m='';if(c.type==='image')m='<img style="max-width:100%;border-radius:12px" src="'+E(c.url)+'">';if(c.type==='video')m='<video controls style="width:100%" src="'+E(c.url)+'"></video>';if(c.type==='file'||c.type==='link')m='<p><a target="_blank" rel="noopener" href="'+E(c.url)+'">📎 فتح '+(c.type==='file'?'الملف':'الرابط')+'</a></p>';return '<article class="card"><h3>'+E(c.title)+'</h3><p>'+E(c.body||'')+'</p>'+m+'</article>'}
+window.addKnowledgeItem=async function(parentId){
+ if(!currentAdmin)return alert('سجّلي الدخول بحساب المعلمة أولًا.');
+ const s=sec('production-knowledge');if(!s)return;
+ const kind=prompt('نوع الإضافة: نص، صورة، فيديو، ملف، رابط، مجلد');if(!kind)return;
+ const types={'نص':'text','صورة':'image','فيديو':'video','ملف':'file','رابط':'link','مجلد':'folder'};const type=types[kind.trim()];if(!type)return alert('اختاري نوعًا من القائمة.');
+ const title=prompt('عنوان المحتوى:');if(!title||!title.trim())return;
+ const c={id:'item-'+Date.now(),type,title:title.trim(),body:'',parent:parentId||null};
+ if(type==='text'||type==='folder')c.body=prompt(type==='text'?'اكتبي النص':'وصف المجلد')||'';
+ if(type==='link'){try{const u=new URL(prompt('الصقي الرابط:'));if(!['http:','https:'].includes(u.protocol))throw 0;c.url=u.href}catch(e){return alert('الرابط غير صحيح.')}}
+ if(['image','video','file'].includes(type)){
+  const input=document.createElement('input');input.type='file';input.accept=type==='image'?'image/*':type==='video'?'video/mp4,video/webm':'.pdf';
+  input.onchange=async()=>{const f=input.files[0];if(!f)return;if(f.size>5*1024*1024)return alert('الحد الأعلى 5 ميجابايت.');const path='knowledge/'+Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const up=await sbClient.storage.from('aalam-site-media').upload(path,f,{upsert:false,contentType:f.type});if(up.error)return alert('تعذر الرفع: '+up.error.message);c.url=sbClient.storage.from('aalam-site-media').getPublicUrl(path).data.publicUrl;c.storage_path=path;s.cards.push(c);try{await save();alert('تمت الإضافة والنشر.')}catch(e){alert('تعذر الحفظ: '+e.message)}};
+  input.click();return;
+ }
+ s.cards.push(c);try{await save();alert('تمت الإضافة والنشر.')}catch(e){alert('تعذر الحفظ: '+e.message)}
+};
+window.addRosterStudent=async function(){if(!currentAdmin)return;const n=prompt('اسم الطالب أو الطالبة:');if(!n||!n.trim())return;const cl=prompt('الصف / الفصل:');if(!cl||!cl.trim())return;const {error}=await sbClient.from('student_roster').upsert({student_name:n.trim(),class_name:cl.trim(),active:true},{onConflict:'student_name,class_name'});if(error)return alert(error.message);await refreshStudentFeatures();alert('تمت إضافة الاسم.');};
+window.awardStudentPoints=async function(){const id=document.getElementById('pointStudent')?.value,points=Number(document.getElementById('pointValue')?.value),reason=document.getElementById('pointReason')?.value.trim();if(!id||!Number.isInteger(points)||points<1||points>100||!reason)return alert('اختاري الاسم وأدخلي نقاطًا من 1 إلى 100 والسبب.');const {error}=await sbClient.from('student_points').insert({student_id:id,points,reason});if(error)return alert(error.message);await refreshStudentFeatures();alert('تمت إضافة النقاط.');};
+async function refreshStudentFeatures(){
+ if(!sbClient)return;
+ const {data:roster}=await sbClient.from('student_roster').select('id,student_name,class_name').eq('active',true).order('class_name').order('student_name');
+ const opts='<option value="">اختاري الاسم والصف</option>'+(roster||[]).map(s=>'<option value="'+E(s.id)+'">'+E(s.student_name)+' — '+E(s.class_name)+'</option>').join('');
+ ['pointStudent','readingStudentSelect','artworkStudentSelect'].forEach(id=>{const el=document.getElementById(id);if(el&&el.innerHTML!==opts)el.innerHTML=opts});
+ const {data:points}=await sbClient.from('student_points').select('student_id,points');
+ const sums={};(points||[]).forEach(p=>sums[p.student_id]=(sums[p.student_id]||0)+p.points);
+ const ph=document.getElementById('publicPointsList');if(ph)ph.innerHTML=(roster||[]).map(s=>'<p class="admin-list-item"><b>'+E(s.student_name)+'</b> — '+E(s.class_name)+' <strong style="float:left">⭐ '+(sums[s.id]||0)+'</strong></p>').join('')||'لم تُضف أسماء الطلاب بعد.';
+ const {data:honor,error}=await sbClient.from('weekly_honor_roll').select('*').gt('activity_count',0).order('rank').limit(10);
+ const hh=document.getElementById('honorRollList');if(hh)hh.innerHTML=error?'تعذر تحميل لوحة الشرف.':(honor||[]).map(s=>'<p class="admin-list-item"><b>'+s.rank+'. '+E(s.student_name)+'</b> — '+E(s.class_name)+' <strong style="float:left">🏅 '+s.activity_count+'</strong></p>').join('')||'ستظهر الأسماء بعد بدء التفاعل.';
+}
+window.renderCustomSections=function(){
+ const host=document.getElementById('customSectionsHost');if(!host)return;
+ host.innerHTML=customSectionsCache.map(x=>{
+ let body='';
+ if(x.id==='production-knowledge'){body='<div class="cards">'+(x.cards||[]).filter(c=>!c.parent).map(c=>c.type==='folder'?'<article class="card"><h3>📁 '+E(c.title)+'</h3><button onclick="openKFolder(\''+E(c.id)+'\')">فتح المجلد</button></article>':cardHtml(c)).join('')+'</div><div id="kFolder"></div>'+(currentAdmin?'<button onclick="addKnowledgeItem()">＋ إضافة محتوى</button>':'');}
+ else if(x.id==='student-points'){body='<div id="publicPointsList">جارٍ التحميل...</div>'+(currentAdmin?'<div class="card"><h3>إدارة النقاط</h3><select id="pointStudent">'+( '<option value="">اختاري الاسم</option>')+'</select><label>عدد النقاط</label><input id="pointValue" type="number" min="1" max="100"><label>السبب</label><input id="pointReason"><button onclick="awardStudentPoints()">إضافة النقاط</button><button onclick="addRosterStudent()">＋ إضافة طالب / طالبة</button></div>':'');}
+ else if(x.id==='honor-roll')body='<p>تُحتسب المشاركات من الخميس إلى الأربعاء.</p><div id="honorRollList">جارٍ التحميل...</div>';
+ else body='<div class="cards">'+(x.cards||[]).map(cardHtml).join('')+'</div>';
+ return '<section class="added-section" id="'+E(x.id)+'"><button class="section-back secondary" onclick="showSiteSection(\'home\')">↩ العودة إلى الأقسام</button><h2>'+E(x.icon)+' '+E(x.name)+'</h2><p>'+E(x.desc||'')+'</p>'+body+'</section>';
+ }).join('');
+ const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());customSectionsCache.forEach(x=>{const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a)})}
+ refreshStudentFeatures();
+};
+window.openKFolder=function(id){const s=sec('production-knowledge'),f=s&&s.cards.find(c=>c.id===id);if(!f)return;const h=document.getElementById('kFolder');h.innerHTML='<h3>📁 '+E(f.title)+'</h3><button onclick="addKnowledgeItem(\''+E(id)+'\')">＋ إضافة داخل المجلد</button><div class="cards">'+s.cards.filter(c=>c.parent===id).map(cardHtml).join('')+'</div>';};
+document.addEventListener('DOMContentLoaded',()=>{
+ const oldReading=document.getElementById('readingStudentName'),oldClass=document.getElementById('readingClass');if(oldReading&&oldClass){const sel=document.createElement('select');sel.id='readingStudentSelect';sel.required=true;sel.innerHTML='<option value="">اختاري الاسم والصف</option>';oldReading.replaceWith(sel);oldClass.remove();}
+ const an=document.getElementById('artworkStudentName'),ac=document.getElementById('artworkClassName');if(an&&ac){const sel=document.createElement('select');sel.id='artworkStudentSelect';sel.required=true;sel.innerHTML='<option value="">اختاري الاسم والصف</option>';an.replaceWith(sel);ac.remove();}
+ const w=()=>{if(sbClient)refreshStudentFeatures();else setTimeout(w,400)};w();
+});
+})();
+</script>
+
 </body></html>
