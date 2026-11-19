@@ -1245,24 +1245,26 @@ function addSectionBackButtons(){
  targetIds.forEach(id=>{
   const sec=document.getElementById(id);
   if(!sec)return;
-  // إزالة كل أزرار الرجوع القديمة مهما اختلف موضعها أو صنفها.
-  sec.querySelectorAll('button,a').forEach(el=>{
+  const candidates=[...sec.querySelectorAll('button,a')].filter(el=>{
    const label=(el.textContent||'').replace(/\\s+/g,' ').trim();
    const action=el.getAttribute('onclick')||'';
-   if(el.classList.contains('section-back') ||
-      /عودة|رجوع/.test(label) ||
-      /showSiteSection\\s*\\(\\s*['"]home['"]/.test(action)){
-    el.remove();
-   }
+   return el.dataset.singleHomeBack==='1' ||
+    el.classList.contains('section-back') ||
+    /عودة|رجوع/.test(label) ||
+    /showSiteSection\\s*\\(\\s*['"]home['"]/.test(action);
   });
-  // زر موحد واحد فقط لكل قسم.
-  const back=document.createElement('button');
+  let back=candidates.shift();
+  candidates.forEach(el=>el.remove());
+  if(!back){
+   back=document.createElement('button');
+   sec.insertBefore(back,sec.firstChild);
+  }
   back.type='button';
   back.className='section-back secondary';
   back.dataset.singleHomeBack='1';
   back.textContent='↩ العودة إلى الصفحة الرئيسية';
-  back.addEventListener('click',()=>showSiteSection('home'));
-  sec.insertBefore(back,sec.firstChild);
+  back.removeAttribute('onclick');
+  back.onclick=()=>showSiteSection('home');
  });
 }
 window.addEventListener('DOMContentLoaded',()=>{
