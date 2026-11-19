@@ -1211,48 +1211,45 @@ document.addEventListener('DOMContentLoaded',async()=>{
 <script>
 
 function showSiteSection(id, updateHash=true){
- const sections=[...document.querySelectorAll('main>.section, #customSectionsHost>.added-section')];
- const target=id==='home'?document.getElementById('main-sections'):document.getElementById(id);
- if(!target)return false;
- sections.forEach(sec=>{
-   const isLanding=(sec.id==='main-sections');
-   sec.classList.toggle('active-section',sec.id===id);
-   if(sec.matches('main>.section')) sec.style.display=(sec.id===id || (id==='home'&&isLanding))?'block':'none';
-   else sec.style.display=sec.id===id?'block':'none';
+ const home=document.getElementById('main-sections');
+ const target=id==='home'?home:document.getElementById(id);
+ if(!home||!target)return false;
+ document.querySelectorAll('main>.section, #customSectionsHost>.added-section').forEach(sec=>{
+  const isHome=sec===home;
+  const active=(id==='home')?isHome:(sec===target);
+  sec.classList.toggle('active-section',active);
+  sec.style.display=active?'block':'none';
  });
- const isHome=(id==='home');
  const announcements=document.getElementById('announcements');
- const chooser=document.getElementById('main-sections');
- if(announcements) announcements.style.display='flex';
- if(chooser) chooser.style.display=isHome?'block':'none';
- if(updateHash && !isHome) history.replaceState(null,'','#'+id);
- if(isHome && updateHash) history.replaceState(null,'',location.pathname+location.search);
- if(!isHome) target.scrollIntoView({behavior:'smooth',block:'center'});
- else window.scrollTo({top:0,behavior:'smooth'});
+ if(announcements)announcements.style.display='flex';
+ home.style.display=id==='home'?'block':'none';
+ if(updateHash){
+  if(id==='home')history.replaceState(null,'',location.pathname+location.search);
+  else history.replaceState(null,'','#'+encodeURIComponent(id));
+ }
+ window.scrollTo({top:0,behavior:'auto'});
  return true;
 }
 document.addEventListener('click',function(ev){
+ const back=ev.target.closest('.section-back');
+ if(back){
+  ev.preventDefault();
+  ev.stopPropagation();
+  showSiteSection('home');
+  return;
+ }
  const link=ev.target.closest('a[href^="#"]');
  if(!link)return;
  const id=decodeURIComponent(link.getAttribute('href').slice(1));
  if(document.getElementById(id)){
-   ev.preventDefault();
-   showSiteSection(id);
+  ev.preventDefault();
+  showSiteSection(id);
  }
-});
+},true);
 function addSectionBackButtons(){
- const targetIds=['worksheets','reading','enrichment'];
- targetIds.forEach(id=>{
-  const sec=document.getElementById(id);
-  if(!sec)return;
-  const candidates=[...sec.querySelectorAll('button,a')].filter(el=>{
-   const label=(el.textContent||'').replace(/\s+/g,' ').trim();
-   const action=el.getAttribute('onclick')||'';
-   return el.dataset.singleHomeBack==='1' ||
-    el.classList.contains('section-back') ||
-    /عودة|رجوع/.test(label) ||
-    /showSiteSection\s*\(\s*['"]home['"]/.test(action);
-  });
+ const sections=[...document.querySelectorAll('main>.section:not(#main-sections), #customSectionsHost>.added-section')];
+ sections.forEach(sec=>{
+  const candidates=[...sec.querySelectorAll(':scope > .section-back')];
   let back=candidates.shift();
   candidates.forEach(el=>el.remove());
   if(!back){
@@ -1261,17 +1258,16 @@ function addSectionBackButtons(){
   }
   back.type='button';
   back.className='section-back secondary';
-  back.dataset.singleHomeBack='1';
   back.textContent='↩ العودة إلى الصفحة الرئيسية';
   back.removeAttribute('onclick');
-  back.onclick=()=>showSiteSection('home');
+  back.removeAttribute('href');
+  back.setAttribute('aria-label','العودة إلى الصفحة الرئيسية');
  });
 }
 window.addEventListener('DOMContentLoaded',()=>{
- // تهيئة أزرار الرجوع مرة واحدة؛ وتُحدّث عند إعادة رسم الأقسام من renderCustomSections.
  addSectionBackButtons();
- const initial=decodeURIComponent(location.hash.replace('#',''));
- if(initial && document.getElementById(initial)) showSiteSection(initial,false);
+ const initial=decodeURIComponent(location.hash.replace(/^#/,''));
+ if(initial && document.getElementById(initial))showSiteSection(initial,false);
  else showSiteSection('home',false);
 });
 
