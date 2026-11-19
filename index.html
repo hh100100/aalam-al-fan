@@ -1242,11 +1242,17 @@ document.addEventListener('click',function(ev){
 });
 function addSectionBackButtons(){
  document.querySelectorAll('main>.section:not(#announcements):not(#main-sections),#customSectionsHost>.added-section').forEach(sec=>{
-  // افحص الزر المباشر فقط؛ وجود زر داخل عنصر فرعي لا يغني عن زر الرجوع للقسم نفسه.
-  if(!sec.querySelector(':scope > .section-back')){
-   const b=document.createElement('button');b.type='button';b.className='section-back secondary';b.textContent='↩ العودة إلى الأقسام';
-   b.addEventListener('click',()=>showSiteSection('home'));
-   sec.insertBefore(b,sec.firstChild);
+  // تأكد من وجود زر رجوع واحد فقط في بداية كل قسم، واحذف أي أزرار مكررة.
+  const buttons=[...sec.querySelectorAll(':scope > .section-back')];
+  let backButton=buttons.shift();
+  buttons.forEach(button=>button.remove());
+  if(!backButton){
+   backButton=document.createElement('button');
+   backButton.type='button';
+   backButton.className='section-back secondary';
+   backButton.textContent='↩ العودة إلى الأقسام';
+   backButton.addEventListener('click',()=>showSiteSection('home'));
+   sec.insertBefore(backButton,sec.firstChild);
   }
  });
 }
