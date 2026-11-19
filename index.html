@@ -846,8 +846,8 @@ async function publishEnrichmentEntry(id){
   await saveEnrichmentVideos();
   box.remove();
   renderEnrichmentVideos();
-  if(!document.querySelector('#enrichmentEntryForms .enrichment-entry'))addEnrichmentEntryForm();
-  setEnrichmentStatus('تم نشر الإثراء بنجاح، وأصبح ظاهرًا للطلاب والطالبات.');
+  addEnrichmentEntryForm();
+  setEnrichmentStatus('تم نشر الإثراء بنجاح. أُضيف مربع جديد لإثراء آخر.');
  }catch(e){enrichmentVideos.pop();setEnrichmentStatus('تعذر الحفظ: '+e.message)}
 }
 function renderEnrichmentVideos(){
