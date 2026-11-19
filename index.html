@@ -1156,7 +1156,7 @@ function renderCustomSections(){
  if(!host)return;
  const items=readCustomSections();
  host.innerHTML=items.map(x=>`<section class="added-section" id="${safeText(x.id)}">
- <button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الأقسام</button>
+ <button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button>
  <h2>${safeText(x.icon)} ${safeText(x.name)}</h2>
  <p>${safeText(x.desc||'')}</p>
  ${currentAdmin?`<div class="custom-section-admin-tools" style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0">
@@ -1221,7 +1221,11 @@ function showSiteSection(id, updateHash=true){
   sec.style.display=active?'block':'none';
  });
  const announcements=document.getElementById('announcements');
- if(announcements)announcements.style.display='flex';
+ if(announcements){
+  announcements.style.display='flex';
+  const announcementsBack=announcements.querySelector('.section-back');
+  if(announcementsBack)announcementsBack.style.display=id==='home'?'none':'inline-flex';
+ }
  home.style.display=id==='home'?'block':'none';
  if(updateHash){
   if(id==='home')history.replaceState(null,'',location.pathname+location.search);
@@ -1247,6 +1251,16 @@ document.addEventListener('click',function(ev){
  }
 },true);
 function addSectionBackButtons(){
+ const announcements=document.getElementById('announcements');
+ if(announcements && !announcements.querySelector('.section-back')){
+  const back=document.createElement('button');
+  back.type='button';
+  back.className='section-back secondary';
+  back.textContent='↩ العودة إلى الصفحة الرئيسية';
+  back.setAttribute('aria-label','العودة إلى الصفحة الرئيسية');
+  back.style.marginInlineStart='8px';
+  announcements.appendChild(back);
+ }
  const sections=[...document.querySelectorAll('main>.section:not(#main-sections), #customSectionsHost>.added-section')];
  sections.forEach(sec=>{
   const candidates=[...sec.querySelectorAll(':scope > .section-back')];
@@ -1410,7 +1424,7 @@ window.renderCustomSections=function(){
  else if(x.id==='student-points'){body='<div class="my-points-card"><div class="my-points-icon">⭐</div><h3>اكتشف نقاطك</h3><p>اختَر اسمك وصفك، ثم اضغط على عرض نقاطي</p><select id="myPointsStudent"><option value="">اختَر الاسم والصف</option></select><button class="my-points-button" onclick="showMyPoints()">عرض نقاطي ✨</button><div id="myPointsResult" class="my-points-result" aria-live="polite">نقاطك بانتظارك 🌟</div></div>'+(currentAdmin?'<div class="card"><h3>إدارة النقاط</h3><select id="pointStudent"><option value="">اختاري الاسم</option></select><label>عدد النقاط</label><input id="pointValue" type="number" min="1" max="100"><label>السبب</label><input id="pointReason"><button onclick="awardStudentPoints()">إضافة النقاط</button><button onclick="addRosterStudent()">＋ إضافة طالب / طالبة</button></div>':'');}
  else if(x.id==='honor-roll')body='<p class="honor-period">🏆 تُحتسب المشاركات تلقائيًا من الخميس إلى الأربعاء</p><div class="honor-stage"><div class="honor-glow">🏆</div><h3>نجوم التفاعل لهذا الأسبوع</h3><p>اضغطي لاكتشاف الطلاب والطالبات الأكثر تفاعلًا</p><button class="honor-reveal-btn" onclick="revealHonorRoll()">✨ اكشفي لوحة الشرف ✨</button></div><div id="honorRollList" class="honor-results" aria-live="polite">جارٍ تجهيز لوحة الشرف...</div>';
  else body='<div class="cards">'+(x.cards||[]).map(cardHtml).join('')+'</div>';
- return '<section class="added-section" id="'+E(x.id)+'"><button class="section-back secondary" onclick="showSiteSection(\'home\')">↩ العودة إلى الأقسام</button><h2>'+E(x.icon)+' '+E(x.name)+'</h2><p>'+E(x.desc||'')+'</p>'+body+'</section>';
+ return '<section class="added-section" id="'+E(x.id)+'"><button class="section-back secondary" onclick="showSiteSection(\'home\')">↩ العودة إلى الصفحة الرئيسية</button><h2>'+E(x.icon)+' '+E(x.name)+'</h2><p>'+E(x.desc||'')+'</p>'+body+'</section>';
  }).join('');
  const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());customSectionsCache.forEach(x=>{const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a)})}
  refreshStudentFeatures();
