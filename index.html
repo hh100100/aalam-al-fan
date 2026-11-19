@@ -882,7 +882,16 @@ function supabaseReady(){
         !!window.supabase;
 }
 function updateDbStatus(msg){const el=document.getElementById('dbStatus');if(el)el.textContent=msg}
-function readCustomSections(){return customSectionsCache}
+function readCustomSections(){
+ const normalizeName=v=>String(v||'').trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\sـ]+/g,' ').toLowerCase();
+ const seen=new Set();
+ return customSectionsCache.filter(x=>{
+  if(normalizeName(x.name)!==normalizeName('الإنتاج المعرفي'))return true;
+  const key=normalizeName(x.name);
+  if(seen.has(key))return false;
+  seen.add(key);return true;
+ });
+}
 function saveCustomSections(items){customSectionsCache=items;localStorage.setItem(CUSTOM_KEY,JSON.stringify(items))}
 async function persistAllSections(){
  if(!sbClient || !currentAdmin) throw new Error('يجب تسجيل الدخول بحساب المعلمة قبل النشر.');
@@ -1000,9 +1009,19 @@ async function loadSectionsFromCloud(){
  const {data,error}=await sbClient.from('site_sections').select('*').order('sort_order',{ascending:true});
  if(error){updateDbStatus('تعذر تحميل الأقسام: '+error.message);return}
  const rows=data||[];
- const enrichmentRow=rows.find(r=>r.id===ENRICHMENT_ROW_ID);
+ // إزالة تكرار قسم الإنتاج المعرفي والإبقاء على أول نسخة حسب ترتيب الموقع
+ const normalizeKnowledgeName=v=>String(v||'').trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\sـ]+/g,' ').toLowerCase();
+ const knowledgeRows=rows.filter(r=>normalizeKnowledgeName(r.name)===normalizeKnowledgeName('الإنتاج المعرفي'));
+ const duplicateKnowledgeRows=knowledgeRows.slice(1);
+ if(duplicateKnowledgeRows.length && currentAdmin){
+  const duplicateIds=duplicateKnowledgeRows.map(r=>r.id);
+  const {error:deleteDuplicatesError}=await sbClient.from('site_sections').delete().in('id',duplicateIds);
+  if(deleteDuplicatesError)updateDbStatus('أُخفيت الأقسام المكررة، لكن تعذر حذف نسخها الزائدة من قاعدة البيانات: '+deleteDuplicatesError.message);
+ }
+ const uniqueRows=rows.filter(r=>!duplicateKnowledgeRows.some(d=>d.id===r.id));
+ const enrichmentRow=uniqueRows.find(r=>r.id===ENRICHMENT_ROW_ID);
  enrichmentVideos=enrichmentRow&&Array.isArray(enrichmentRow.cards)?enrichmentRow.cards:DEFAULT_ENRICHMENT_VIDEOS.map(x=>({...x}));
- customSectionsCache=rows.filter(r=>r.id!==ENRICHMENT_ROW_ID).map(r=>({id:r.id,name:r.name,icon:r.icon,desc:r.description||'',cards:r.cards||[]}));
+ customSectionsCache=uniqueRows.filter(r=>r.id!==ENRICHMENT_ROW_ID).map(r=>({id:r.id,name:r.name,icon:r.icon,desc:r.description||'',cards:r.cards||[]}));
  localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSectionsCache));
  renderCustomSections();renderAdminLists();renderEnrichmentVideos();await loadPlansContent();
 }
