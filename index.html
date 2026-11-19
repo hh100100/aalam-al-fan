@@ -245,11 +245,13 @@ body>*{position:relative;z-index:1}
 .points-student small{color:#806b91}
 .points-total{white-space:nowrap;color:#76519a;font-size:14px}
 .my-points-card{max-width:560px;margin:20px auto;padding:26px 18px;text-align:center;border-radius:26px;background:linear-gradient(145deg,#fff9df,#f1e5ff 60%,#e4f4ff);box-shadow:0 12px 28px #59407826,inset 0 2px 8px #fff}.my-points-icon{font-size:48px;filter:drop-shadow(0 6px 4px #b28b36)}.my-points-card h3{font-size:24px;color:#563477;margin:8px}.my-points-card p{color:#705d80}.my-points-card select{display:block;width:100%;max-width:380px;margin:16px auto;padding:13px;border:1px solid #d9c7e8;border-radius:13px;background:white;font:inherit}.my-points-button{border:0;border-radius:999px;padding:12px 25px;background:linear-gradient(135deg,#7950ad,#d05c9d);color:white;font-weight:800;font-size:16px;box-shadow:0 6px 0 #57377d;cursor:pointer}.my-points-result{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:90px;justify-content:center;margin-top:20px;padding:15px;border-radius:18px;background:#ffffffb8;color:#68448a}.my-points-number{font-size:42px;font-weight:900;color:#9b6b18;text-shadow:0 3px 0 #f2d98b}.my-points-result small{color:#7d6b8c}
-/* مكتبة الإثراءات الفنية */
-.enrichment-teacher-box{background:linear-gradient(145deg,#fff,#f5edff);border:1px dashed #b58bd2;border-radius:20px;padding:16px;margin:16px 0 20px}
-.enrichment-teacher-box h3{color:#75419a;margin:0 0 8px}.enrichment-teacher-box label{display:block;color:#68408a;font-weight:700;margin:10px 0 5px}.enrichment-teacher-box small{display:block;color:#397c70;margin-top:9px}
-.enrichment-video-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:13px;min-height:190px;text-align:center;text-decoration:none;color:inherit;background:linear-gradient(145deg,#fff,#f8f1ff);border:1px solid #e8d7f2;border-radius:23px;padding:18px;box-shadow:0 5px 14px #63358a0c;transition:.2s}
-.enrichment-video-card[href]:hover{transform:translateY(-3px);box-shadow:0 9px 18px #63358a1c}.enrichment-video-card h3{color:#75419a;font-size:clamp(17px,2vw,21px);margin:0;line-height:1.6}.enrichment-play{display:inline-flex;align-items:center;gap:7px;background:#ddf6f0;color:#397c70;border-radius:30px;padding:9px 15px;font-weight:700}.enrichment-play.disabled{opacity:.75}.enrichment-video-admin{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:100%}.enrichment-video-admin button{padding:7px 11px;font-size:13px}
+/* مكتبة الإثراءات الفنية — بطاقات فنية ونماذج متكررة */
+.enrichment-teacher-box{background:linear-gradient(145deg,#fff 0%,#fbf7ff 100%);border:1px solid #e8d7f2;border-radius:24px;padding:17px;margin:18px 0 22px;box-shadow:0 8px 24px #63358a0b}
+.enrichment-admin-heading{display:flex;align-items:center;gap:12px;margin-bottom:15px}.enrichment-admin-mark{width:45px;height:45px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#f5e6ff,#e0f7f1);color:#75419a;font-size:25px}.enrichment-admin-heading h3{color:#75419a;margin:0 0 3px}.enrichment-admin-heading p{margin:0;color:#786887;font-size:13px}
+.enrichment-entry-list{display:grid;gap:12px}.enrichment-entry{background:#fff;border:1px solid #e8d9f0;border-radius:18px;padding:14px}.enrichment-entry-top{display:flex;align-items:center;gap:8px;color:#75419a;font-weight:800;margin-bottom:8px}.enrichment-entry-top span:first-child{width:28px;height:28px;display:grid;place-items:center;border-radius:10px;background:#f4eaff}.enrichment-entry label{display:block;color:#68408a;font-weight:700;margin:10px 0 5px}.enrichment-entry input{margin:0}.enrichment-entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.enrichment-entry-actions button{font-size:13px;padding:9px 13px}.enrichment-add-form{margin-top:13px;background:#e1f6f0;color:#397c70;box-shadow:none;font-weight:800;border:1px dashed #9bd9ca}.enrichment-teacher-box>small{display:block;color:#397c70;margin-top:10px}
+.enrichment-video-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:13px;min-height:205px;text-align:center;text-decoration:none;color:inherit;background:linear-gradient(150deg,#fff 0%,#fbf6ff 70%,#f0fbf7 100%);border:1px solid #e8d7f2;border-radius:25px;padding:19px 16px;box-shadow:0 6px 18px #63358a0c;transition:transform .2s,box-shadow .2s;overflow:hidden}
+.enrichment-video-card:before{content:"";position:absolute;width:105px;height:105px;border-radius:50%;background:#eadcf8;opacity:.38;top:-53px;left:-30px}.enrichment-video-card[href]:hover{transform:translateY(-4px);box-shadow:0 12px 24px #63358a18}
+.enrichment-art-icon{width:66px;height:66px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,#f2e5ff,#e1f7f0);color:#8050a3;box-shadow:inset 0 0 0 1px #fff;position:relative}.enrichment-art-icon svg{width:38px;height:38px}.enrichment-video-card h3{color:#75419a;font-size:clamp(17px,2vw,21px);margin:0;line-height:1.65;position:relative}.enrichment-card-kicker{font-size:11px;letter-spacing:.4px;color:#9a7bb0;font-weight:800}.enrichment-play{display:inline-flex;align-items:center;gap:8px;background:#ddf6f0;color:#397c70;border-radius:30px;padding:9px 16px;font-weight:800;font-size:13px}.enrichment-play svg{width:15px;height:15px}.enrichment-play.disabled{opacity:.7}.enrichment-video-admin{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:100%;position:relative}.enrichment-video-admin button{padding:7px 11px;font-size:13px}
 </style><!-- teacher-login-form-fix-2026-11-17 -->
 </head>
 <body>
@@ -302,11 +304,9 @@ body>*{position:relative;z-index:1}
 <section class="section" id="enrichment"><h2>✨ الإثراءات الفنية</h2>
 <p>شاهدوا الفيديوهات الفنية، واكتشفوا أفكارًا جديدة وتجارب ممتعة.</p>
 <div id="enrichmentTeacherBox" class="enrichment-teacher-box" style="display:none">
- <h3>＋ إضافة إثراء فني جديد</h3>
- <p>اكتبي عنوان الفيديو والصقي رابط YouTube، ثم أضيفيه للطلاب.</p>
- <label for="enrichmentNewTitle">عنوان الإثراء</label><input id="enrichmentNewTitle" type="text" maxlength="120" placeholder="مثال: أسرار مزج الألوان">
- <label for="enrichmentNewUrl">رابط فيديو YouTube</label><input id="enrichmentNewUrl" type="url" placeholder="https://youtu.be/...">
- <button type="button" onclick="addEnrichmentVideo()">＋ إضافة للطلاب</button>
+ <div class="enrichment-admin-heading"><span class="enrichment-admin-mark">✦</span><div><h3>إدارة الإثراءات الفنية</h3><p>أضيفي فيديو جديدًا، وسيظهر مباشرة في مكتبة الطلاب والطالبات.</p></div></div>
+ <div id="enrichmentEntryForms" class="enrichment-entry-list"></div>
+ <button type="button" class="enrichment-add-form" onclick="addEnrichmentEntryForm()">＋ مربع إثراء جديد</button>
  <small id="enrichmentTeacherStatus" aria-live="polite"></small>
 </div>
 <div id="enrichmentVideosGrid" class="grid"></div>
@@ -818,36 +818,59 @@ const DEFAULT_ENRICHMENT_VIDEOS=[
  {title:'🖍️ الرسم والتعبير',url:''}
 ];
 let enrichmentVideos=DEFAULT_ENRICHMENT_VIDEOS.map(x=>({...x}));
+let enrichmentEntryCounter=0;
 function setEnrichmentStatus(message){const el=document.getElementById('enrichmentTeacherStatus');if(el)el.textContent=message}
 function validYouTubeUrl(value){
  try{const u=new URL(value);return (u.hostname==='youtu.be'||u.hostname==='youtube.com'||u.hostname.endsWith('.youtube.com'))&&(u.pathname.length>1)}
  catch(e){return false}
 }
+function addEnrichmentEntryForm(){
+ const host=document.getElementById('enrichmentEntryForms');if(!host)return;
+ const id='enrichment-entry-'+(++enrichmentEntryCounter);
+ const card=document.createElement('div');card.className='enrichment-entry';card.id=id;
+ card.innerHTML=`<div class="enrichment-entry-top"><span>✦</span><span>إثراء فني جديد</span></div>
+ <label for="${id}-title">عنوان الإثراء</label><input id="${id}-title" type="text" maxlength="120" placeholder="اكتبي عنوان الفيديو">
+ <label for="${id}-url">رابط فيديو YouTube</label><input id="${id}-url" type="url" placeholder="الصقي رابط الفيديو هنا">
+ <div class="enrichment-entry-actions"><button type="button" onclick="publishEnrichmentEntry('${id}')">＋ إضافة للطلاب</button><button type="button" class="secondary" onclick="removeEnrichmentEntryForm('${id}')">إغلاق المربع</button></div>`;
+ host.appendChild(card);
+}
+function removeEnrichmentEntryForm(id){const el=document.getElementById(id);if(el)el.remove();const host=document.getElementById('enrichmentEntryForms');if(host&& !host.children.length)addEnrichmentEntryForm()}
+async function publishEnrichmentEntry(id){
+ const box=document.getElementById(id);if(!box)return;
+ const titleEl=box.querySelector('input[type="text"]'),urlEl=box.querySelector('input[type="url"]');
+ const title=titleEl.value.trim(),url=urlEl.value.trim();
+ if(!title||!url){setEnrichmentStatus('أكملي عنوان الإثراء ورابط الفيديو أولًا.');return}
+ if(!validYouTubeUrl(url)){setEnrichmentStatus('الرابط غير صحيح. استخدمي رابط فيديو من YouTube.');return}
+ enrichmentVideos.push({title,url});
+ try{
+  await saveEnrichmentVideos();
+  box.remove();
+  renderEnrichmentVideos();
+  if(!document.querySelector('#enrichmentEntryForms .enrichment-entry'))addEnrichmentEntryForm();
+  setEnrichmentStatus('تم نشر الإثراء بنجاح، وأصبح ظاهرًا للطلاب والطالبات.');
+ }catch(e){enrichmentVideos.pop();setEnrichmentStatus('تعذر الحفظ: '+e.message)}
+}
 function renderEnrichmentVideos(){
  const host=document.getElementById('enrichmentVideosGrid');if(!host)return;
  const adminBox=document.getElementById('enrichmentTeacherBox');if(adminBox)adminBox.style.display=currentAdmin?'block':'none';
+ if(currentAdmin){
+  const forms=document.getElementById('enrichmentEntryForms');
+  if(forms&&!forms.children.length)addEnrichmentEntryForm();
+ }
+ const artIcon=`<span class="enrichment-art-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 6C13.5 6 5 14 5 24s8.5 18 19 18h3.2c3.1 0 5.3-2.7 4.4-5.5-.7-2.2.9-4.5 3.2-4.5H37c3.3 0 6-2.7 6-6C43 15 34.5 6 24 6Z" stroke="currentColor" stroke-width="2.2"/><circle cx="15" cy="20" r="2.5" fill="#d77fbd"/><circle cx="22" cy="13.5" r="2.5" fill="#e9bd5e"/><circle cx="31" cy="15.5" r="2.5" fill="#80cbb8"/><path d="m19 28 4 4 8-9" stroke="#8050a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+ const playIcon=`<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="m8 6.5 5 3.5-5 3.5v-7Z" fill="currentColor"/></svg>`;
  host.innerHTML=enrichmentVideos.map((v,i)=>{
-  const title=safeText(v.title||'إثراء فني جديد');
-  const playable=validYouTubeUrl(v.url||'');
-  const cardContent=`<span style="font-size:34px">🎬</span><h3>${title}</h3><span class="enrichment-play ${playable?'':'disabled'}">${playable?'▶ شاهدي الإثراء الفني':'قريبًا — سيتم إضافة الفيديو'}</span>`;
-  const adminTools=currentAdmin?`<div class="enrichment-video-admin"><button type="button" class="secondary" onclick="editEnrichmentVideo(${i})">✏️ تعديل</button><button type="button" class="secondary" onclick="deleteEnrichmentVideo(${i})">🗑️ حذف</button></div>`:'';
-  return playable?`<article class="enrichment-video-card"><a href="${safeText(v.url)}" target="_blank" rel="noopener noreferrer" style="display:flex;flex:1;width:100%;flex-direction:column;align-items:center;justify-content:space-between;gap:13px;text-decoration:none;color:inherit">${cardContent}</a>${adminTools}</article>`:`<article class="enrichment-video-card">${cardContent}${adminTools}</article>`;
+  const title=safeText(v.title||'إثراء فني جديد'),playable=validYouTubeUrl(v.url||'');
+  const content=`${artIcon}<span class="enrichment-card-kicker">عَالَمُ الفَنّ • إِثْرَاء فَنّي</span><h3>${title}</h3><span class="enrichment-play ${playable?'':'disabled'}">${playable?playIcon+' شاهدي الإثراء الفني':'سيُضاف الفيديو قريبًا'}</span>`;
+  const adminTools=currentAdmin?`<div class="enrichment-video-admin"><button type="button" class="secondary" onclick="editEnrichmentVideo(${i})">✏️ تعديل</button><button type="button" class="secondary" onclick="deleteEnrichmentVideo(${i})">حذف</button></div>`:'';
+  return playable?`<article class="enrichment-video-card"><a href="${safeText(v.url)}" target="_blank" rel="noopener noreferrer" style="display:flex;flex:1;width:100%;flex-direction:column;align-items:center;justify-content:space-between;gap:11px;text-decoration:none;color:inherit">${content}</a>${adminTools}</article>`:`<article class="enrichment-video-card">${content}${adminTools}</article>`;
  }).join('');
 }
 async function saveEnrichmentVideos(){
  if(!sbClient||!currentAdmin)throw new Error('سجّلي الدخول بحساب المعلمة أولًا.');
- const row={id:ENRICHMENT_ROW_ID,name:'مكتبة الإثراءات الفنية',icon:'🎬',description:'فيديوهات الإثراءات الفنية',cards:enrichmentVideos,sort_order:999999};
+ const row={id:ENRICHMENT_ROW_ID,name:'مكتبة الإثراءات الفنية',icon:'✦',description:'فيديوهات الإثراءات الفنية',cards:enrichmentVideos,sort_order:999999};
  const {error}=await sbClient.from('site_sections').upsert(row,{onConflict:'id'});
  if(error)throw new Error(error.message);
-}
-async function addEnrichmentVideo(){
- const title=document.getElementById('enrichmentNewTitle').value.trim();
- const url=document.getElementById('enrichmentNewUrl').value.trim();
- if(!title||!url){setEnrichmentStatus('اكتبي عنوان الإثراء ورابط الفيديو.');return}
- if(!validYouTubeUrl(url)){setEnrichmentStatus('تحققي من رابط YouTube وحاولي مرة أخرى.');return}
- enrichmentVideos.push({title,url});
- try{await saveEnrichmentVideos();document.getElementById('enrichmentNewTitle').value='';document.getElementById('enrichmentNewUrl').value='';renderEnrichmentVideos();setEnrichmentStatus('تمت الإضافة والنشر للطلاب والطالبات بنجاح.');}
- catch(e){enrichmentVideos.pop();setEnrichmentStatus('تعذر الحفظ: '+e.message);}
 }
 async function editEnrichmentVideo(index){
  const item=enrichmentVideos[index];if(!item)return;
@@ -870,7 +893,7 @@ async function loadSectionsFromCloud(){
  if(error){updateDbStatus('تعذر تحميل الأقسام: '+error.message);return}
  const rows=data||[];
  const enrichmentRow=rows.find(r=>r.id===ENRICHMENT_ROW_ID);
- enrichmentVideos=enrichmentRow&&Array.isArray(enrichmentRow.cards)&&enrichmentRow.cards.length?enrichmentRow.cards:DEFAULT_ENRICHMENT_VIDEOS.map(x=>({...x}));
+ enrichmentVideos=enrichmentRow&&Array.isArray(enrichmentRow.cards)?enrichmentRow.cards:DEFAULT_ENRICHMENT_VIDEOS.map(x=>({...x}));
  customSectionsCache=rows.filter(r=>r.id!==ENRICHMENT_ROW_ID).map(r=>({id:r.id,name:r.name,icon:r.icon,desc:r.description||'',cards:r.cards||[]}));
  localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSectionsCache));
  renderCustomSections();renderAdminLists();renderEnrichmentVideos();
