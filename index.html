@@ -264,6 +264,26 @@ body>*{position:relative;z-index:1}
 .art-quiz-shell{max-width:780px;margin:18px auto;padding:clamp(16px,4vw,28px);border:2px solid #ead7f5;border-radius:28px;background:radial-gradient(circle at 8% 5%,#f2e7ff 0,transparent 25%),radial-gradient(circle at 95% 90%,#e4f8f1 0,transparent 25%),linear-gradient(145deg,#fff,#fff8fd);box-shadow:0 14px 34px #75449a16}.art-quiz-heading{display:flex;align-items:center;gap:12px;color:#75419a}.art-quiz-heading h2{margin:0;font-size:clamp(23px,5vw,32px)}.art-quiz-heading p{margin:5px 0 0;color:#806d8d}.art-quiz-trophy{font-size:44px;filter:drop-shadow(0 5px 4px #d8b8ed)}.art-quiz-sparkle{margin-inline-start:auto;font-size:34px}.art-quiz-progress{display:flex;align-items:center;gap:12px;margin:22px 0 18px;color:#75419a;font-weight:800}.art-quiz-progress-track{height:11px;background:#eee4f5;border-radius:20px;overflow:hidden;flex:1}.art-quiz-progress-track span{display:block;width:25%;height:100%;border-radius:20px;background:linear-gradient(90deg,#9a68c1,#54bda7);transition:width .3s}.art-quiz-question-card{padding:clamp(17px,4vw,25px);background:#fff;border:1px solid #eadcf2;border-radius:22px;text-align:center;box-shadow:0 6px 18px #5d39740c}.art-quiz-question-number{display:inline-block;padding:6px 14px;border-radius:20px;background:#f1e7fb;color:#75419a;font-size:13px;font-weight:800}.art-quiz-question{color:#4f3266;font-size:clamp(20px,4.5vw,25px);font-weight:900;line-height:1.8;margin:12px 0 20px}.art-quiz-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.art-quiz-option{min-height:64px;padding:12px;border:2px solid #e7d8f1;border-radius:17px;background:linear-gradient(145deg,#fff,#faf5ff);color:#674184;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #e9def0;transition:transform .15s}.art-quiz-option:active{transform:translateY(3px);box-shadow:0 1px 0 #e9def0}.art-quiz-option:disabled{cursor:default;opacity:.8}.art-quiz-option.correct{border-color:#69bea8;background:#e9f8f2;color:#287966}.art-quiz-option.wrong{border-color:#e99aa9;background:#fff0f2;color:#a94359}.art-quiz-result{margin-top:15px;min-height:28px;text-align:center;color:#75419a;font-size:17px;font-weight:900}.art-quiz-result.good{color:#287966}.art-quiz-result.try{color:#b35a70}.art-quiz-final{margin-top:17px;padding:21px 14px;border-radius:22px;text-align:center;background:linear-gradient(135deg,#f1e6ff,#e6f8f2);border:1px solid #dfcbed}.art-quiz-score{font-size:clamp(30px,8vw,44px);font-weight:1000;color:#75419a;margin:4px}.art-quiz-feedback{font-size:18px;line-height:1.8;color:#4d6f65;font-weight:800;margin:10px 0 0}.art-quiz-restart{display:block;margin:17px auto 0;padding:12px 24px;border:0;border-radius:16px;background:#75419a;color:white;font:inherit;font-weight:800;cursor:pointer}.art-quiz-option:focus-visible,.art-quiz-restart:focus-visible{outline:3px solid #e4ad39;outline-offset:3px}@media(max-width:480px){.art-quiz-options{grid-template-columns:1fr}.art-quiz-option{min-height:56px}}
 
 .art-quiz-review{margin-top:20px;text-align:right;background:#fff;border:1px solid #e6d7ef;border-radius:18px;padding:16px}.art-quiz-review h3{margin:0 0 12px;color:#75419a;font-size:20px}.art-quiz-review-item{padding:12px 10px;border-bottom:1px solid #eee4f3;color:#563b69;line-height:1.8}.art-quiz-review-item:last-child{border-bottom:0}.art-quiz-review-item strong{display:block;color:#75419a}.art-quiz-review-item p{margin:5px 0 0}.art-quiz-review-item p:first-of-type{font-weight:800;color:#287966}
+
+/* بطاقة تحدي الأسبوع ثلاثية الأبعاد */
+.weekly-challenge-scene{perspective:1200px;max-width:650px;margin:24px auto;min-height:360px}
+.weekly-challenge-card{position:relative;min-height:360px;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.75,.25,1);border-radius:28px}
+.weekly-challenge-card.is-flipped{transform:rotateY(180deg)}
+.weekly-challenge-face{position:absolute;inset:0;min-height:360px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;border-radius:28px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;box-shadow:0 12px 28px #59317824;border:3px solid #ead7fa}
+.weekly-challenge-front{background:radial-gradient(circle at top right,#fff0b9,transparent 40%),linear-gradient(145deg,#fff,#f3e8ff)}
+.weekly-challenge-back{transform:rotateY(180deg);background:radial-gradient(circle at top left,#ffedb5,transparent 38%),linear-gradient(145deg,#fff8e8,#e9f9f5);border-color:#f3d68a}
+.weekly-challenge-stars{font-size:30px;letter-spacing:8px;margin-bottom:6px}
+.weekly-challenge-trophy{font-size:64px;line-height:1.3;filter:drop-shadow(0 5px 4px #8b6a2730)}
+.weekly-challenge-face h3{color:#70419a;font-size:clamp(22px,4vw,30px);line-height:1.6;margin:12px 0}
+.weekly-challenge-back h3{color:#b16b13}
+.weekly-challenge-back h4{font-size:23px;color:#287966;margin:8px 0}
+.weekly-challenge-face p{font-size:17px;line-height:1.9;color:#59466b;max-width:500px;margin:6px 0 18px}
+.weekly-challenge-action{border:0;border-radius:999px;padding:13px 28px;background:linear-gradient(135deg,#8c55bd,#67359b);color:white;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 6px 14px #65359b35}
+.weekly-challenge-back .weekly-challenge-action{background:linear-gradient(135deg,#e9a93c,#c77c19)}
+.weekly-challenge-action:focus-visible{outline:3px solid #e4ad39;outline-offset:4px}
+@media(max-width:520px){.weekly-challenge-scene,.weekly-challenge-card,.weekly-challenge-face{min-height:390px}.weekly-challenge-face{padding:22px 18px}.weekly-challenge-face p{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.weekly-challenge-card{transition:none}}
+
 </style><!-- teacher-login-form-fix-2026-11-17 -->
 </head>
 <body>
@@ -381,7 +401,27 @@ body>*{position:relative;z-index:1}
 <p class="muted">جميع الأعمال تمر بمراجعة المعلمة قبل ظهورها في المعرض العام.</p></section>
 <section class="section" id="quiz"><div class="art-quiz-shell"><div class="art-quiz-heading"><span class="art-quiz-trophy">🏆</span><div><h2>🎯 اختبر إبداعك</h2><p>هيا نلعب ونتحدى معلوماتنا الفنية!</p></div><span class="art-quiz-sparkle">✨</span></div><div class="art-quiz-progress"><div class="art-quiz-progress-track"><span id="artQuizProgress"></span></div><strong id="artQuizStep">السؤال ١ من ٤</strong></div><div id="artQuizStage" aria-live="polite"></div><div id="artQuizResult" class="art-quiz-result" aria-live="polite">اختاري الإجابة التي ترينها صحيحة 💜</div><div id="artQuizFinal" class="art-quiz-final" hidden></div><button type="button" id="artQuizRestart" class="art-quiz-restart" onclick="restartArtQuiz()" hidden>🔄 أعيدي اللعب</button></div></section>
 <section class="section" id="ask"><h2>💌 اسأل معلمتي</h2><p>اكتب سؤالك الدراسي دون مشاركة معلومات شخصية حساسة.</p><label>السؤال</label><textarea placeholder="اكتب سؤالك هنا..."></textarea><p class="muted">هذه نسخة عرض تجريبية؛ لا يُرسل السؤال إلى المعلمة من هذا الملف.</p></section>
-<section class="section" id="challenge"><h2>🏆 تحدي الأسبوع</h2><h3>اصنع لوحة من الأشكال</h3><p>كوّن صورة من الدائرة والمربع والمثلث والمستطيل، ثم لوّنها بألوان متناسقة. هل تستطيع ابتكار منزل أو حديقة أو مركبة؟</p></section>
+<section class="section" id="challenge">
+<h2>🏆 تحدي الأسبوع</h2>
+<div class="weekly-challenge-scene">
+ <div class="weekly-challenge-card" id="weeklyChallengeCard">
+  <div class="weekly-challenge-face weekly-challenge-front">
+   <div class="weekly-challenge-stars" aria-hidden="true">✨ ⭐ ✨</div>
+   <div class="weekly-challenge-trophy" aria-hidden="true">🏆</div>
+   <h3>هل أنت مستعد لتحدي الأسبوع؟</h3>
+   <p>اضغط على البطاقة واكتشف التحدي!</p>
+   <button type="button" class="weekly-challenge-action" onclick="flipWeeklyChallenge()">أنا مستعد! 🚀</button>
+  </div>
+  <div class="weekly-challenge-face weekly-challenge-back">
+   <div class="weekly-challenge-trophy" aria-hidden="true">🎨</div>
+   <h3>هذا هو تحديك لهذا الأسبوع!</h3>
+   <h4>اصنع لوحة من الأشكال</h4>
+   <p>كوّن صورة من الدائرة والمربع والمثلث والمستطيل، ثم لوّنها بألوان متناسقة. هل تستطيع ابتكار منزل أو حديقة أو مركبة؟</p>
+   <button type="button" class="weekly-challenge-action" onclick="flipWeeklyChallenge()">العودة إلى البطاقة ↩</button>
+  </div>
+ </div>
+</div>
+</section>
 <section class="section" id="stars"><h2>⭐ نجوم الفن</h2><p>مساحة لعرض أسماء المتميزين وأعمالهم بعد اعتماد المعلمة.</p></section>
 <section class="section" id="schedule"><h2>📅 الجدول المدرسي</h2><p class="muted">يُضاف الجدول المعتمد هنا.</p></section>
 <section class="section" id="events"><h2>🌍 المناسبات العالمية</h2><p>أفكار فنية للمناسبات: اليوم العالمي للفن، يوم البيئة، اليوم العالمي للغة العربية، واليوم الوطني.</p></section>
@@ -1471,5 +1511,38 @@ window.submitReadingAnswers=async function(){
  document.getElementById('readingAnswersForm').reset();status.textContent='وصلت إجاباتك بنجاح 🌟 شكرًا لمشاركتك.';button.disabled=false;
 };
 })();
+
+function flipWeeklyChallenge(){
+ const card=document.getElementById('weeklyChallengeCard');
+ if(!card)return;
+ const revealing=!card.classList.contains('is-flipped');
+ if(revealing)playWeeklyChallengeSuspense();
+ card.classList.toggle('is-flipped');
+}
+function playWeeklyChallengeSuspense(){
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+  const ctx=new AudioCtx();
+  if(ctx.state==='suspended')ctx.resume();
+  const start=ctx.currentTime;
+  const notes=[392,440,523.25,659.25,783.99];
+  notes.forEach((freq,i)=>{
+   const at=start+i*.16,osc=ctx.createOscillator(),gain=ctx.createGain();
+   osc.type='triangle';
+   osc.frequency.setValueAtTime(freq,at);
+   osc.frequency.exponentialRampToValueAtTime(freq*1.35,at+.13);
+   gain.gain.setValueAtTime(.0001,at);
+   gain.gain.exponentialRampToValueAtTime(.13,at+.025);
+   gain.gain.exponentialRampToValueAtTime(.0001,at+.19);
+   osc.connect(gain);gain.connect(ctx.destination);osc.start(at);osc.stop(at+.2);
+  });
+  const boom=ctx.createOscillator(),volume=ctx.createGain();
+  boom.type='sine';boom.frequency.setValueAtTime(130,start+.78);boom.frequency.exponentialRampToValueAtTime(48,start+1.12);
+  volume.gain.setValueAtTime(.0001,start+.78);volume.gain.exponentialRampToValueAtTime(.22,start+.82);volume.gain.exponentialRampToValueAtTime(.0001,start+1.18);
+  boom.connect(volume);volume.connect(ctx.destination);boom.start(start+.78);boom.stop(start+1.2);
+ }catch(e){}
+}
+
 </script>
 </body></html>
