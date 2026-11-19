@@ -1268,13 +1268,8 @@ function addSectionBackButtons(){
  });
 }
 window.addEventListener('DOMContentLoaded',()=>{
+ // تهيئة أزرار الرجوع مرة واحدة؛ وتُحدّث عند إعادة رسم الأقسام من renderCustomSections.
  addSectionBackButtons();
- // بعض الأقسام تُنشأ أو يعاد رسمها بعد التحميل؛ أضف زر الرجوع لها تلقائيًا.
- const watchTargets=[document.querySelector('main'),document.getElementById('customSectionsHost')].filter(Boolean);
- if(window.MutationObserver){
-  const backObserver=new MutationObserver(()=>addSectionBackButtons());
-  watchTargets.forEach(node=>backObserver.observe(node,{childList:true,subtree:true}));
- }
  const initial=decodeURIComponent(location.hash.replace('#',''));
  if(initial && document.getElementById(initial)) showSiteSection(initial,false);
  else showSiteSection('home',false);
