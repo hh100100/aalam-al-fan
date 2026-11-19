@@ -1241,19 +1241,28 @@ document.addEventListener('click',function(ev){
  }
 });
 function addSectionBackButtons(){
- document.querySelectorAll('main>.section:not(#announcements):not(#main-sections),#customSectionsHost>.added-section').forEach(sec=>{
-  // تأكد من وجود زر رجوع واحد فقط في بداية كل قسم، واحذف أي أزرار مكررة.
-  const buttons=[...sec.querySelectorAll(':scope > .section-back')];
-  let backButton=buttons.shift();
-  buttons.forEach(button=>button.remove());
-  if(!backButton){
-   backButton=document.createElement('button');
-   backButton.type='button';
-   backButton.className='section-back secondary';
-   backButton.textContent='↩ العودة إلى الأقسام';
-   backButton.addEventListener('click',()=>showSiteSection('home'));
-   sec.insertBefore(backButton,sec.firstChild);
-  }
+ const targetIds=['worksheets','reading','enrichment'];
+ targetIds.forEach(id=>{
+  const sec=document.getElementById(id);
+  if(!sec)return;
+  // إزالة كل أزرار الرجوع القديمة مهما اختلف موضعها أو صنفها.
+  sec.querySelectorAll('button,a').forEach(el=>{
+   const label=(el.textContent||'').replace(/\\s+/g,' ').trim();
+   const action=el.getAttribute('onclick')||'';
+   if(el.classList.contains('section-back') ||
+      /عودة|رجوع/.test(label) ||
+      /showSiteSection\\s*\\(\\s*['"]home['"]/.test(action)){
+    el.remove();
+   }
+  });
+  // زر موحد واحد فقط لكل قسم.
+  const back=document.createElement('button');
+  back.type='button';
+  back.className='section-back secondary';
+  back.dataset.singleHomeBack='1';
+  back.textContent='↩ العودة إلى الصفحة الرئيسية';
+  back.addEventListener('click',()=>showSiteSection('home'));
+  sec.insertBefore(back,sec.firstChild);
  });
 }
 window.addEventListener('DOMContentLoaded',()=>{
