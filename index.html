@@ -323,7 +323,7 @@ body>*{position:relative;z-index:1}
 </div>
 <main>
 <section class="section" id="main-sections"><h2>اكتشف أقسام عالم الفن</h2><div class="grid">
-<a class="tile" href="#plans"><span>🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span>📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span>📖</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span>💡</span>إثراءات</a><a class="tile" href="#stars"><span>⭐</span>نجوم الفن</a><a class="tile" href="#gallery"><span>🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span>🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span>💌</span>اسأل معلمتي</a><a class="tile" href="#kit"><span>🎒</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span>🏆</span>تحدي الأسبوع</a>
+<a class="tile" href="#plans"><span>🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span>📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span>📖</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span>💡</span>إثراءات</a><a class="tile" href="#gallery"><span>🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span>🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span>💌</span>اسأل معلمتي</a><a class="tile" href="#kit"><span>🎒</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span>🏆</span>تحدي الأسبوع</a>
 </div></section>
 <section class="section" id="kit"><h2>🎒 حقيبة الفنان</h2><p class="muted">نتعرّف إلى أساسيات الفن خطوةً خطوة.</p><div class="grid">
 <article class="lesson"><h3>🎨 عجلة الألوان</h3><p>الألوان الأساسية هي الأحمر والأصفر والأزرق. وعند مزج لونين أساسيين نحصل على لون ثانوي.</p><ul><li>أحمر + أصفر = برتقالي</li><li>أصفر + أزرق = أخضر</li><li>أزرق + أحمر = بنفسجي</li></ul></article>
@@ -422,7 +422,17 @@ body>*{position:relative;z-index:1}
  </div>
 </div>
 </section>
-<section class="section" id="stars"><h2>⭐ نجوم الفن</h2><p>مساحة لعرض أسماء المتميزين وأعمالهم بعد اعتماد المعلمة.</p></section>
+<section class="section" id="stars">
+<h2>⭐ نجوم الفن</h2>
+<p class="honor-period">🏆 تُحتسب المشاركات تلقائيًا من الخميس إلى الأربعاء</p>
+<div class="honor-stage">
+ <div class="honor-glow">🌟</div>
+ <h3>نجوم الفن لهذا الأسبوع</h3>
+ <p>اكتشفي الطلاب والطالبات الأكثر تفاعلًا ومشاركة في عالم الفن</p>
+ <button class="honor-reveal-btn" onclick="revealHonorRoll()">✨ اكتشفي نجوم الفن ✨</button>
+</div>
+<div id="honorRollList" class="honor-results" aria-live="polite">اضغطي على الزر لاكتشاف نجوم الفن 🌟</div>
+</section>
 <section class="section" id="schedule"><h2>📅 الجدول المدرسي</h2><p class="muted">يُضاف الجدول المعتمد هنا.</p></section>
 <section class="section" id="events"><h2>🌍 المناسبات العالمية</h2><p>أفكار فنية للمناسبات: اليوم العالمي للفن، يوم البيئة، اليوم العالمي للغة العربية، واليوم الوطني.</p></section>
 <section class="section" id="contact"><h2>🌉 جسر التواصل</h2><p>قناة للتواصل والاستفسارات العامة. تُضاف وسيلة التواصل المعتمدة من المدرسة عند النشر.</p></section>
@@ -1458,15 +1468,15 @@ window.revealHonorRoll=async function(){
 };
 window.renderCustomSections=function(){
  const host=document.getElementById('customSectionsHost');if(!host)return;
- host.innerHTML=customSectionsCache.map(x=>{
+ host.innerHTML=customSectionsCache.filter(x=>x.id!=='honor-roll').map(x=>{
  let body='';
  if(x.id==='production-knowledge'){body='<div class="cards">'+(x.cards||[]).filter(c=>!c.parent).map(c=>c.type==='folder'?'<article class="card"><h3>📁 '+E(c.title)+'</h3><button onclick="openKFolder(\''+E(c.id)+'\')">فتح المجلد</button></article>':cardHtml(c)).join('')+'</div><div id="kFolder"></div>'+(currentAdmin?'<button onclick="addKnowledgeItem()">＋ إضافة محتوى</button>':'');}
  else if(x.id==='student-points'){body='<div class="my-points-card"><div class="my-points-icon">⭐</div><h3>اكتشف نقاطك</h3><p>اختَر اسمك وصفك، ثم اضغط على عرض نقاطي</p><select id="myPointsStudent"><option value="">اختَر الاسم والصف</option></select><button class="my-points-button" onclick="showMyPoints()">عرض نقاطي ✨</button><div id="myPointsResult" class="my-points-result" aria-live="polite">نقاطك بانتظارك 🌟</div></div>'+(currentAdmin?'<div class="card"><h3>إدارة النقاط</h3><select id="pointStudent"><option value="">اختاري الاسم</option></select><label>عدد النقاط</label><input id="pointValue" type="number" min="1" max="100"><label>السبب</label><input id="pointReason"><button onclick="awardStudentPoints()">إضافة النقاط</button><button onclick="addRosterStudent()">＋ إضافة طالب / طالبة</button></div>':'');}
- else if(x.id==='honor-roll')body='<p class="honor-period">🏆 تُحتسب المشاركات تلقائيًا من الخميس إلى الأربعاء</p><div class="honor-stage"><div class="honor-glow">🏆</div><h3>نجوم التفاعل لهذا الأسبوع</h3><p>اضغطي لاكتشاف الطلاب والطالبات الأكثر تفاعلًا</p><button class="honor-reveal-btn" onclick="revealHonorRoll()">✨ اكشفي لوحة الشرف ✨</button></div><div id="honorRollList" class="honor-results" aria-live="polite">جارٍ تجهيز لوحة الشرف...</div>';
+ else if(x.id==='honor-roll')body='';
  else body='<div class="cards">'+(x.cards||[]).map(cardHtml).join('')+'</div>';
  return '<section class="added-section" id="'+E(x.id)+'"><button class="section-back secondary" onclick="showSiteSection(\'home\')">↩ العودة إلى الصفحة الرئيسية</button><h2>'+E(x.icon)+' '+E(x.name)+'</h2><p>'+E(x.desc||'')+'</p>'+body+'</section>';
  }).join('');
- const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());customSectionsCache.forEach(x=>{const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a)})}
+ const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());customSectionsCache.filter(x=>x.id!=='honor-roll').forEach(x=>{const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a)})}
  refreshStudentFeatures();
 };
 window.openKFolder=function(id){const s=sec('production-knowledge'),f=s&&s.cards.find(c=>c.id===id);if(!f)return;const h=document.getElementById('kFolder');h.innerHTML='<h3>📁 '+E(f.title)+'</h3><button onclick="addKnowledgeItem(\''+E(id)+'\')">＋ إضافة داخل المجلد</button><div class="cards">'+s.cards.filter(c=>c.parent===id).map(cardHtml).join('')+'</div>';};
