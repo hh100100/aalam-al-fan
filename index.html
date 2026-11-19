@@ -318,7 +318,7 @@ body>*{position:relative;z-index:1}
 </div>
 <div id="enrichmentVideosGrid" class="grid"></div>
 </section>
-<section class="section" id="plans"><h2>🗓️ الخطط والمهام الأسبوعية</h2>
+<section class="section" id="plans"><h2>🗓️ الخطط والملخص اليومي</h2>
 <article class="plans-panel plans-combined-panel"><div class="plans-panel-heading"><span class="plans-panel-icon">📚</span><div><h3>الخطط الأسبوعية والملخص اليومي</h3><p>كل خططنا وملخصات دروسنا في مكان واحد</p></div></div><div id="combinedPlansPublic" class="plans-image-list"><p class="plans-empty">ستظهر الخطط والملخصات هنا عند إضافتها من المعلمة.</p></div></article>
 <article class="weekly-task-panel"><div class="weekly-task-ribbon">مهمة الأسبوع</div><div class="weekly-task-content" id="weeklyTaskPublic"><p class="plans-empty">ستظهر مهمة الأسبوع هنا قريبًا.</p></div></article>
 <div id="plansTeacherManager" class="plans-teacher-manager" style="display:none">
@@ -578,6 +578,8 @@ async function loadPublishedPageEdits(){
  const {data,error}=await sbClient.from(INLINE_EDIT_TABLE).select('section_id,html_content');
  if(error){console.warn('تعذر تحميل تعديلات الصفحة المنشورة:',error.message);return}
  (data||[]).forEach(row=>{
+  // قسم الخطط له عرض وإدارة مستقلان؛ لا نستبدل واجهته بنسخة HTML قديمة محفوظة.
+  if(row.section_id==='plans')return;
   const target=document.getElementById(row.section_id);
   if(!target||!target.matches('section.section'))return;
   let content=target.querySelector('.section-editable-content');
@@ -592,6 +594,8 @@ async function enableInlineEditor(){
  if(!loaded.error)savedRows=loaded.data||[];
  // حمّل المحتوى المحفوظ إن كانت قاعدة بيانات التحرير جاهزة.
  savedRows.forEach(row=>{
+  // منع استعادة نسخة قديمة من قسم الخطط فوق واجهة الخطط والملخص المدمجة.
+  if(row.section_id==='plans')return;
   const target=document.getElementById(row.section_id);
   if(target&&target.matches('section.section')){
    let content=target.querySelector('.section-editable-content');
