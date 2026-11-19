@@ -1019,6 +1019,20 @@ async function loadSectionsFromCloud(){
   if(deleteDuplicatesError)updateDbStatus('أُخفيت الأقسام المكررة، لكن تعذر حذف نسخها الزائدة من قاعدة البيانات: '+deleteDuplicatesError.message);
  }
  const uniqueRows=rows.filter(r=>!duplicateKnowledgeRows.some(d=>d.id===r.id));
+ // توحيد مجلدات الإنتاج المعرفي المتكررة داخل القسم مع نقل محتوياتها للمجلد الذي سيبقى
+ const knowledgeSection=uniqueRows.find(r=>normalizeKnowledgeName(r.name)===normalizeKnowledgeName('الإنتاج المعرفي'));
+ if(knowledgeSection && Array.isArray(knowledgeSection.cards)){
+  const cards=knowledgeSection.cards.slice();
+  const folders=cards.filter(c=>c.type==='folder' && normalizeKnowledgeName(c.title)===normalizeKnowledgeName('الإنتاج المعرفي'));
+  if(folders.length>1){
+   const keep=folders[0], removeIds=new Set(folders.slice(1).map(f=>f.id));
+   knowledgeSection.cards=cards.filter(c=>!removeIds.has(c.id)).map(c=>removeIds.has(c.parent)?{...c,parent:keep.id}:c);
+   if(currentAdmin){
+    const {error:folderCleanupError}=await sbClient.from('site_sections').update({cards:knowledgeSection.cards}).eq('id',knowledgeSection.id);
+    if(folderCleanupError)updateDbStatus('تم إخفاء المجلدات المكررة، لكن تعذر حفظ نقل محتوياتها: '+folderCleanupError.message);
+   }
+  }
+ }
  const enrichmentRow=uniqueRows.find(r=>r.id===ENRICHMENT_ROW_ID);
  enrichmentVideos=enrichmentRow&&Array.isArray(enrichmentRow.cards)?enrichmentRow.cards:DEFAULT_ENRICHMENT_VIDEOS.map(x=>({...x}));
  customSectionsCache=uniqueRows.filter(r=>r.id!==ENRICHMENT_ROW_ID).map(r=>({id:r.id,name:r.name,icon:r.icon,desc:r.description||'',cards:r.cards||[]}));
@@ -1487,7 +1501,7 @@ window.revealHonorRoll=async function(){
 };
 window.renderCustomSections=function(){
  const host=document.getElementById('customSectionsHost');if(!host)return;
- host.innerHTML=customSectionsCache.filter(x=>x.id!=='honor-roll').map(x=>{
+ host.innerHTML=readCustomSections().filter(x=>x.id!=='honor-roll').map(x=>{
  let body='';
  if(x.id==='production-knowledge'){body='<div class="cards">'+(x.cards||[]).filter(c=>!c.parent).map(c=>c.type==='folder'?'<article class="card"><h3>📁 '+E(c.title)+'</h3><button onclick="openKFolder(\''+E(c.id)+'\')">فتح المجلد</button></article>':cardHtml(c)).join('')+'</div><div id="kFolder"></div>'+(currentAdmin?'<button onclick="addKnowledgeItem()">＋ إضافة محتوى</button>':'');}
  else if(x.id==='student-points'){body='<div class="my-points-card"><div class="my-points-icon">⭐</div><h3>اكتشف نقاطك</h3><p>اختَر اسمك وصفك، ثم اضغط على عرض نقاطي</p><select id="myPointsStudent"><option value="">اختَر الاسم والصف</option></select><button class="my-points-button" onclick="showMyPoints()">عرض نقاطي ✨</button><div id="myPointsResult" class="my-points-result" aria-live="polite">نقاطك بانتظارك 🌟</div></div>'+(currentAdmin?'<div class="card"><h3>إدارة النقاط</h3><select id="pointStudent"><option value="">اختاري الاسم</option></select><label>عدد النقاط</label><input id="pointValue" type="number" min="1" max="100"><label>السبب</label><input id="pointReason"><button onclick="awardStudentPoints()">إضافة النقاط</button><button onclick="addRosterStudent()">＋ إضافة طالب / طالبة</button></div>':'');}
@@ -1495,7 +1509,7 @@ window.renderCustomSections=function(){
  else body='<div class="cards">'+(x.cards||[]).map(cardHtml).join('')+'</div>';
  return '<section class="added-section" id="'+E(x.id)+'"><button class="section-back secondary" onclick="showSiteSection(\'home\')">↩ العودة إلى الصفحة الرئيسية</button><h2>'+E(x.icon)+' '+E(x.name)+'</h2><p>'+E(x.desc||'')+'</p>'+body+'</section>';
  }).join('');
- const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());customSectionsCache.filter(x=>x.id!=='honor-roll').forEach(x=>{const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a)})}
+ const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());readCustomSections().filter(x=>x.id!=='honor-roll').forEach(x=>{const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a)})}
  refreshStudentFeatures();
 };
 window.openKFolder=function(id){const s=sec('production-knowledge'),f=s&&s.cards.find(c=>c.id===id);if(!f)return;const h=document.getElementById('kFolder');h.innerHTML='<h3>📁 '+E(f.title)+'</h3><button onclick="addKnowledgeItem(\''+E(id)+'\')">＋ إضافة داخل المجلد</button><div class="cards">'+s.cards.filter(c=>c.parent===id).map(cardHtml).join('')+'</div>';};
