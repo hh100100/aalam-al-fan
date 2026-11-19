@@ -1242,7 +1242,8 @@ document.addEventListener('click',function(ev){
 });
 function addSectionBackButtons(){
  document.querySelectorAll('main>.section:not(#announcements):not(#main-sections),#customSectionsHost>.added-section').forEach(sec=>{
-  if(!sec.querySelector('.section-back')){
+  // افحص الزر المباشر فقط؛ وجود زر داخل عنصر فرعي لا يغني عن زر الرجوع للقسم نفسه.
+  if(!sec.querySelector(':scope > .section-back')){
    const b=document.createElement('button');b.type='button';b.className='section-back secondary';b.textContent='↩ العودة إلى الأقسام';
    b.addEventListener('click',()=>showSiteSection('home'));
    sec.insertBefore(b,sec.firstChild);
@@ -1251,6 +1252,12 @@ function addSectionBackButtons(){
 }
 window.addEventListener('DOMContentLoaded',()=>{
  addSectionBackButtons();
+ // بعض الأقسام تُنشأ أو يعاد رسمها بعد التحميل؛ أضف زر الرجوع لها تلقائيًا.
+ const watchTargets=[document.querySelector('main'),document.getElementById('customSectionsHost')].filter(Boolean);
+ if(window.MutationObserver){
+  const backObserver=new MutationObserver(()=>addSectionBackButtons());
+  watchTargets.forEach(node=>backObserver.observe(node,{childList:true,subtree:true}));
+ }
  const initial=decodeURIComponent(location.hash.replace('#',''));
  if(initial && document.getElementById(initial)) showSiteSection(initial,false);
  else showSiteSection('home',false);
