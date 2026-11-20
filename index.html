@@ -287,33 +287,27 @@ body>*{position:relative;z-index:1}
 @media(max-width:520px){.weekly-challenge-scene,.weekly-challenge-card,.weekly-challenge-face{min-height:390px}.weekly-challenge-face{padding:22px 18px}.weekly-challenge-face p{font-size:16px}}
 @media(prefers-reduced-motion:reduce){.weekly-challenge-card{transition:none}}
 
-.tile span{display:block;font-size:clamp(48px,5vw,64px);line-height:1.15;margin:0 auto 12px;filter:drop-shadow(0 7px 4px #52307735);transform:translateY(-1px);transition:transform .2s,filter .2s}.tile:hover span{transform:translateY(-5px) rotate(-2deg);filter:drop-shadow(0 10px 5px #52307740)}@media(max-width:520px){.tile span{font-size:54px}}
-/* تثبيت أيقونات أقسام الصفحة الرئيسية: منع اختفائها */
-#main-sections a.tile > span,
-#main-sections a.tile > span > svg.tile-3d-icon {
-  display:flex !important; visibility:visible !important; opacity:1 !important;
-  height:116px !important; width:116px !important; min-height:116px !important;
-  min-width:116px !important; max-width:none !important; flex:none !important;
-  position:relative !important; z-index:2 !important; animation:none !important;
-}
-#main-sections a.tile > span > svg.tile-3d-icon { overflow:visible !important; }
-#main-sections a.tile > span > svg.tile-3d-icon * { visibility:visible !important; opacity:1 !important; }
-@media(max-width:520px){#main-sections a.tile > span > svg.tile-3d-icon{width:104px!important;height:104px!important;min-width:104px!important;min-height:104px!important}}
 
-/* Stable homepage icon rendering */
-#main-sections .tile span.tile-icon-emoji{display:block!important;visibility:visible!important;opacity:1!important;font-size:clamp(48px,5vw,64px)!important;line-height:1.15!important;width:auto!important;height:auto!important;min-height:0!important;min-width:0!important;margin:0 auto 8px!important;filter:drop-shadow(0 7px 4px #52307735)!important;transform:translateY(-1px)!important;}
-#main-sections .tile{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
-</style>
-/* Fix: custom homepage section icons were hidden by font-size:0 rules */
-#main-sections a.tile > span:not(:has(svg.tile-3d-icon)){
-  display:flex!important; visibility:visible!important; opacity:1!important;
-  font-size:42px!important; line-height:1.2!important;
-  width:auto!important; height:auto!important; min-width:0!important; min-height:56px!important;
-  max-width:100%!important; flex:0 0 auto!important; margin:0 auto 8px!important;
-  filter:drop-shadow(0 5px 3px rgba(69,43,91,.28))!important;
+/* Fix homepage section icons only: keep emoji visible */
+#main-sections a.tile span.tile-icon-emoji{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ visibility:visible!important;
+ opacity:1!important;
+ font-size:clamp(42px,5vw,58px)!important;
+ line-height:1.15!important;
+ width:auto!important;height:auto!important;
+ min-width:0!important;min-height:0!important;
+ margin:0 auto 8px!important;
+ flex:0 0 auto!important;
+ filter:drop-shadow(0 5px 3px rgba(69,43,91,.25))!important;
 }
-#main-sections a.tile > span:not(:has(svg.tile-3d-icon)) * {visibility:visible!important;opacity:1!important}
-<!-- teacher-login-form-fix-2026-11-17 -->
+#main-sections a.tile{
+ display:flex!important;flex-direction:column!important;
+ align-items:center!important;justify-content:center!important;gap:8px!important;
+}
+</style><!-- teacher-login-form-fix-2026-11-17 -->
 </head>
 <body>
 <header class="site-header">
@@ -352,7 +346,7 @@ body>*{position:relative;z-index:1}
 </div>
 <main>
 <section class="section" id="main-sections"><h2>اكتشف أقسام عالم الفن</h2><div class="grid">
-<a class="tile" href="#plans"><span class="tile-icon-emoji" aria-hidden="true">🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span class="tile-icon-emoji" aria-hidden="true">📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span class="tile-icon-emoji" aria-hidden="true">📚</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span class="tile-icon-emoji" aria-hidden="true">🎨</span>إثراءات</a><a class="tile" href="#gallery"><span class="tile-icon-emoji" aria-hidden="true">🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span class="tile-icon-emoji" aria-hidden="true">🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span class="tile-icon-emoji" aria-hidden="true">💬</span>اسأل معلمتي</a><a class="tile" href="#kit"><span class="tile-icon-emoji" aria-hidden="true">🧰</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span class="tile-icon-emoji" aria-hidden="true">🏆</span>تحدي الأسبوع</a><a class="tile" href="#azkar"><span class="tile-icon-emoji" aria-hidden="true">🌙</span>أذكار الصباح والمساء</a>
+<a class="tile" href="#plans"><span>🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span>📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span>📖</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span>💡</span>إثراءات</a><a class="tile" href="#gallery"><span>🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span>🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span>💌</span>اسأل معلمتي</a><a class="tile" href="#kit"><span>🎒</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span>🏆</span>تحدي الأسبوع</a><a class="tile" href="#azkar"><span>🌙</span>أذكار الصباح والمساء</a>
 </div></section>
 <section class="section" id="azkar"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button><h2>🌙 أذكار الصباح والمساء</h2><p class="muted">نبدأ يومنا ونختمه بذكر الله.</p><div class="grid"><article class="lesson"><h3>☀️ أذكار الصباح</h3><p>أصبحنا وأصبح الملك لله، والحمد لله.</p><p>اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.</p><p>رضيت بالله ربًا، وبالإسلام دينًا، وبمحمد ﷺ نبيًا.</p><p>اللهم إني أسألك العفو والعافية في الدنيا والآخرة.</p></article><article class="lesson"><h3>🌙 أذكار المساء</h3><p>أمسينا وأمسى الملك لله، والحمد لله.</p><p>اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.</p><p>رضيت بالله ربًا، وبالإسلام دينًا، وبمحمد ﷺ نبيًا.</p><p>اللهم إني أسألك العفو والعافية في الدنيا والآخرة.</p></article></div></section><section class="section" id="kit"><h2>🎒 حقيبة الفنان</h2><p class="muted">نتعرّف إلى أساسيات الفن خطوةً خطوة.</p><div class="grid">
 <article class="lesson"><h3>🎨 عجلة الألوان</h3><p>الألوان الأساسية هي الأحمر والأصفر والأزرق. وعند مزج لونين أساسيين نحصل على لون ثانوي.</p><ul><li>أحمر + أصفر = برتقالي</li><li>أصفر + أزرق = أخضر</li><li>أزرق + أحمر = بنفسجي</li></ul></article>
