@@ -1692,7 +1692,7 @@ async function loadAnnouncementsFromCloud(){
  if(!sbClient)return;
  const [a,t]=await Promise.all([sbClient.from('site_sections').select('cards').eq('id',ANNOUNCEMENTS_ROW_ID).maybeSingle(),sbClient.from('site_sections').select('cards').eq('id',TICKER_ROW_ID).maybeSingle()]);
  if(!a.error)siteAnnouncements=Array.isArray(a.data?.cards)?a.data.cards:[];
- if(!t.error&&Array.isArray(t.data?.cards)&&t.data.cards.length)tickerMessages=t.data.cards.map(x=>x.text||'').filter(Boolean);
+ if(!t.error&&Array.isArray(t.data?.cards))tickerMessages=t.data.cards.map(x=>x.text||'').filter(Boolean);
  renderSiteAnnouncements();renderAnnouncementAdminList();renderTickerMessages();const input=document.getElementById('tickerMessagesInput');if(input)input.value=tickerMessages.join('\n');
 }
 async function saveAnnouncementsCloud(){if(!currentAdmin||!sbClient)throw Error('سجّلي الدخول بحساب المعلمة أولًا.');
