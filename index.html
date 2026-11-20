@@ -292,7 +292,19 @@ body>*{position:relative;z-index:1}
 .announcement-tools .announcement-strip{flex:1;margin:0}
 .azkar-shortcut{display:flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto;padding:12px 16px;border-radius:20px;border:2px solid #d9c4f1;background:linear-gradient(145deg,#fff,#f2e6ff);color:#59218a;font-weight:800;text-decoration:none;box-shadow:0 5px 12px #66358a18}
 .azkar-shortcut-icon{font-size:32px;filter:drop-shadow(0 4px 2px #55306b25)}
-@media(max-width:650px){.announcement-tools{flex-direction:column}.azkar-shortcut{min-height:64px;font-size:17px}.art-icon{width:88px;height:88px}}#main-sections .tile span{display:flex;align-items:center;justify-content:center;font-size:0;margin:0 auto 16px;line-height:1;filter:none;transform:none}#main-sections .tile-3d-icon{display:block;width:116px;height:116px;overflow:visible;filter:drop-shadow(0 8px 5px #54307940);transition:transform .2s,filter .2s}#main-sections .tile:hover .tile-3d-icon{transform:translateY(-5px) rotate(-2deg);filter:drop-shadow(0 12px 6px #54307945)}@media(max-width:520px){#main-sections .tile-3d-icon{width:104px;height:104px}}#main-sections a.tile>span{display:flex!important;visibility:visible!important;opacity:1!important;font-size:0!important;min-height:126px!important;align-items:center!important;justify-content:center!important}#main-sections a.tile>span>svg.tile-3d-icon{display:block!important;visibility:visible!important;opacity:1!important;width:116px!important;height:116px!important;max-width:none!important;min-width:116px!important;flex:none!important;overflow:visible!important}#main-sections a.tile{gap:8px!important}</style><!-- teacher-login-form-fix-2026-11-17 -->
+@media(max-width:650px){.announcement-tools{flex-direction:column}.azkar-shortcut{min-height:64px;font-size:17px}.art-icon{width:88px;height:88px}}#main-sections .tile span{display:flex;align-items:center;justify-content:center;font-size:0;margin:0 auto 16px;line-height:1;filter:none;transform:none}#main-sections .tile-3d-icon{display:block;width:116px;height:116px;overflow:visible;filter:drop-shadow(0 8px 5px #54307940);transition:transform .2s,filter .2s}#main-sections .tile:hover .tile-3d-icon{transform:translateY(-5px) rotate(-2deg);filter:drop-shadow(0 12px 6px #54307945)}@media(max-width:520px){#main-sections .tile-3d-icon{width:104px;height:104px}}#main-sections a.tile>span{display:flex!important;visibility:visible!important;opacity:1!important;font-size:0!important;min-height:126px!important;align-items:center!important;justify-content:center!important}#main-sections a.tile>span>svg.tile-3d-icon{display:block!important;visibility:visible!important;opacity:1!important;width:116px!important;height:116px!important;max-width:none!important;min-width:116px!important;flex:none!important;overflow:visible!important}#main-sections a.tile{gap:8px!important}
+/* تثبيت أيقونات أقسام الصفحة الرئيسية: منع اختفائها */
+#main-sections a.tile > span,
+#main-sections a.tile > span > svg.tile-3d-icon {
+  display:flex !important; visibility:visible !important; opacity:1 !important;
+  height:116px !important; width:116px !important; min-height:116px !important;
+  min-width:116px !important; max-width:none !important; flex:none !important;
+  position:relative !important; z-index:2 !important; animation:none !important;
+}
+#main-sections a.tile > span > svg.tile-3d-icon { overflow:visible !important; }
+#main-sections a.tile > span > svg.tile-3d-icon * { visibility:visible !important; opacity:1 !important; }
+@media(max-width:520px){#main-sections a.tile > span > svg.tile-3d-icon{width:104px!important;height:104px!important;min-width:104px!important;min-height:104px!important}}
+</style><!-- teacher-login-form-fix-2026-11-17 -->
 </head>
 <body>
 <header class="site-header">
