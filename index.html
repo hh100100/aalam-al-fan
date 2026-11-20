@@ -304,7 +304,17 @@ body>*{position:relative;z-index:1}
 #main-sections a.tile > span > svg.tile-3d-icon { overflow:visible !important; }
 #main-sections a.tile > span > svg.tile-3d-icon * { visibility:visible !important; opacity:1 !important; }
 @media(max-width:520px){#main-sections a.tile > span > svg.tile-3d-icon{width:104px!important;height:104px!important;min-width:104px!important;min-height:104px!important}}
-</style><!-- teacher-login-form-fix-2026-11-17 -->
+</style>
+/* Fix: custom homepage section icons were hidden by font-size:0 rules */
+#main-sections a.tile > span:not(:has(svg.tile-3d-icon)){
+  display:flex!important; visibility:visible!important; opacity:1!important;
+  font-size:42px!important; line-height:1.2!important;
+  width:auto!important; height:auto!important; min-width:0!important; min-height:56px!important;
+  max-width:100%!important; flex:0 0 auto!important; margin:0 auto 8px!important;
+  filter:drop-shadow(0 5px 3px rgba(69,43,91,.28))!important;
+}
+#main-sections a.tile > span:not(:has(svg.tile-3d-icon)) * {visibility:visible!important;opacity:1!important}
+<!-- teacher-login-form-fix-2026-11-17 -->
 </head>
 <body>
 <header class="site-header">
