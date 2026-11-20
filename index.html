@@ -1326,6 +1326,15 @@ document.addEventListener('DOMContentLoaded',async()=>{
   updateDbStatus('بانتظار إضافة رابط Supabase ومفتاح Publishable لإتاحة الحفظ المشترك.');
  }
  renderCustomSections();renderAdminLists();loadPublishedArtworks();
+ // بعد اكتمال تحميل المحتوى من قاعدة البيانات، أعد إظهار القسم الذي اختاره الزائر.
+ // بعض عمليات التحميل تعيد بناء أجزاء من الصفحة؛ لذلك نعيد تثبيت القسم النشط في النهاية.
+ let activeSection='';
+ try{activeSection=decodeURIComponent(location.hash.replace(/^#/,''))||localStorage.getItem('aalamLastSection')||'';}catch(e){}
+ if(activeSection && document.getElementById(activeSection)){
+  showSiteSection(activeSection,false);
+ }else if(!location.hash){
+  showSiteSection('home',false);
+ }
 });
 </script>
 
