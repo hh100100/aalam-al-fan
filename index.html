@@ -78,29 +78,9 @@ main>.section.active-section{display:block}
 }
 .tile{cursor:pointer;text-align:center;color:var(--ink);font-weight:bold;transition:.2s}
 .tile:hover{transform:translateY(-4px);box-shadow:0 9px 18px #63358a1c}
-.tile span{
- display:flex;align-items:center;justify-content:center;
- width:82px;height:76px;margin:0 auto 13px;
- font-size:43px;line-height:1;border-radius:25px;
- background:linear-gradient(145deg,#fff 0%,#f6eaff 48%,#e4d1f7 100%);
- border:1px solid #ffffff; 
- box-shadow:inset 3px 3px 7px #ffffff, inset -5px -6px 10px #b99bd533, 0 8px 0 #c9b2df, 0 13px 19px #67418a25;
- text-shadow:0 3px 1px #ffffffaa,0 5px 7px #55306b25;
- transform:translateY(-2px);
- position:relative;isolation:isolate;
-}
-.tile span:before{
- content:"";position:absolute;inset:5px 7px auto;height:25px;border-radius:18px;
- background:linear-gradient(180deg,#ffffffb8,#ffffff00);pointer-events:none;z-index:-1;
-}
-.tile:nth-child(6n+1) span{background:linear-gradient(145deg,#fff9df,#ffe5a4 55%,#f6c96c);box-shadow:inset 3px 3px 7px #fff,inset -5px -6px 10px #e4a83b55,0 8px 0 #e7bd6c,0 13px 19px #9b713025}
-.tile:nth-child(6n+2) span{background:linear-gradient(145deg,#f1fbff,#ccecff 55%,#9ed6f2);box-shadow:inset 3px 3px 7px #fff,inset -5px -6px 10px #70b7d755,0 8px 0 #9bcbe0,0 13px 19px #477f9925}
-.tile:nth-child(6n+3) span{background:linear-gradient(145deg,#fff1fa,#f8cfe9 55%,#eaa9d4);box-shadow:inset 3px 3px 7px #fff,inset -5px -6px 10px #d27db755,0 8px 0 #dfa2ca,0 13px 19px #98527f25}
-.tile:nth-child(6n+4) span{background:linear-gradient(145deg,#f2fff8,#c9f2dc 55%,#9bdcb9);box-shadow:inset 3px 3px 7px #fff,inset -5px -6px 10px #69bd8e55,0 8px 0 #9bcdb0,0 13px 19px #477e5c25}
-.tile:nth-child(6n+5) span{background:linear-gradient(145deg,#f8f3ff,#dfd0ff 55%,#c0a6f2);box-shadow:inset 3px 3px 7px #fff,inset -5px -6px 10px #9976d755,0 8px 0 #b6a0df,0 13px 19px #684a9925}
-.tile:nth-child(6n) span{background:linear-gradient(145deg,#fff7ee,#ffdfc6 55%,#f5bd96);box-shadow:inset 3px 3px 7px #fff,inset -5px -6px 10px #d89b7055,0 8px 0 #e0b18e,0 13px 19px #9b684625}
-.tile:hover span{transform:translateY(-5px) rotate(-2deg);transition:transform .2s ease}
-@media(max-width:520px){.tile span{width:72px;height:68px;font-size:39px;border-radius:22px}}
+.tile span{display:block;font-size:clamp(48px,5vw,64px);line-height:1.15;margin:0 auto 12px;filter:drop-shadow(0 5px 3px #5d328a30);transform:translateY(-2px);transition:transform .2s,filter .2s}
+.tile:hover span{transform:translateY(-6px) rotate(-3deg);filter:drop-shadow(0 9px 5px #5d328a35)}
+@media(max-width:520px){.tile span{font-size:52px}}
 button,.btn{border:0;background:linear-gradient(135deg,#8a43b7,#633091);color:white;padding:10px 17px;border-radius:16px;cursor:pointer;font:inherit;text-decoration:none;display:inline-block;box-shadow:0 4px 10px #61308c20}
 button.secondary{background:#f0e4f8;color:#5e2c86;box-shadow:none}
 input,textarea,select{width:100%;padding:12px;border:1px solid #d9c4e8;border-radius:14px;font:inherit;margin:6px 0 12px;background:#fff}
@@ -346,9 +326,9 @@ body>*{position:relative;z-index:1}
 </div>
 <main>
 <section class="section" id="main-sections"><h2>اكتشف أقسام عالم الفن</h2><div class="grid">
-<a class="tile" href="#plans"><span>🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span>📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span>📖</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span>💡</span>إثراءات</a><a class="tile" href="#gallery"><span>🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span>🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span>💌</span>اسأل معلمتي</a><a class="tile" href="#kit"><span>🎒</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span>🏆</span>تحدي الأسبوع</a>
+<a class="tile" href="#plans"><span>🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span>📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span>📖</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span>💡</span>إثراءات</a><a class="tile" href="#gallery"><span>🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span>🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span>💌</span>اسأل معلمتي</a><a class="tile" href="#kit"><span>🎒</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span>🏆</span>تحدي الأسبوع</a><a class="tile" href="#azkar"><span>🌙</span>أذكار الصباح والمساء</a>
 </div></section>
-<section class="section" id="kit"><h2>🎒 حقيبة الفنان</h2><p class="muted">نتعرّف إلى أساسيات الفن خطوةً خطوة.</p><div class="grid">
+<section class="section" id="azkar"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button><h2>🌙 أذكار الصباح والمساء</h2><p class="muted">نبدأ يومنا ونختمه بذكر الله.</p><div class="grid"><article class="lesson"><h3>☀️ أذكار الصباح</h3><p>أصبحنا وأصبح الملك لله، والحمد لله.</p><p>اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.</p><p>رضيت بالله ربًا، وبالإسلام دينًا، وبمحمد ﷺ نبيًا.</p><p>اللهم إني أسألك العفو والعافية في الدنيا والآخرة.</p></article><article class="lesson"><h3>🌙 أذكار المساء</h3><p>أمسينا وأمسى الملك لله، والحمد لله.</p><p>اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.</p><p>رضيت بالله ربًا، وبالإسلام دينًا، وبمحمد ﷺ نبيًا.</p><p>اللهم إني أسألك العفو والعافية في الدنيا والآخرة.</p></article></div></section><section class="section" id="kit"><h2>🎒 حقيبة الفنان</h2><p class="muted">نتعرّف إلى أساسيات الفن خطوةً خطوة.</p><div class="grid">
 <article class="lesson"><h3>🎨 عجلة الألوان</h3><p>الألوان الأساسية هي الأحمر والأصفر والأزرق. وعند مزج لونين أساسيين نحصل على لون ثانوي.</p><ul><li>أحمر + أصفر = برتقالي</li><li>أصفر + أزرق = أخضر</li><li>أزرق + أحمر = بنفسجي</li></ul></article>
 <article class="lesson"><h3>〰️ أنواع الخطوط</h3><p>من الخطوط: المستقيم، والمنحني، والمتموج، والمتعرج، واللولبي. نستخدمها لتكوين أشكال ورسومات متنوعة.</p></article>
 <article class="lesson"><h3>🔺 الأشكال الهندسية</h3><p>الدائرة والمربع والمثلث والمستطيل أشكال نراها حولنا، ويمكن ترتيبها لتكوين بيت أو شجرة أو لعبة.</p></article>
