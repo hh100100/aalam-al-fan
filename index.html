@@ -1656,12 +1656,13 @@ function playWeeklyChallengeSuspense(){
 
 </script>
 <style>
-.announcement-cards-public{display:grid;gap:14px;margin-top:16px}
-.announcement-public-card{padding:18px 20px;border:1px solid #ead8f5;border-radius:22px;background:linear-gradient(145deg,#fff,#fff8ff);box-shadow:0 6px 18px #663b8510}
-.announcement-public-card.pinned{border:2px solid #e8b65d;background:linear-gradient(145deg,#fffdf4,#fff6df)}
+.announcement-cards-public{display:grid;gap:16px;margin-top:16px}
+.announcement-public-card{padding:20px 22px;border:1px solid #ead8f5;border-radius:22px;background:linear-gradient(145deg,#fff,#fff8ff);box-shadow:0 6px 18px #663b8510}
+.announcement-public-card.pinned{border:2px solid #e8b65d;background:linear-gradient(145deg,#fffdf4,#fff6df);order:-1}
 .announcement-pin{display:inline-block;padding:5px 10px;border-radius:12px;background:#fff1cb;color:#875a12;font-weight:800;margin-bottom:8px}
-.announcement-public-card h3{margin:0 0 8px;color:#63358a}.announcement-public-card p{margin:0;line-height:1.8;color:#654b76;white-space:pre-wrap}.announcement-public-card time{display:block;color:#9884a5;font-size:12px;margin-top:9px}
-.announcement-admin-row{border:1px solid #ead8f5;border-radius:14px;padding:12px;margin:10px 0;background:#fff}.announcement-admin-row h4{margin:0 0 5px;color:#63358a}.announcement-admin-row p{margin:0 0 10px;white-space:pre-wrap}
+.announcement-public-card h3{margin:0 0 10px;color:#7b42a5;font-size:1.22rem;font-weight:800}.announcement-public-card p{margin:0;line-height:1.9;color:#42434b;white-space:pre-wrap;font-size:1rem}.announcement-public-card time{display:block;color:#9884a5;font-size:12px;margin-top:10px}
+.announcement-admin-row{border:1px solid #ead8f5;border-radius:18px;padding:16px;margin:12px 0;background:linear-gradient(145deg,#fff,#fcf8ff);box-shadow:0 4px 14px #663b850a}.announcement-admin-row h4{margin:0 0 8px;color:#7b42a5;font-size:1.08rem;font-weight:800}.announcement-admin-row p{margin:0 0 12px;white-space:pre-wrap;color:#42434b;line-height:1.8}
+.announcement-admin-row .admin-actions{display:flex;gap:8px;flex-wrap:wrap}.announcement-admin-row button{min-height:40px}
 </style>
 <script>
 const ANNOUNCEMENTS_ROW_ID='site-announcements-archive',TICKER_ROW_ID='site-announcements-ticker';
