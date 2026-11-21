@@ -1184,6 +1184,7 @@ async function adminSignIn(){
   return;
  }
  currentAdmin=data.user;
+ setAnnouncementTeacherEditor();
  document.getElementById('adminAuthBox').style.display='none';
  document.getElementById('adminTools').style.display='block';
  updateDbStatus('تم تسجيل الدخول. جارٍ تفعيل أدوات التحرير داخل الموقع...');
@@ -1195,6 +1196,7 @@ async function adminSignIn(){
 async function adminSignOut(){
  if(sbClient)await sbClient.auth.signOut();
  currentAdmin=null;
+ setAnnouncementTeacherEditor();
  document.body.classList.remove('teacher-edit-mode');
  document.querySelectorAll('.inline-editor-toolbar,.inline-element-toolbar').forEach(el=>el.remove());
  inlineEditMode=false;
@@ -1330,6 +1332,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   const {data:{session}}=await sbClient.auth.getSession();
   if(session && session.user && session.user.app_metadata && session.user.app_metadata.role==='teacher'){
    currentAdmin=session.user;
+   setAnnouncementTeacherEditor();
    document.getElementById('adminAuthBox').style.display='none';
    document.getElementById('adminTools').style.display='block';
    await loadSectionsFromCloud();
@@ -1681,6 +1684,7 @@ function renderSiteAnnouncements(){
  const p=document.createElement('p');p.textContent=item.description||'';card.appendChild(p);
  if(item.created_at){const t=document.createElement('time');t.textContent=new Date(item.created_at).toLocaleDateString('ar-SA');card.appendChild(t)}host.appendChild(card)});
 }
+function setAnnouncementTeacherEditor(){const box=document.getElementById('announcementTeacherEditor');if(box)box.style.display=currentAdmin?'block':'none';}
 function renderAnnouncementAdminList(){
  const host=document.getElementById('announcementAdminList');if(!host)return;host.replaceChildren();
  siteAnnouncements.forEach((item,index)=>{const row=document.createElement('div');row.className='announcement-admin-row';
