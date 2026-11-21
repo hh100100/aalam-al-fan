@@ -1346,6 +1346,9 @@ document.addEventListener('DOMContentLoaded',async()=>{
  }else{
   updateDbStatus('بانتظار إضافة رابط Supabase ومفتاح Publishable لإتاحة الحفظ المشترك.');
  }
+ await refreshStudentFeatures(); // تعبئة قائمة نقاطي وأسماء الطلاب والطالبات لجميع الزوار
+ const pointsManager=document.getElementById('studentPointsTeacherManager');
+ if(pointsManager)pointsManager.style.display=currentAdmin?'block':'none';
  renderCustomSections();renderAdminLists();loadPublishedArtworks();
  // بعد اكتمال تحميل المحتوى من قاعدة البيانات، أعد إظهار القسم الذي اختاره الزائر.
  // بعض عمليات التحميل تعيد بناء أجزاء من الصفحة؛ لذلك نعيد تثبيت القسم النشط في النهاية.
