@@ -1740,4 +1740,87 @@ async function saveTickerMessages(){if(!currentAdmin||!sbClient){alert('سجّل
  const {error}=await sbClient.from('site_sections').upsert({id:TICKER_ROW_ID,name:'رسائل الشريط المتحرك',icon:'📣',description:'رسائل الشريط المتحرك',cards:messages.map(text=>({text})),sort_order:999999},{onConflict:'id'});
  if(error){alert('تعذر حفظ رسائل الشريط: '+error.message);return}tickerMessages=messages;renderTickerMessages();updateDbStatus('تم حفظ رسائل الشريط المتحرك.')}
 </script>
+
+<style id="featured-art-worlds-style">
+.added-section{border:2px solid #e8d8f1!important;background:linear-gradient(145deg,#fff,#fff9fd)!important}
+.added-section>h2{font-size:clamp(23px,3vw,30px);color:#542078;margin:8px 0}
+.added-section>p{color:#755e83;font-size:16px;margin:0 0 18px}
+.added-section .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;margin-top:18px}
+.added-section .card{border:1px solid #eadcf1;border-radius:22px;padding:18px;background:linear-gradient(145deg,#fff,#f8f1ff);box-shadow:0 7px 18px #57336d10;min-width:0;transition:transform .2s,box-shadow .2s}
+.added-section .card:nth-child(4n+2){background:linear-gradient(145deg,#fff,#effaf7);border-color:#d8eee7}
+.added-section .card:nth-child(4n+3){background:linear-gradient(145deg,#fff,#fff8e9);border-color:#f0e4c9}
+.added-section .card:nth-child(4n){background:linear-gradient(145deg,#fff,#fff1f8);border-color:#f0dce9}
+.added-section .card:hover{transform:translateY(-4px);box-shadow:0 12px 22px #57336d18}
+.added-section .card h3{font-size:18px;color:#67338c;margin:0 0 10px}
+.added-section .card p{white-space:pre-line;line-height:1.9;color:#65566e;margin:0}
+.added-section .custom-section-admin-tools{padding:12px;background:#f8f1fc;border:1px dashed #d9c3e8;border-radius:16px}
+#main-sections .tile[data-custom-section-tile="1"]{min-height:155px}
+#main-sections .tile[data-custom-section-tile="1"] span{font-size:48px}
+@media(max-width:520px){.added-section .cards{grid-template-columns:1fr 1fr;gap:10px}.added-section .card{padding:13px}.added-section .card h3{font-size:16px}.added-section .card p{font-size:13px}}
+@media(max-width:360px){.added-section .cards{grid-template-columns:1fr}}
+</style>
+<script id="featured-art-worlds-seed">
+(function(){
+ const FEATURED_ART_SECTIONS=[
+  {id:'featured-art-lab',name:'مختبر الفن والتجريب',icon:'🧪',desc:'هيا نكتشف أسرار الألوان والخامات من خلال تجارب فنية ممتعة وآمنة. اختاري تجربة، جهزي أدواتك، ثم شاهدي ماذا سيحدث!',cards:[
+   {title:'🌈 سحر مزج الألوان',body:'ماذا سنتعلم؟ كيف تتكوّن الألوان الثانوية.\nالأدوات: ألوان مائية أو ألوان طعام، ثلاثة أكواب شفافة، ماء، وملعقة.\nالخطوات: ضعي قليلًا من الماء واللون الأصفر في كوب، والأحمر في الثاني، ثم امزجي قليلًا من اللونين في كوب ثالث. كرري مع الأزرق والأصفر، ثم الأزرق والأحمر.\nاكتشفي: ما الألوان الجديدة التي حصلتِ عليها؟' },
+   {title:'🧂 الرسم بالملح والألوان',body:'الأدوات: ورق سميك، غراء أبيض، ملح ناعم، ألوان مائية وفرشاة.\nالخطوات: ارسمي خطوطًا أو أشكالًا بالغراء، انثري الملح فوقها، تخلصي من الملح الزائد، ثم لوني برفق بطرف فرشاة رطبة.\nاكتشفي كيف ينتقل اللون بين حبيبات الملح. اطلبي مساعدة شخص بالغ عند استخدام الغراء.'},
+   {title:'🍃 طباعة أوراق الطبيعة',body:'الأدوات: أوراق نباتات آمنة ونظيفة، ألوان، فرشاة وورق.\nالخطوات: اختاري ورقة ذات عروق واضحة، ادهني ظهرها بطبقة خفيفة من اللون، اضغطيها على الورق ثم ارفعيها بهدوء.\nاكتشفي اختلاف الملامس والأشكال التي تتركها الأوراق.'},
+   {title:'🫧 الرسم بالفقاعات',body:'الأدوات: ماء، قليل من سائل الصابون، لون طعام، شفاطة، وورق.\nالخطوات: امزجي الماء والصابون واللون في وعاء واسع. انفخي بالشفاطة لتتكون فقاعات، ثم ضعي الورق برفق فوق الفقاعات.\nتنبيه: لا تشفطي السائل أبدًا، ونفذي التجربة بإشراف شخص بالغ.'},
+   {title:'🎨 فن الرخام والألوان المتداخلة',body:'الأدوات: ألوان سائلة مناسبة للأطفال، ورق، وصينية مسطحة.\nالخطوات: ضعي قطرات من ألوان مختلفة على سطح الورق أو الصينية، وحرّكيها برفق بعود آمن لتكوين خطوط متموجة، ثم اطبعي الورقة حسب نوع الألوان المستخدم.\nاكتشفي كيف تصنع الحركة أشكالًا فريدة.'},
+   {title:'🧽 الطباعة بالإسفنج',body:'الأدوات: قطع إسفنج نظيفة، ألوان قابلة للغسل، ورق.\nالخطوات: قصّي الإسفنج بأشكال بسيطة بمساعدة شخص بالغ، اغمسيه قليلًا في اللون، ثم اطبعيه على الورق بتكرار وترتيب مختلف.\nاكتشفي كيف تصنع الأشكال المتكررة لوحة جميلة.'},
+   {title:'🖍️ اكتشاف الملامس بالفرك',body:'الأدوات: أوراق، أقلام شمعية، أسطح آمنة ذات ملامس بارزة مثل قطعة قماش أو ورق مقوى مموج.\nالخطوات: ضعي الورقة فوق السطح، ومرري جانب قلم الشمع برفق حتى يظهر الملمس.\nاكتشفي كيف نستطيع إظهار الملمس بالرسم دون رسمه مباشرة.'},
+   {title:'🌀 عجائب الألوان المتحركة',body:'الأدوات: طبق مسطح، حليب، ألوان طعام، وقطنة عليها نقطة من سائل غسل الصحون.\nالخطوات: اسكبي الحليب في الطبق، أضيفي قطرات ألوان متباعدة، ثم المسِي سطح الحليب بقطنة مبللة بقليل من سائل الصحون.\nشاهدي حركة الألوان. تنفذ التجربة بإشراف شخص بالغ، ولا يُشرب الحليب بعد التجربة.'}
+  ]},
+  {id:'featured-national-art',name:'الفن والهوية الوطنية',icon:'🇸🇦',desc:'رحلة فنية نتعرف فيها على تراث المملكة وفنون مناطقها، ونكتشف كيف تحكي الألوان والزخارف والحرف قصة وطننا.',cards:[
+   {title:'🏡 القط العسيري',body:'حكاية الفن: فن زخرفي تقليدي اشتهرت به منطقة عسير، وارتبط بتزيين جدران البيوت بأشكال هندسية وألوان متناسقة.\nتأمل فني: لاحظي المثلثات والخطوط وتكرار الوحدات.\nأبدع بلمستك: صممي شريطًا زخرفيًا مستوحى من الأشكال الهندسية والألوان الزاهية.'},
+   {title:'🧵 فن السدو',body:'حكاية الفن: نسيج تقليدي ارتبط بحياة أهل البادية، وتظهر فيه الخطوط والأشكال الهندسية المتكررة.\nتأمل فني: اكتشفي كيف تتداخل الألوان والخيوط لتكوين نمط متوازن.\nأبدع بلمستك: انسجي شرائط ورقية ملونة بالتبادل فوقًا وتحتًا.'},
+   {title:'🪟 الرواشين الحجازية',body:'حكاية الفن: نوافذ خشبية بارزة تميزت بها بيوت الحجاز، ومنها بيوت جدة التاريخية، وتجمع بين الجمال والظل والتهوية.\nتأمل فني: لاحظي تفاصيل الخشب والتكرار والزخارف.\nأبدع بلمستك: صممي واجهة بيت حجازي باستخدام الأشكال الهندسية.'},
+   {title:'🚪 الزخارف النجدية',body:'حكاية الفن: تظهر الزخارف الهندسية والألوان الترابية في عناصر من العمارة التقليدية في نجد.\nتأمل فني: ابحثي عن التماثل وتكرار الخطوط والمثلثات.\nأبدع بلمستك: ابتكري زخرفة لباب مستوحاة من الأشكال الهندسية.'},
+   {title:'🏺 الفخار والحرف اليدوية',body:'حكاية الفن: استخدم الإنسان الطين لصناعة أوانٍ وأدوات نافعة، ثم زيّنها بالنقوش والأشكال. وتتنوع الحرف الفخارية في مناطق المملكة.\nتأمل فني: لاحظي شكل الإناء وملمسه وزخارفه.\nأبدع بلمستك: شكّلي إناءً صغيرًا بالصلصال وزيّنيه بنقوش بسيطة.'},
+   {title:'✒️ جمال الخط العربي',body:'حكاية الفن: الخط العربي فن يجمع بين جمال الحرف وتناسق الكلمة، وله أنواع وأساليب متعددة.\nتأمل فني: لاحظي امتداد الحروف وانحناءاتها وتوازنها.\nأبدع بلمستك: صممي لوحة فنية لحرف من اسمك باستخدام خطوط وزخارف.'},
+   {title:'⛵ حكايات البحر',body:'حكاية الفن: ارتبطت سواحل المملكة بالبحر والصيد والتجارة وصناعة السفن، وظهرت هذه الحياة في الحكايات والرسوم والحرف.\nتأمل فني: اكتشفي أشكال السفن والأمواج والأصداف.\nأبدع بلمستك: اصنعي لوحة بحرية بخطوط متموجة وألوان مستوحاة من البحر.'}
+  ]},
+  {id:'featured-digital-museum',name:'المتحف الفني الرقمي',icon:'🖼️',desc:'مساحة نعرض فيها الإبداعات الفنية ونحتفي بالأفكار الجميلة والمهارات التي يكتسبها طلابنا وطالباتنا.',cards:[
+   {title:'🌟 معرض إبداعاتنا',body:'هنا نحتفي بالأعمال الفنية المميزة التي ينجزها الطلاب والطالبات.\nللمعلمة: أضيفي صور الأعمال بعد التأكد من مناسبة النشر والحصول على الموافقات اللازمة، واكتبي عنوانًا ووصفًا قصيرًا لكل عمل.'},
+   {title:'🇸🇦 معرض وطني بريشتي',body:'أعمال فنية تعبّر عن حب الوطن، ومعالم المملكة، ورموزها، وتراث مناطقها.\nفكرة المشاركة: لوحة أو مجسم أو تصميم زخرفي يحكي حكاية وطن.'},
+   {title:'🧵 معرض الخامات والتقنيات',body:'مجموعة من الأعمال التي استخدمت النسيج والطباعة والكولاج والتشكيل والخامات المتنوعة.\nتأمل العمل: ما الخامة المستخدمة؟ وما التقنية الفنية التي تميز العمل؟'},
+   {title:'🏆 نجوم الإبداع',body:'ركن للاحتفاء بالمشاركات المتميزة والجهد والمحاولة والتطور الفني.\nتذكّر: لكل عمل بصمته الخاصة، والإبداع لا يقتصر على شكل واحد.'}
+  ]},
+  {id:'featured-sustainable-art',name:'فنون مستدامة',icon:'♻️',desc:'نحوّل الخامات التي يمكن إعادة استخدامها إلى أعمال فنية جديدة، ونتعلم كيف نحافظ على بيئتنا بالإبداع.',cards:[
+   {title:'📦 مدينة من الكرتون',body:'الأدوات: علب كرتونية نظيفة، ورق ملون، غراء، وأقلام.\nالخطوات: اجمعي علبًا بأحجام مختلفة، رتبيها لتشكيل بيوت ومبانٍ، ثم زينيها بالأبواب والنوافذ.\nرسالة الاستدامة: نعيد استخدام الكرتون بدل التخلص منه.'},
+   {title:'🌸 زهور من العبوات',body:'الأدوات: عبوات بلاستيكية نظيفة وخفيفة، ألوان مناسبة، وغراء.\nالخطوات: بمساعدة شخص بالغ، تُقص أجزاء العبوة لتشكيل بتلات، ثم تُلوّن وتُرتب في عمل فني.\nتنبيه: قص البلاستيك للكبار فقط، ويمكن استخدام بديل ورقي آمن.'},
+   {title:'🧢 لوحة بأغطية العبوات',body:'الأدوات: أغطية نظيفة، قاعدة كرتونية، وغراء مناسب.\nالخطوات: رتبي الأغطية حسب اللون لتكوين زهرة أو سمكة أو شكل هندسي، ثم ثبتيها بمساعدة شخص بالغ.\nرسالة الاستدامة: يمكن للخامات الصغيرة أن تصبح لوحة جميلة.'},
+   {title:'📰 كولاج من الورق المستعمل',body:'الأدوات: أوراق وجرائد نظيفة مستخدمة من جهة واحدة، مقص آمن، وغراء.\nالخطوات: قصّي الورق إلى أشكال وألوان، ثم رتبيها لتكوين منظر أو لوحة تجريدية.\nرسالة الاستدامة: نستخدم الورق مرة أخرى بطريقة إبداعية.'},
+   {title:'🥚 مجسمات من أطباق البيض',body:'الأدوات: أطباق بيض كرتونية نظيفة، ألوان، ورق وغراء.\nالخطوات: استخدمي تجاويف الطبق لصناعة زهور أو أشكال صغيرة، ثم زينيها بالألوان.\nتنبيه: يستخدم الكرتون النظيف والجاف فقط، والقص بمساعدة شخص بالغ.'},
+   {title:'🫙 علبة تتحول إلى منظم',body:'الأدوات: علبة كرتونية أو عبوة آمنة نظيفة، ورق تغليف، ألوان وملصقات.\nالخطوات: غلّفي العلبة وزينيها، ثم استخدميها لترتيب الأقلام أو الأدوات الفنية.\nرسالة الاستدامة: نطيل عمر الأشياء بإعادة توظيفها.'}
+  ]}
+ ];
+ function ensureFeaturedArtSections(){
+  if(!Array.isArray(customSectionsCache))customSectionsCache=[];
+  let changed=false;
+  FEATURED_ART_SECTIONS.forEach(seed=>{
+   let existing=customSectionsCache.find(x=>x.id===seed.id);
+   if(!existing){customSectionsCache.push(JSON.parse(JSON.stringify(seed)));changed=true}
+   else{
+    if(!Array.isArray(existing.cards)||!existing.cards.length){existing.cards=JSON.parse(JSON.stringify(seed.cards));changed=true}
+    if(!existing.name){existing.name=seed.name;changed=true}
+    if(!existing.icon){existing.icon=seed.icon;changed=true}
+    if(!existing.desc){existing.desc=seed.desc;changed=true}
+   }
+  });
+  if(changed){try{localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSectionsCache))}catch(e){}}
+  renderCustomSections();renderAdminLists();
+  if(currentAdmin&&sbClient&&changed){
+   persistAllSections().catch(e=>updateDbStatus('تعذر حفظ الأقسام الفنية الجديدة: '+(e.message||e)));
+  }
+ }
+ const originalLoadSections=window.loadSectionsFromCloud;
+ if(typeof originalLoadSections==='function'){
+  window.loadSectionsFromCloud=async function(){await originalLoadSections();ensureFeaturedArtSections()}
+ }
+ document.addEventListener('DOMContentLoaded',()=>{setTimeout(ensureFeaturedArtSections,1200)});
+})();
+</script>
+
 </body></html>
