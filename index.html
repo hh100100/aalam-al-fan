@@ -1765,3 +1765,23 @@ async function saveTickerMessages(){if(!currentAdmin||!sbClient){alert('سجّل
 
 
 </body></html>
+<style id="announcement-cards-layout">
+/* تنسيق الإعلانات: بطاقات واضحة وإدارة سهلة للمعلمة */
+#announcementCardsPublic{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:18px}
+.announcement-public-card{background:#fff;border:2px solid #ead8f5;border-radius:22px;padding:20px;box-shadow:0 7px 18px #62358a12;min-width:0;display:flex;flex-direction:column;gap:8px}
+.announcement-public-card h3{color:#4c167b!important;font-weight:900!important;margin:4px 0 8px!important;font-size:20px!important}
+.announcement-public-card p{color:#171717!important;line-height:1.9;margin:0!important;font-size:16px}
+.announcement-public-card time{color:#887795;font-size:12px;margin-top:auto}
+.announcement-public-card.pinned{border:2px solid #c9a3e6;background:linear-gradient(145deg,#fff,#f7efff)}
+.announcement-pin{align-self:flex-start;background:#eee0fa;color:#4c167b;border-radius:12px;padding:7px 12px;font-weight:800}
+#announcementTeacherEditor{display:none;margin-top:22px;padding:18px;border:2px solid #d7bce8;border-radius:22px;background:#fffaff}
+#announcementTeacherEditor h3{color:#4c167b}
+#announcementTeacherEditor .admin-actions button{background:#6b35a0;color:#fff;border-radius:14px;padding:10px 16px}
+#announcementAdminList{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.announcement-admin-row{border:2px solid #ead8f5;border-radius:20px;background:#fff;padding:16px;display:flex;flex-direction:column;gap:8px}
+.announcement-admin-row h4{color:#4c167b;font-weight:900;font-size:18px;margin:0}
+.announcement-admin-row p{color:#171717;line-height:1.8;margin:0}
+.announcement-admin-row .admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
+.announcement-admin-row .admin-actions button{border-radius:12px}
+@media(max-width:560px){#announcementCardsPublic,#announcementAdminList{grid-template-columns:1fr!important}.announcement-public-card,.announcement-admin-row{padding:16px}}
+</style>
