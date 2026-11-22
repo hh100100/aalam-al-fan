@@ -968,10 +968,13 @@ function supabaseReady(){
 function updateDbStatus(msg){const el=document.getElementById('dbStatus');if(el)el.textContent=msg}
 function readCustomSections(){
  const normalizeName=v=>String(v||'').trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\sـ]+/g,' ').toLowerCase();
+ const knowledgeName=normalizeName('الإنتاج المعرفي');
  const seen=new Set();
  return customSectionsCache.filter(x=>{
-  if(normalizeName(x.name)!==normalizeName('الإنتاج المعرفي'))return true;
   const key=normalizeName(x.name);
+  // قسم الإنتاج المعرفي له صفحة تعليمية ثابتة؛ إخفاء النسخ المضافة كأقسام
+  // مخصصة يمنع تكرار الاسم أو فتح صفحة فارغة. لا تُحذف بياناتها من قاعدة البيانات.
+  if(key===knowledgeName)return false;
   if(seen.has(key))return false;
   seen.add(key);return true;
  });
