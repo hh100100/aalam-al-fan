@@ -1416,7 +1416,7 @@ function showSiteSection(id, updateHash=true){
  const home=document.getElementById('main-sections');
  const target=id==='home'?home:document.getElementById(id);
  if(!home||!target)return false;
- document.querySelectorAll('main>.section, #customSectionsHost>.added-section').forEach(sec=>{
+ document.querySelectorAll('main>.section, #knowledgeProduction, #customSectionsHost>.added-section').forEach(sec=>{
   const isHome=sec===home;
   const active=(id==='home')?isHome:(sec===target);
   sec.classList.toggle('active-section',active);
