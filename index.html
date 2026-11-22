@@ -892,7 +892,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <div id="adminAuthBox">
    <label for="adminEmail">البريد الإلكتروني</label><input id="adminEmail" type="email" autocomplete="username" placeholder="البريد الإلكتروني">
    <label for="adminPassword">كلمة المرور</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="كلمة المرور">
-   <div class="admin-actions"><button type="button" onclick="adminSignIn()">تسجيل الدخول</button><button class="secondary" type="button" onclick="closeAdmin()">إغلاق</button></div>
+   <div class="admin-actions"><button type="button" onclick="document.getElementById('dbStatus').textContent='تم الضغط على تسجيل الدخول...';adminSignIn()">تسجيل الدخول</button><button class="secondary" type="button" onclick="closeAdmin()">إغلاق</button></div>
    <div class="admin-actions"><button class="secondary" type="button" onclick="sendRecoveryCode()">استعادة كلمة المرور</button></div>
   </div>
   <div id="passwordRecoveryBox" style="display:none">
