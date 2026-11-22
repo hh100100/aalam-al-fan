@@ -732,8 +732,8 @@ async function loadPublishedPageEdits(){
  const {data,error}=await sbClient.from(INLINE_EDIT_TABLE).select('section_id,html_content');
  if(error){console.warn('تعذر تحميل تعديلات الصفحة المنشورة:',error.message);return}
  (data||[]).forEach(row=>{
-  // قسم الخطط له عرض وإدارة مستقلان؛ لا نستبدل واجهته بنسخة HTML قديمة محفوظة.
-  if(row.section_id==='plans'||row.section_id==='schedule')return;
+  // الإنتاج المعرفي صفحة تعليمية ثابتة؛ لا تستبدل محتواها بنسخة تحرير قديمة أو فارغة.
+  if(row.section_id==='knowledgeProduction'||row.section_id==='plans'||row.section_id==='schedule')return;
   const target=document.getElementById(row.section_id);
   if(!target||!target.matches('section.section'))return;
   let content=target.querySelector('.section-editable-content');
@@ -748,8 +748,8 @@ async function enableInlineEditor(){
  if(!loaded.error)savedRows=loaded.data||[];
  // حمّل المحتوى المحفوظ إن كانت قاعدة بيانات التحرير جاهزة.
  savedRows.forEach(row=>{
-  // منع استعادة نسخة قديمة من قسم الخطط فوق واجهة الخطط والملخص المدمجة.
-  if(row.section_id==='plans'||row.section_id==='schedule')return;
+  // الإنتاج المعرفي صفحة تعليمية ثابتة؛ لا تستبدل محتواها بنسخة تحرير قديمة أو فارغة.
+  if(row.section_id==='knowledgeProduction'||row.section_id==='plans'||row.section_id==='schedule')return;
   const target=document.getElementById(row.section_id);
   if(target&&target.matches('section.section')){
    let content=target.querySelector('.section-editable-content');
