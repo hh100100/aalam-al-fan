@@ -1099,13 +1099,15 @@ async function loadSectionsFromCloud(){
  }
  const normalizeEnrichmentName=v=>String(v||'').trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\sـ]+/g,' ').toLowerCase();
  const enrichmentRow=uniqueRows.find(r=>r.id===ENRICHMENT_ROW_ID)||rows.find(r=>normalizeEnrichmentName(r.name)===normalizeEnrichmentName('مكتبة الإثراءات الفنية'));
- if(enrichmentRow&&Array.isArray(enrichmentRow.cards)){
-  enrichmentVideos=enrichmentRow.cards.filter(x=>x&&typeof x.title==='string').map(x=>({title:x.title,url:typeof x.url==='string'?x.url:''}));
+ const cloudEnrichmentCards=enrichmentRow&&Array.isArray(enrichmentRow.cards)?enrichmentRow.cards.filter(x=>x&&typeof x.title==='string').map(x=>({title:x.title,url:typeof x.url==='string'?x.url:''})): [];
+ if(cloudEnrichmentCards.length){
+  enrichmentVideos=cloudEnrichmentCards;
   localStorage.setItem(ENRICHMENT_CACHE_KEY,JSON.stringify(enrichmentVideos));
  }else{
+  // لا تسمح القائمة الفارغة من قاعدة البيانات بمسح الإثراءات المحفوظة محليًا
   const cached=readEnrichmentCache();
   if(cached&&cached.length)enrichmentVideos=cached;
-  else if(!Array.isArray(enrichmentVideos)||!enrichmentVideos.length)enrichmentVideos=DEFAULT_ENRICHMENT_VIDEOS.map(x=>({...x}));
+  else enrichmentVideos=DEFAULT_ENRICHMENT_VIDEOS.map(x=>({...x}));
  }
  customSectionsCache=uniqueRows.filter(r=>r.id!==ENRICHMENT_ROW_ID).map(r=>({id:r.id,name:r.name,icon:r.icon,desc:r.description||'',cards:r.cards||[]}));
  localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSectionsCache));
