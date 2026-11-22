@@ -1191,26 +1191,26 @@ async function completeOtpRecovery(){
  alert('تم تغيير كلمة المرور بنجاح.');
 }
 async function adminSignIn(){
- if(!supabaseReady()){alert('أضيفي رابط المشروع ومفتاح Publishable في إعدادات الملف أولًا.');return}
- const email=document.getElementById('adminEmail').value.trim();
- const password=document.getElementById('adminPassword').value;
- if(!email||!password){alert('اكتبي البريد الإلكتروني وكلمة المرور.');return}
- const {data,error}=await sbClient.auth.signInWithPassword({email,password});
- if(error){alert('تعذر تسجيل الدخول: '+error.message);return}
- if(!data.user || !data.user.app_metadata || data.user.app_metadata.role!=='teacher'){
-  await sbClient.auth.signOut();
-  alert('تم تسجيل الدخول، لكن هذا الحساب غير مفعّل كحساب معلمة. يلزم تعيين role=teacher له في إعدادات Supabase.');
-  return;
- }
- currentAdmin=data.user;
- setAnnouncementTeacherEditor();
- document.getElementById('adminAuthBox').style.display='none';
- document.getElementById('adminTools').style.display='block';
- updateDbStatus('تم تسجيل الدخول. جارٍ تفعيل أدوات التحرير داخل الموقع...');
- await loadSectionsFromCloud();
- renderEnrichmentVideos();
- await enableInlineEditor();
- closeAdmin();
+ const status=document.getElementById('dbStatus');
+ const btn=document.querySelector('#adminAuthBox button[onclick="adminSignIn()"]');
+ try{
+  if(btn){btn.disabled=true;btn.textContent='جارٍ تسجيل الدخول...'}
+  if(status)status.textContent='جارٍ التحقق من بيانات الدخول...';
+  if(!supabaseReady()){if(status)status.textContent='خدمة تسجيل الدخول غير مهيأة.';alert('خدمة تسجيل الدخول غير مهيأة.');return}
+  const email=document.getElementById('adminEmail').value.trim();
+  const password=document.getElementById('adminPassword').value;
+  if(!email||!password){if(status)status.textContent='أدخلي البريد الإلكتروني وكلمة المرور.';alert('اكتبي البريد الإلكتروني وكلمة المرور.');return}
+  const {data,error}=await sbClient.auth.signInWithPassword({email,password});
+  if(error){if(status)status.textContent='تعذر تسجيل الدخول: '+error.message;alert('تعذر تسجيل الدخول: '+error.message);return}
+  if(!data.user || !data.user.app_metadata || data.user.app_metadata.role!=='teacher'){
+   await sbClient.auth.signOut();if(status)status.textContent='الحساب غير مفعّل كحساب معلمة.';alert('تم تسجيل الدخول، لكن الحساب غير مفعّل كحساب معلمة.');return;
+  }
+  currentAdmin=data.user;setAnnouncementTeacherEditor();
+  document.getElementById('adminAuthBox').style.display='none';document.getElementById('adminTools').style.display='block';
+  if(status)status.textContent='تم تسجيل الدخول. جارٍ تفعيل أدوات المعلمة...';
+  await loadSectionsFromCloud();renderEnrichmentVideos();await enableInlineEditor();closeAdmin();
+ }catch(e){if(status)status.textContent='حدث خطأ أثناء تسجيل الدخول: '+(e?.message||e);alert('حدث خطأ أثناء تسجيل الدخول: '+(e?.message||e))}
+ finally{if(btn){btn.disabled=false;btn.textContent='تسجيل الدخول'}}
 }
 async function adminSignOut(){
  if(sbClient)await sbClient.auth.signOut();
