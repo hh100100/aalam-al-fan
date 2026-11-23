@@ -575,11 +575,16 @@ body>*{position:relative;z-index:1}
 <div id="sustainHome" class="sustain-home">
 <p class="sustain-instruction">اختاري القسم الذي تحبين اكتشافه، وسيفتح محتواه وحده ✨</p>
 <div class="sustain-menu">
-<button class="sustain-menu-card sustain-c1" onclick="openSustainPanel('reuse')"><span>♻️</span><strong>الفن من بقايا الأشياء</strong><small>أعمال فنية من خامات مستهلكة</small></button>
-<button class="sustain-menu-card sustain-c2" onclick="openSustainPanel('ideas')"><span>🧵</span><strong>أفكار من خامات بسيطة</strong><small>أفكار سهلة وخطوات مصورة</small></button>
-<button class="sustain-menu-card sustain-c3" onclick="openSustainPanel('before')"><span>✨</span><strong>قبل وبعد</strong><small>شاهدي كيف تتغير الأشياء</small></button>
-<button class="sustain-menu-card sustain-c4" onclick="openSustainPanel('bank')"><span>🧺</span><strong>بنك الخامات</strong><small>اضغطي على الخامة لاكتشاف أفكارها</small></button>
-<button class="sustain-menu-card sustain-c5" onclick="openSustainPanel('journey')"><span>🚀</span><strong>رحلة الخامة</strong><small>اكتشفي التحول خطوة بخطوة</small></button>
+<button type="button" class="sustain-menu-card sustain-c1" onclick="flipSustainCard(this)" aria-label="اقلب بطاقة الفن من بقايا الأشياء">
+<span class="sustain-flip-inner"><span class="sustain-flip-front"><img src="https://s3.us-east-1.amazonaws.com/pem-org/general/VAA_RecycleCollages_3600_01.jpg" alt="أعمال فنية مصنوعة من الورق والكرتون والأغطية المعاد استخدامها"><strong>الفن من بقايا الأشياء</strong><small>اضغطي لاكتشاف الفكرة</small></span><span class="sustain-flip-back"><strong>حوّلي المستهلك إلى فن!</strong><small>استخدمي الكرتون لصنع مدينة صغيرة، والورق القديم لعمل لوحة كولاج، والعبوات النظيفة لصنع مزهرية. كل خامة يمكن أن تبدأ منها حكاية فنية جديدة.</small><b>جرّبي: مدينة من الكرتون 🏙️</b></span></span></button>
+<button type="button" class="sustain-menu-card sustain-c2" onclick="flipSustainCard(this)" aria-label="اقلب بطاقة أفكار من خامات بسيطة">
+<span class="sustain-flip-inner"><span class="sustain-flip-front"><img src="https://images.unsplash.com/photo-1674376360445-2996327553e7?auto=format&fit=crop&w=900&q=80" alt="أدوات وخامات فنية على سطح كرتوني"><strong>أفكار من خامات بسيطة</strong><small>اضغطي لاكتشاف الفكرة</small></span><span class="sustain-flip-back"><strong>أفكار سهلة نصنعها بأيدينا</strong><small>رول الكرتون يصبح فراشة أو حامل أقلام، والورق القديم يتحول إلى زهور، والعلبة الفارغة تصبح منظمًا للألوان.</small><b>ابدئي بخامة واحدة وفكرة جميلة!</b></span></span></button>
+<button type="button" class="sustain-menu-card sustain-c3" onclick="flipSustainCard(this)" aria-label="اقلب بطاقة قبل وبعد">
+<span class="sustain-flip-inner"><span class="sustain-flip-front"><img src="https://images.unsplash.com/photo-1691430596599-d8268793294b?auto=format&fit=crop&w=900&q=80" alt="خامات ملونة معاد استخدامها في عمل فني"><strong>قبل وبعد</strong><small>اضغطي لتشاهدي التحوّل</small></span><span class="sustain-flip-back"><strong>شاهدي الفرق!</strong><small>عبوة فارغة تصبح مزهرية، وكرتون قديم يصبح مجسمًا، وأوراق مستعملة تصبح لوحة جميلة. إعادة الاستخدام تمنح الأشياء عمرًا جديدًا.</small><b>فكّري: ماذا يمكن أن تصنعي من علبة؟</b></span></span></button>
+<button type="button" class="sustain-menu-card sustain-c4" onclick="flipSustainCard(this)" aria-label="اقلب بطاقة بنك الخامات">
+<span class="sustain-flip-inner"><span class="sustain-flip-front"><img src="https://images.unsplash.com/photo-1691430596599-d8268793294b?auto=format&fit=crop&w=900&q=80" alt="قصاصات أقمشة وخامات متنوعة بألوان زاهية"><strong>بنك الخامات</strong><small>اضغطي لاكتشاف الاستخدامات</small></span><span class="sustain-flip-back"><strong>خامات حولنا تنتظر الإبداع</strong><small>الورق للكولاج، والكرتون للمجسمات، والأغطية للفسيفساء، وبقايا القماش للوحات الملمسية، والأعواد للإطارات.</small><b>اختاري خامة آمنة ونظيفة.</b></span></span></button>
+<button type="button" class="sustain-menu-card sustain-c5" onclick="flipSustainCard(this)" aria-label="اقلب بطاقة رحلة الخامة">
+<span class="sustain-flip-inner"><span class="sustain-flip-front"><img src="https://images.unsplash.com/photo-1691430596599-d8268793294b?auto=format&fit=crop&w=900&q=80" alt="خامات متنوعة يمكن تحويلها إلى أعمال فنية"><strong>رحلة الخامة</strong><small>اضغطي لاكتشاف التحوّل</small></span><span class="sustain-flip-back"><strong>من خامة بسيطة إلى عمل فني</strong><small>١. اختاري خامة نظيفة. ٢. تخيّلي شكلًا جديدًا لها. ٣. رتّبيها وزيّنيها. ٤. شاركي عملك الفني مع الآخرين.</small><b>إبداعك يحافظ على الأرض 🌱</b></span></span></button>
 </div></div>
 <div id="sustainPanel-reuse" class="sustain-panel" hidden><button class="sustain-back" onclick="closeSustainPanel()">↩ عودة للأقسام</button><h3>♻️ الفن من بقايا الأشياء</h3><p class="sustain-lead">أشياء نظن أنها انتهت، لكنها قد تصبح بداية عمل فني جديد!</p><div class="sustain-art-grid">
 <article class="sustain-art-card"><div class="sustain-art-visual visual-paper">📦 🏙️</div><h4>مدينة من الكرتون</h4><p>استخدمي قطع الكرتون النظيفة لصنع بيوت ومبانٍ صغيرة، ثم زيّنيها بالألوان والنوافذ الورقية.</p></article>
@@ -658,8 +663,26 @@ body>*{position:relative;z-index:1}
 #featured-sustainable-art .sustain-discover{border:0;border-radius:14px;padding:13px 22px;background:#4b9560;color:white;font:inherit;font-weight:900;cursor:pointer}
 #featured-sustainable-art .sustain-footer{text-align:center;margin:22px 0 5px;color:#6b8d71;font-weight:800}
 @media(max-width:620px){#featured-sustainable-art .sustain-menu{grid-template-columns:1fr 1fr;gap:9px}#featured-sustainable-art .sustain-menu-card{min-height:135px;padding:12px 7px}#featured-sustainable-art .sustain-menu-card strong{font-size:14px}#featured-sustainable-art .sustain-menu-card small{font-size:10px}#featured-sustainable-art .sustain-art-grid{grid-template-columns:1fr 1fr}#featured-sustainable-art .sustain-idea-grid{grid-template-columns:1fr}#featured-sustainable-art .sustain-before-grid{grid-template-columns:1fr}#featured-sustainable-art .sustain-materials{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Sustainable section: tap-to-flip photo cards */
+#featured-sustainable-art .sustain-menu-card{padding:0;min-height:250px;perspective:1100px;overflow:visible;background:transparent;border:0;box-shadow:none}
+#featured-sustainable-art .sustain-flip-inner{position:relative;display:block;width:100%;height:100%;min-height:250px;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.2,.75,.25,1);border-radius:22px}
+#featured-sustainable-art .sustain-menu-card.is-flipped .sustain-flip-inner{transform:rotateY(180deg)}
+#featured-sustainable-art .sustain-flip-front,#featured-sustainable-art .sustain-flip-back{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;padding:12px;border-radius:22px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-sizing:border-box;border:1px solid #dcebdc;box-shadow:0 6px 18px #345c4018}
+#featured-sustainable-art .sustain-flip-front{background:#fff}
+#featured-sustainable-art .sustain-flip-front img{width:100%;height:145px;object-fit:cover;border-radius:15px;display:block}
+#featured-sustainable-art .sustain-flip-front strong{font-size:16px;color:#3e6f4a}
+#featured-sustainable-art .sustain-flip-front small{font-size:12px;color:#78907c}
+#featured-sustainable-art .sustain-flip-back{transform:rotateY(180deg);justify-content:center;text-align:center;background:linear-gradient(145deg,#f4fbf0,#fffdf1);color:#426b4a;padding:18px}
+#featured-sustainable-art .sustain-flip-back strong{font-size:18px;color:#34734e;line-height:1.5}
+#featured-sustainable-art .sustain-flip-back small{font-size:14px;line-height:1.95;color:#526f59}
+#featured-sustainable-art .sustain-flip-back b{font-size:13px;color:#8a713d;background:#fff;border-radius:12px;padding:8px 10px;margin-top:4px}
+#featured-sustainable-art .sustain-menu-card:focus-visible{outline:3px solid #78a97a;outline-offset:4px}
+@media(max-width:620px){#featured-sustainable-art .sustain-menu{grid-template-columns:1fr 1fr;gap:10px}#featured-sustainable-art .sustain-menu-card,#featured-sustainable-art .sustain-flip-inner{min-height:235px}#featured-sustainable-art .sustain-flip-front img{height:125px}#featured-sustainable-art .sustain-flip-front strong{font-size:14px}#featured-sustainable-art .sustain-flip-back{padding:12px}#featured-sustainable-art .sustain-flip-back strong{font-size:15px}#featured-sustainable-art .sustain-flip-back small{font-size:12px;line-height:1.75}#featured-sustainable-art .sustain-flip-back b{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#featured-sustainable-art .sustain-flip-inner{transition:none}}
 </style>
 <script>
+function flipSustainCard(card){if(!card)return;const was=card.classList.contains("is-flipped");document.querySelectorAll("#featured-sustainable-art .sustain-menu-card.is-flipped").forEach(c=>c.classList.remove("is-flipped"));if(!was)card.classList.add("is-flipped");}
 function openSustainPanel(key){
  document.getElementById('sustainHome').hidden=true;
  document.querySelectorAll('#featured-sustainable-art .sustain-panel').forEach(p=>p.hidden=true);
