@@ -1812,6 +1812,26 @@ async function saveTickerMessages(){if(!currentAdmin||!sbClient){alert('سجّل
 <script>
 function openKnowledgeProduction(){const sec=document.getElementById('knowledgeProduction');if(!sec)return;showSiteSection('knowledgeProduction');sec.style.display='block';sec.classList.add('active-section');const home=document.getElementById('kphome');if(home)home.style.display='block';document.querySelectorAll('#kppages .kppage').forEach(p=>p.style.display='none');}
 </script>
+
+<!-- Restore stable student points tile -->
+<style>
+#studentPointsHomeTile{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;min-height:148px!important}
+#studentPointsHomeTile>span{display:block!important;visibility:visible!important;opacity:1!important;font-size:clamp(48px,5vw,64px)!important;line-height:1.15!important;margin:0 auto 8px!important}
+#studentPointsHomeTile>strong{display:block!important;visibility:visible!important;opacity:1!important}
+</style>
+<script>
+(function(){
+ function restoreStudentPointsTile(){
+  const home=document.getElementById('main-sections');if(!home)return;
+  const grid=home.querySelector('.grid');if(!grid)return;
+  let tile=document.getElementById('studentPointsHomeTile');
+  if(!tile){tile=document.createElement('a');tile.className='tile';tile.id='studentPointsHomeTile';tile.href='#student-points';tile.innerHTML='<span>⭐</span><strong>نقاطي</strong>';const kp=document.getElementById('knowledgeProductionHomeTile');if(kp&&kp.parentNode===grid)grid.insertBefore(tile,kp);else grid.appendChild(tile);}
+  tile.onclick=function(ev){ev.preventDefault();if(typeof showSiteSection==='function')showSiteSection('student-points');};
+  tile.style.display='flex';tile.style.visibility='visible';tile.style.opacity='1';
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restoreStudentPointsTile);else restoreStudentPointsTile();
+})();
+</script>
 </body></html>
 <style id="announcement-cards-layout">
 /* تنسيق الإعلانات: بطاقات واضحة وإدارة سهلة للمعلمة */
