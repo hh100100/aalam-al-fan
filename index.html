@@ -1600,16 +1600,51 @@ function chooseSectionMedia(section, accept){
  input.onchange=async()=>{
   const file=input.files&&input.files[0];if(!file)return;
   try{
+   const bucket=sbClient.storage.from('aalam-site-media');
+   const content=section.querySelector('.section-editable-content');
+   if(!content)throw new Error('تعذر العثور على مساحة المحتوى داخل القسم.');
+   if(file.type==='application/pdf'||/\.pdf$/i.test(file.name)){
+    if(file.size>5*1024*1024)throw new Error('الحد الأعلى لملف PDF هو 5 ميجابايت. اختاري ملفاً أصغر.');
+    const coverInput=document.createElement('input');coverInput.type='file';coverInput.accept='image/*';coverInput.style.display='none';
+    document.body.appendChild(coverInput);
+    const cover=await new Promise(resolve=>{coverInput.onchange=()=>resolve(coverInput.files&&coverInput.files[0]||null);coverInput.click()});
+    coverInput.remove();
+    if(!cover)return;
+    const preparedCover=await compressSiteImage(cover);
+    if(preparedCover.size>5*1024*1024)throw new Error('حجم صورة الغلاف بعد التجهيز أكبر من 5 ميجابايت.');
+    const title=(file.name.replace(/\.pdf$/i,'')||'ملف PDF');
+    const stamp=Date.now(),safeName=v=>v.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const pdfPath='site/'+stamp+'-'+safeName(file);
+    const coverPath='site/covers/'+stamp+'-'+safeName(preparedCover);
+    updateDbStatus('جارٍ رفع ملف PDF وصورة الغلاف...');
+    const pdfUp=await bucket.upload(pdfPath,file,{contentType:'application/pdf',upsert:false});
+    if(pdfUp.error)throw pdfUp.error;
+    const coverUp=await bucket.upload(coverPath,preparedCover,{contentType:preparedCover.type||'image/jpeg',upsert:false});
+    if(coverUp.error){await bucket.remove([pdfPath]);throw coverUp.error}
+    const pdfUrl=bucket.getPublicUrl(pdfPath).data.publicUrl;
+    const coverUrl=bucket.getPublicUrl(coverPath).data.publicUrl;
+    const card=document.createElement('article');card.className='pdf-resource-card';card.style.width='min(100%,300px)';
+    const coverLink=document.createElement('a');coverLink.className='pdf-cover-link';coverLink.href=pdfUrl;coverLink.target='_blank';coverLink.rel='noopener noreferrer';coverLink.setAttribute('aria-label','فتح ملف '+title);
+    const img=document.createElement('img');img.className='pdf-cover-image';img.src=coverUrl;img.alt='غلاف '+title;img.loading='lazy';coverLink.appendChild(img);card.appendChild(coverLink);
+    const actions=document.createElement('div');actions.className='pdf-resource-actions';
+    const open=document.createElement('a');open.className='pdf-open-action';open.href=pdfUrl;open.target='_blank';open.rel='noopener noreferrer';open.textContent='فتح الملف';
+    const download=document.createElement('a');download.className='pdf-download-action';download.href=pdfUrl;download.target='_blank';download.rel='noopener noreferrer';download.download=title+'.pdf';download.textContent='تحميل الملف';
+    actions.append(open,download);card.appendChild(actions);
+    card.dataset.siteMediaPath=pdfPath;card.dataset.siteCoverPath=coverPath;card.dataset.sitePdfTitle=title;
+    content.appendChild(card);addInlineElementControls(section);
+    updateDbStatus('تم رفع ملف PDF وصورة الغلاف. اضغطي «حفظ ونشر» لحفظهما في قسم المناسبات.');
+    alert('تم رفع الملف وصورة الغلاف. اضغطي «حفظ ونشر» لإظهارهما للطلاب والطالبات.');
+    return;
+   }
    let uploadFile=file;
    if(file.type.startsWith('image/')) uploadFile=await compressSiteImage(file);
-   if(uploadFile.size>5*1024*1024){alert('حجم الملف بعد التجهيز أكبر من 5 ميجابايت. اختاري ملفاً أصغر.');return}
+   if(uploadFile.size>5*1024*1024)throw new Error('حجم الملف بعد التجهيز أكبر من 5 ميجابايت. اختاري ملفاً أصغر.');
    const ext=(uploadFile.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
    const path='site/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
    updateDbStatus('جارٍ رفع الملف...');
-   const {error}=await sbClient.storage.from('aalam-site-media').upload(path,uploadFile,{contentType:uploadFile.type,upsert:false});
+   const {error}=await bucket.upload(path,uploadFile,{contentType:uploadFile.type,upsert:false});
    if(error)throw error;
-   const {data}=sbClient.storage.from('aalam-site-media').getPublicUrl(path);
-   const content=section.querySelector('.section-editable-content');
+   const {data}=bucket.getPublicUrl(path);
    let node;
    if(uploadFile.type.startsWith('image/')){node=document.createElement('figure');const img=document.createElement('img');img.src=data.publicUrl;img.alt=uploadFile.name;img.loading='lazy';img.style.cssText='max-width:100%;height:auto;border-radius:14px';node.appendChild(img)}
    else if(uploadFile.type.startsWith('video/')){node=document.createElement('figure');const video=document.createElement('video');video.src=data.publicUrl;video.controls=true;video.preload='metadata';video.style.cssText='max-width:100%;width:100%;border-radius:14px';node.appendChild(video)}
