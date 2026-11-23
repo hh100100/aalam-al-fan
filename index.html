@@ -1365,7 +1365,8 @@ function renderCustomSections(){
  const grid=main&&main.querySelector('.section-editable-content .grid, .grid');
  if(grid){
   grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(el=>el.remove());
-  items.forEach(x=>{
+  const normalizeHomeTileName=v=>String(v||'').trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\sـ]+/g,' ').toLowerCase();
+  items.filter(x=>!['الانتاج المعرفي','نقاطي'].includes(normalizeHomeTileName(x.name))).forEach(x=>{
    const tile=document.createElement('a');
    tile.className='tile';tile.href='#'+x.id;tile.dataset.customSectionTile='1';
    const ico=document.createElement('span');ico.textContent=x.icon||'🎨';
@@ -1807,23 +1808,7 @@ async function saveTickerMessages(){if(!currentAdmin||!sbClient){alert('سجّل
 
 
 
-<script>
-(function(){
- function restoreStudentPointsTile(){
-  const section=document.getElementById('main-sections');
-  const grid=section&&section.querySelector('.grid');
-  if(!grid)return;
-  let tile=document.getElementById('studentPointsHomeTile');
-  if(!tile){tile=document.createElement('a');tile.id='studentPointsHomeTile';tile.className='tile';tile.href='#student-points';tile.innerHTML='<span>⭐</span><strong>نقاطي</strong>';grid.appendChild(tile);}
-  tile.className='tile';tile.style.setProperty('display','flex','important');tile.style.setProperty('visibility','visible','important');tile.style.setProperty('opacity','1','important');tile.style.setProperty('min-height','148px','important');tile.style.setProperty('flex-direction','column','important');tile.style.setProperty('align-items','center','important');tile.style.setProperty('justify-content','center','important');
-  tile.onclick=function(ev){ev.preventDefault();if(typeof showSiteSection==='function')showSiteSection('student-points');};
- }
- document.addEventListener('DOMContentLoaded',restoreStudentPointsTile);
- window.addEventListener('load',restoreStudentPointsTile);
- setTimeout(restoreStudentPointsTile,500);
- setTimeout(restoreStudentPointsTile,1800);
-})();
-</script>
+
 <script>
 function openKnowledgeProduction(){const sec=document.getElementById('knowledgeProduction');if(!sec)return;showSiteSection('knowledgeProduction');sec.style.display='block';sec.classList.add('active-section');const home=document.getElementById('kphome');if(home)home.style.display='block';document.querySelectorAll('#kppages .kppage').forEach(p=>p.style.display='none');}
 </script>
