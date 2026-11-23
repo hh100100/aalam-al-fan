@@ -471,7 +471,7 @@ body>*{position:relative;z-index:1}
 <h3 style="margin-top:22px">الأعمال التي اعتمدتها المعلمة</h3><div id="publishedArtworks" class="artwork-preview-grid"></div>
 <p class="muted">جميع الأعمال تمر بمراجعة المعلمة قبل ظهورها في المعرض العام.</p></section>
 <section class="section" id="quiz"><div class="art-quiz-shell"><div class="art-quiz-heading"><span class="art-quiz-trophy">🏆</span><div><h2>🎯 اختبر إبداعك</h2><p>هيا نلعب ونتحدى معلوماتنا الفنية!</p></div><span class="art-quiz-sparkle">✨</span></div><div class="art-quiz-progress"><div class="art-quiz-progress-track"><span id="artQuizProgress"></span></div><strong id="artQuizStep">السؤال ١ من ٤</strong></div><div id="artQuizStage" aria-live="polite"></div><div id="artQuizResult" class="art-quiz-result" aria-live="polite">اختاري الإجابة التي ترينها صحيحة 💜</div><div id="artQuizFinal" class="art-quiz-final" hidden></div><button type="button" id="artQuizRestart" class="art-quiz-restart" onclick="restartArtQuiz()" hidden>🔄 أعيدي اللعب</button></div></section>
-<section class="section" id="ask"><h2>💌 اسأل معلمتي</h2><p>اكتب سؤالك الدراسي دون مشاركة معلومات شخصية حساسة.</p><div class="ask-teacher-box"><label for="askTeacherQuestion">السؤال</label><textarea id="askTeacherQuestion" rows="5" placeholder="اكتب سؤالك هنا..."></textarea><button type="button" id="askTeacherSend" class="ask-teacher-send" onclick="sendTeacherQuestion()">إرسال السؤال ✉️</button><div id="askTeacherStatus" role="status" aria-live="polite"></div></div></section>
+<section class="section" id="ask"><h2>💌 اسأل معلمتي</h2><p>اكتبي اسمك وفصلك وسؤالك، وستصل رسالتك إلى المعلمة.</p><div class="ask-teacher-box"><label for="askTeacherName">اسم الطالبة</label><input id="askTeacherName" type="text" maxlength="100" placeholder="اكتبي اسمك" required><label for="askTeacherClass">الفصل</label><input id="askTeacherClass" type="text" maxlength="50" placeholder="مثال: ثاني أ" required><label for="askTeacherQuestion">السؤال</label><textarea id="askTeacherQuestion" rows="5" maxlength="3000" placeholder="اكتبي سؤالك هنا..." required></textarea><button type="button" id="askTeacherSend" class="ask-teacher-send" onclick="sendTeacherQuestion()">إرسال السؤال ✉️</button><div id="askTeacherStatus" role="status" aria-live="polite"></div></div></section>
 <section class="section" id="challenge">
 <h2>🏆 تحدي الأسبوع</h2>
 <div class="weekly-challenge-scene">
@@ -1539,7 +1539,29 @@ function renderCustomSections(){
  }
  if(typeof addSectionBackButtons==='function')addSectionBackButtons();
 }
-async function sendTeacherQuestion(){const input=document.getElementById('askTeacherQuestion'),btn=document.getElementById('askTeacherSend'),status=document.getElementById('askTeacherStatus');if(!input||!btn||!status)return;const question=input.value.trim();if(!question){status.textContent='اكتبي سؤالك أولًا.';return;}if(!sbClient){status.textContent='تعذر الاتصال بالخدمة الآن. حاولي لاحقًا.';return;}btn.disabled=true;btn.textContent='جارٍ الإرسال...';status.textContent='';try{const {error}=await sbClient.from('private_questions').insert({question});if(error)throw error;input.value='';status.textContent='تم إرسال سؤالك إلى المعلمة بنجاح 🌷';}catch(e){console.error('sendTeacherQuestion error',e);status.textContent=(e&&e.code==='42P01')?'خدمة الرسائل غير مهيأة بعد. أبلغي المعلمة بتفعيل قاعدة البيانات.':(e&&e.code==='42501')?'تعذر الإرسال بسبب صلاحيات قاعدة البيانات. أبلغي المعلمة بتحديث الإعدادات.':'تعذر الإرسال الآن. تحققي من اتصال الإنترنت ثم حاولي مجددًا.';}finally{btn.disabled=false;btn.textContent='إرسال السؤال ✉️';}}
+async function sendTeacherQuestion(){
+ const nameInput=document.getElementById('askTeacherName');
+ const classInput=document.getElementById('askTeacherClass');
+ const questionInput=document.getElementById('askTeacherQuestion');
+ const btn=document.getElementById('askTeacherSend');
+ const status=document.getElementById('askTeacherStatus');
+ if(!nameInput||!classInput||!questionInput||!btn||!status)return;
+ const sender_name=nameInput.value.trim();
+ const class_name=classInput.value.trim();
+ const message=questionInput.value.trim();
+ if(!sender_name||!class_name||!message){status.textContent='فضلاً اكتبي الاسم والفصل والسؤال قبل الإرسال.';return;}
+ if(!sbClient){status.textContent='تعذر الاتصال بالخدمة الآن. حاولي لاحقًا.';return;}
+ btn.disabled=true;btn.textContent='جارٍ الإرسال...';status.textContent='';
+ try{
+  const {error}=await sbClient.from('private_questions').insert({sender_name,class_name,message});
+  if(error)throw error;
+  nameInput.value='';classInput.value='';questionInput.value='';
+  status.textContent='تم إرسال سؤالك إلى المعلمة بنجاح 🌷';
+ }catch(e){
+  console.error('sendTeacherQuestion error',e);
+  status.textContent=(e&&e.code==='42P01')?'جدول استقبال الأسئلة غير متاح حاليًا.':(e&&e.code==='42501')?'تعذر الإرسال بسبب صلاحيات قاعدة البيانات.':'تعذر الإرسال الآن: '+(e&&e.message?e.message:'تحققي من الاتصال وحاولي مجددًا.');
+ }finally{btn.disabled=false;btn.textContent='إرسال السؤال ✉️';}
+}
 </script>
 <style>.ask-teacher-box{max-width:760px;margin:18px auto;padding:18px;border:1px solid #e6d8f2;border-radius:20px;background:#fffafe;display:grid;gap:12px}.ask-teacher-box label{font-weight:800;color:#75419a}.ask-teacher-box textarea{width:100%;box-sizing:border-box;border:1px solid #dcc9ec;border-radius:14px;padding:14px;font:inherit;resize:vertical;min-height:130px}.ask-teacher-send{border:0;border-radius:14px;background:#75419a;color:#fff;padding:13px 20px;font:inherit;font-weight:800;cursor:pointer}.ask-teacher-send:disabled{opacity:.65}#askTeacherStatus{min-height:1.5em;color:#547b70;font-weight:700;text-align:center}</style>
 <script>
