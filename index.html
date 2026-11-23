@@ -1423,12 +1423,12 @@ function renderCustomSections(){
    const label=document.createElement('strong');label.textContent=x.name;
    tile.append(ico,label);grid.appendChild(tile);
   });
+  // احتفظ بأيقونة الإنتاج المعرفي الأساسية 📚 واحذف أي نسخ قديمة أُعيدت من محتوى محفوظ.
+  const productionTiles=[...grid.querySelectorAll('a.tile')].filter(tile=>normalizeHomeTileName(tile.textContent).includes('الانتاج المعرفي'));
+  const preferred=grid.querySelector('#knowledgeProductionHomeTile');
+  productionTiles.forEach(tile=>{if(tile!==preferred)tile.remove();});
+  if(preferred){const icon=preferred.querySelector('span');if(icon)icon.textContent='📚';preferred.href='#knowledgeProductionFresh';preferred.onclick=function(e){e.preventDefault();openKPFresh();};}
  }
- // احتفظ بأيقونة الإنتاج المعرفي الأساسية 📚 واحذف أي نسخ قديمة أُعيدت من محتوى محفوظ.
- const productionTiles=[...grid.querySelectorAll('a.tile')].filter(tile=>normalizeHomeTileName(tile.textContent).includes('الانتاج المعرفي'));
- const preferred=grid.querySelector('#knowledgeProductionHomeTile');
- productionTiles.forEach(tile=>{if(tile!==preferred)tile.remove();});
- if(preferred){const icon=preferred.querySelector('span');if(icon)icon.textContent='📚';preferred.href='#knowledgeProductionFresh';preferred.onclick=function(e){e.preventDefault();openKPFresh();};}
  if(typeof addSectionBackButtons==='function')addSectionBackButtons();
 }
 async function sendTeacherQuestion(){const input=document.getElementById('askTeacherQuestion'),btn=document.getElementById('askTeacherSend'),status=document.getElementById('askTeacherStatus');if(!input||!btn||!status)return;const question=input.value.trim();if(!question){status.textContent='اكتبي سؤالك أولًا.';return;}if(!sbClient){status.textContent='تعذر الاتصال بالخدمة الآن. حاولي لاحقًا.';return;}btn.disabled=true;btn.textContent='جارٍ الإرسال...';status.textContent='';try{const {error}=await sbClient.from('private_questions').insert({question});if(error)throw error;input.value='';status.textContent='تم إرسال سؤالك إلى المعلمة بنجاح 🌷';}catch(e){console.error('sendTeacherQuestion error',e);status.textContent='لم يتم إرسال السؤال. حاولي مرة أخرى لاحقًا.';}finally{btn.disabled=false;btn.textContent='إرسال السؤال ✉️';}}
