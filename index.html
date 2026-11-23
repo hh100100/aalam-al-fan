@@ -322,7 +322,10 @@ body>*{position:relative;z-index:1}
 #announcementTeacherEditor .announcement-form-grid{display:grid!important}
 #announcementCardsPublic{display:grid!important}
 </style>
-</head>
+<style id="artLabAdventureStyles">
+.lab-heading{text-align:center;padding:22px 12px}.lab-emoji{font-size:48px}.lab-heading h2{color:#69418c}.lab-howto,.lab-student-picker{max-width:900px;margin:16px auto;padding:17px 20px;border-radius:20px;background:linear-gradient(135deg,#fff9e8,#f4edff);border:1px solid #e7d8f0;line-height:1.9}.lab-howto ol{padding-right:24px}.lab-student-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.lab-student-picker select{flex:1;min-width:180px;padding:11px;border:1px solid #d8c4e8;border-radius:12px;font:inherit}.lab-student-picker button,.lab-experiment-card button,.lab-certificate-actions button{border:0;border-radius:12px;padding:11px 16px;background:#75449a;color:white;font:inherit;font-weight:700}.lab-experiments{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px;margin:20px 0}.lab-experiment-card{background:white;border:1px solid #eadcf2;border-radius:22px;padding:18px;box-shadow:0 8px 20px #5b367010;line-height:1.85}.lab-experiment-card h3{color:#69418c}.lab-step{display:inline-block;background:#f0e5fa;color:#63358a;padding:5px 12px;border-radius:30px;font-weight:700}.lab-experiment-card label{display:block;margin:12px 0 5px;font-weight:700}.lab-experiment-card input[type=file]{display:block;width:100%;margin:8px 0 12px;font:inherit}.lab-experiment-card button{width:100%}.lab-status{margin:16px auto;padding:13px;border-radius:14px;background:#f4effa;color:#5e397b;font-weight:700;line-height:1.8}.lab-badges-host{margin:25px auto;max-width:900px}.lab-certificate{max-width:700px;margin:18px auto;padding:30px 24px;text-align:center;border:7px double #c49a43;border-radius:25px;background:radial-gradient(circle at top,#fff9df,#f6efff 60%,#eaf7ff);color:#55366f;box-shadow:0 10px 26px #65447a22;line-height:1.9}.lab-certificate-school{font-weight:800;font-size:20px}.lab-certificate-site{font-size:25px;font-weight:800;margin:10px}.lab-medal-art{width:150px;height:150px;margin:20px auto;border-radius:50%;background:linear-gradient(145deg,#fff0a9,#e2b64e);border:7px solid #c18c2d;box-shadow:0 7px 0 #956a27;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#68441b}.lab-medal-art span{font-size:50px}.lab-certificate-ribbon{display:inline-block;background:#74458f;color:white;padding:7px 18px;border-radius:30px;font-weight:800}.lab-certificate h2{color:#80502b;font-size:28px}.lab-certificate-name{font-size:23px;font-weight:800}.lab-certificate-experiment{font-size:20px;font-weight:700}.lab-certificate-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:20px}.teacher-edit-mode #labSubmissionsPanel{display:block}
+@media print{body.lab-print-mode>*{visibility:hidden!important}body.lab-print-mode .lab-certificate.lab-print-selected,body.lab-print-mode .lab-certificate.lab-print-selected *{visibility:visible!important}body.lab-print-mode .lab-certificate.lab-print-selected{position:absolute;left:0;top:0;width:100%;max-width:none;min-height:95vh;box-shadow:none}body.lab-print-mode .lab-certificate-actions{display:none!important}}
+</style></head>
 <body>
 <header class="site-header">
  <div class="brand-row">
@@ -732,31 +735,33 @@ async function loadPublishedArtworks(){
  if(!host.children.length)host.textContent='سيظهر هنا ما تعتمده المعلمة من أعمالكم الفنية.';
 }
 async function loadGallerySubmissions(){
- const host=document.getElementById('gallerySubmissionsPanel');if(!host)return;
- host.textContent='جارٍ تحميل المشاركات...';
- if(!sbClient||!currentAdmin){host.textContent='سجّلي الدخول بحساب المعلمة أولًا.';return}
+ const hosts=[document.getElementById('gallerySubmissionsPanel'),document.getElementById('labSubmissionsList')].filter(Boolean);
+ if(!hosts.length)return;
+ if(!sbClient||!currentAdmin){hosts.forEach(h=>h.textContent='سجّلي الدخول بحساب المعلمة أولًا.');return}
+ hosts.forEach(h=>h.textContent='جارٍ تحميل المشاركات...');
  const result=await sbClient.from('gallery_submissions').select('id,student_name,class_name,title,category,storage_path,status,created_at,teacher_note').order('created_at',{ascending:false});
- if(result.error){host.textContent='تعذر تحميل المشاركات. تحققي من تشغيل ملف إعداد قاعدة البيانات.';return}
- host.replaceChildren();
+ if(result.error){hosts.forEach(h=>h.textContent='تعذر تحميل المشاركات. تحققي من إعداد قاعدة البيانات.');return}
  const items=result.data||[];
- if(!items.length){host.textContent='لا توجد مشاركات حتى الآن.';return}
- for(const item of items){
-  const card=document.createElement('article');card.className='admin-list-item';card.style.display='block';
-  const head=document.createElement('strong');head.textContent=(item.student_name||'طالب/طالبة')+' — '+(item.class_name||'');card.appendChild(head);
-  const title=document.createElement('p');title.textContent=(item.title||'عمل فني')+' · '+(galleryNames[item.category]||'');card.appendChild(title);
-  const state=document.createElement('p');state.className='muted';state.textContent='الحالة: '+({pending:'بانتظار المراجعة',revision:'يحتاج إلى تعديل',private:'محفوظ بشكل خاص',published:'منشور في المعرض'}[item.status]||item.status);card.appendChild(state);
-  if(item.created_at){const date=document.createElement('small');date.textContent=new Date(item.created_at).toLocaleString('ar-SA');card.appendChild(date)}
-  if(item.storage_path){
-   const signed=await sbClient.storage.from('student-artworks-pending').createSignedUrl(item.storage_path,300);
-   if(!signed.error&&signed.data&&signed.data.signedUrl){const link=document.createElement('a');link.href=signed.data.signedUrl;link.target='_blank';link.rel='noopener';link.textContent='فتح صورة العمل';link.style.display='block';link.style.margin='8px 0';card.appendChild(link)}
+ for(const host of hosts){
+  const labOnly=host.id==='labSubmissionsList';
+  const visible=items.filter(x=>labOnly?String(x.category||'').startsWith('lab-'):!String(x.category||'').startsWith('lab-'));
+  host.replaceChildren();
+  if(!visible.length){host.textContent=labOnly?'لا توجد صور تجارب واردة حتى الآن.':'لا توجد مشاركات حتى الآن.';continue}
+  for(const item of visible){
+   const card=document.createElement('article');card.className='admin-list-item';card.style.display='block';
+   const head=document.createElement('strong');head.textContent=(item.student_name||'طالب/طالبة')+' — '+(item.class_name||'');card.appendChild(head);
+   const p=document.createElement('p');p.textContent=item.title||'عمل فني';card.appendChild(p);
+   const state=document.createElement('p');state.className='muted';state.textContent='الحالة: '+({pending:'بانتظار المراجعة',revision:'يحتاج إلى تعديل',private:'محفوظ بشكل خاص',published:'معتمد'}[item.status]||item.status);card.appendChild(state);
+   if(item.created_at){const d=document.createElement('small');d.textContent=new Date(item.created_at).toLocaleString('ar-SA');card.appendChild(d)}
+   if(item.storage_path){const signed=await sbClient.storage.from('student-artworks-pending').createSignedUrl(item.storage_path,300);if(!signed.error&&signed.data?.signedUrl){const a=document.createElement('a');a.href=signed.data.signedUrl;a.target='_blank';a.rel='noopener';a.textContent='فتح صورة العمل';a.style.display='block';a.style.margin='8px 0';card.appendChild(a)}}
+   const note=document.createElement('input');note.placeholder='ملاحظة للمعلمة (اختياري)';note.value=item.teacher_note||'';card.appendChild(note);
+   const actions=document.createElement('div');actions.className='admin-actions';
+   const approve=document.createElement('button');approve.type='button';approve.textContent=String(item.category||'').startsWith('lab-')?'اعتماد التجربة وإصدار الوسام':'اعتماد ونشر';approve.disabled=item.status==='published';approve.onclick=()=>publishArtwork(item,note.value);actions.appendChild(approve);
+   const revise=document.createElement('button');revise.type='button';revise.className='secondary';revise.textContent='يحتاج إلى تعديل';revise.onclick=()=>setArtworkReview(item.id,'revision',note.value);actions.appendChild(revise);
+   const keep=document.createElement('button');keep.type='button';keep.className='secondary';keep.textContent='احتفاظ خاص';keep.onclick=()=>setArtworkReview(item.id,'private',note.value);actions.appendChild(keep);
+   const remove=document.createElement('button');remove.type='button';remove.className='secondary';remove.textContent='حذف';remove.onclick=()=>deleteArtwork(item);actions.appendChild(remove);
+   card.appendChild(actions);host.appendChild(card);
   }
-  const note=document.createElement('input');note.placeholder='ملاحظة للمعلمة (اختياري)';note.value=item.teacher_note||'';card.appendChild(note);
-  const actions=document.createElement('div');actions.className='admin-actions';
-  const approve=document.createElement('button');approve.type='button';approve.textContent='اعتماد ونشر';approve.disabled=item.status==='published';approve.onclick=()=>publishArtwork(item,note.value);actions.appendChild(approve);
-  const revise=document.createElement('button');revise.type='button';revise.className='secondary';revise.textContent='يحتاج إلى تعديل';revise.onclick=()=>setArtworkReview(item.id,'revision',note.value);actions.appendChild(revise);
-  const keep=document.createElement('button');keep.type='button';keep.className='secondary';keep.textContent='احتفاظ خاص';keep.onclick=()=>setArtworkReview(item.id,'private',note.value);actions.appendChild(keep);
-  const remove=document.createElement('button');remove.type='button';remove.className='secondary';remove.textContent='حذف';remove.onclick=()=>deleteArtwork(item);actions.appendChild(remove);
-  card.appendChild(actions);host.appendChild(card);
  }
 }
 async function setArtworkReview(id,status,note){
@@ -785,6 +790,67 @@ async function deleteArtwork(item){
  const result=await sbClient.from('gallery_submissions').delete().eq('id',item.id);
  if(result.error){alert('تعذر حذف المشاركة من قاعدة البيانات.');return}
  loadGallerySubmissions();loadPublishedArtworks();
+}
+
+const LAB_EXPERIMENTS={
+ exp1:{category:'lab-exp1',name:'التجربة الأولى: مزج الألوان'},
+ exp2:{category:'lab-exp2',name:'التجربة الثانية: طباعة الطبيعة'},
+ exp3:{category:'lab-exp3',name:'التجربة الثالثة: الرسم بالملح'},
+ exp4:{category:'lab-exp4',name:'التجربة الرابعة: الطباعة بالإسفنج'}
+};
+function labSelectedStudent(){
+ const sel=document.getElementById('labStudentSelect'),o=sel&&sel.options[sel.selectedIndex];
+ if(!sel||!sel.value||!o)return null;
+ return {name:o.dataset.studentName||o.textContent.split(' — ')[0],className:o.dataset.className||o.textContent.split(' — ').slice(1).join(' — ')};
+}
+async function submitLabExperiment(key){
+ const exp=LAB_EXPERIMENTS[key],student=labSelectedStudent(),input=document.getElementById('labFile-'+key),file=input&&input.files&&input.files[0],status=document.getElementById('labSubmitStatus');
+ if(!student){status.textContent='اختاري اسمك وصفك أولًا.';return}
+ if(!file){status.textContent='اختاري صورة واضحة للتجربة قبل الإرسال.';return}
+ if(!file.type.startsWith('image/')||file.size>5*1024*1024){status.textContent='اختاري صورة لا يتجاوز حجمها 5 ميجابايت.';return}
+ if(!sbClient){status.textContent='الخدمة غير متصلة الآن. أعيدي تحميل الصفحة وحاولي مرة أخرى.';return}
+ const button=input.parentElement.querySelector('button');button.disabled=true;status.textContent='⏳ جارٍ إرسال صورتك إلى معلمتك...';
+ try{
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+  const path='pending/lab-'+key+'-'+crypto.randomUUID()+'.'+ext;
+  const up=await sbClient.storage.from('student-artworks-pending').upload(path,file,{upsert:false,contentType:file.type});
+  if(up.error)throw up.error;
+  const ins=await sbClient.from('gallery_submissions').insert([{student_name:student.name,class_name:student.className,title:exp.name,category:exp.category,storage_path:path,status:'pending'}]);
+  if(ins.error){await sbClient.storage.from('student-artworks-pending').remove([path]);throw ins.error}
+  input.value='';status.textContent='وصلت صورتك بنجاح! 🌟 ستراجع معلمتك التجربة، وبعد اعتمادها سيظهر وسام الإنجاز باسمك.';
+ }catch(e){console.error(e);status.textContent='تعذر إرسال الصورة: '+(e.message||'حاولي مرة أخرى.')}
+ finally{button.disabled=false}
+}
+async function showMyLabBadges(){
+ const student=labSelectedStudent(),host=document.getElementById('labBadgesHost');if(!host)return;
+ if(!student){host.innerHTML='<h3>🏅 أوسمة إنجازي</h3><p>اختاري اسمك وصفك أولًا.</p>';return}
+ host.innerHTML='<h3>🏅 أوسمة إنجازي</h3><p>جارٍ البحث عن الأوسمة المعتمدة...</p>';
+ const q=await sbClient.from('gallery_submissions').select('title,category,status').eq('student_name',student.name).eq('class_name',student.className).eq('status','published');
+ if(q.error){host.innerHTML='<h3>🏅 أوسمة إنجازي</h3><p>تعذر تحميل الأوسمة الآن.</p>';return}
+ const rows=(q.data||[]).filter(x=>String(x.category||'').startsWith('lab-'));
+ host.innerHTML='<h3>🏅 أوسمة إنجازي</h3>';
+ if(!rows.length){host.insertAdjacentHTML('beforeend','<p>لا يوجد وسام معتمد حتى الآن. أرسلي صورة تجربتك وانتظري مراجعة المعلمة. 🌟</p>');return}
+ rows.forEach((item,i)=>{
+  const card=document.createElement('article');card.className='lab-certificate';card.id='lab-certificate-'+i;
+  card.innerHTML='<div class="lab-certificate-school">الطفولة المبكرة بالابتدائية الحادية والتسعون</div><div class="lab-certificate-site">عالم الفن الرقمي</div><div class="lab-medal-art"><span>🏅</span><b>وسام الإنجاز</b></div><div class="lab-certificate-ribbon">خطوة أنجزتها ونجمة استحقتها</div><h2>مبارك لك وسام الإنجاز</h2><p class="lab-certificate-name"></p><p class="lab-certificate-experiment"></p><p>معلمتك الفخورة بك:</p><strong>هاجر الثقفي</strong><p class="lab-certificate-note">صوّري إنجازك وأرسلي الصورة لمعلمتك لتسعدي قلبها</p><small>اختر اسمك ثم صوّر/ي البطاقة</small>';
+  card.querySelector('.lab-certificate-name').textContent=student.name+' — '+student.className;
+  card.querySelector('.lab-certificate-experiment').textContent='أكملت '+item.title;
+  const actions=document.createElement('div');actions.className='lab-certificate-actions';
+  const print=document.createElement('button');print.textContent='طباعة الوسام';print.onclick=()=>printLabBadge(card.id);
+  const download=document.createElement('button');download.textContent='تحميل الوسام';download.onclick=()=>downloadLabBadge(student.name,item.title);
+  actions.append(print,download);card.appendChild(actions);host.appendChild(card);
+ });
+}
+function printLabBadge(id){
+ document.body.classList.add('lab-print-mode');
+ document.querySelectorAll('.lab-certificate').forEach(x=>x.classList.toggle('lab-print-selected',x.id===id));
+ window.print();
+ setTimeout(()=>{document.body.classList.remove('lab-print-mode');document.querySelectorAll('.lab-certificate').forEach(x=>x.classList.remove('lab-print-selected'))},700);
+}
+function downloadLabBadge(name,experiment){
+ const esc=x=>String(x||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="794" height="1123"><rect width="100%" height="100%" fill="#fff8e9"/><rect x="28" y="28" width="738" height="1067" rx="35" fill="none" stroke="#9b70b4" stroke-width="6"/><g font-family="Arial,sans-serif" text-anchor="middle" fill="#583875"><text x="397" y="140" font-size="27">الطفولة المبكرة بالابتدائية الحادية والتسعون</text><text x="397" y="200" font-size="36">عالم الفن الرقمي</text><circle cx="397" cy="390" r="130" fill="#f5d778" stroke="#b77c22" stroke-width="8"/><text x="397" y="420" font-size="110">🏅</text><text x="397" y="590" font-size="38">وسام الإنجاز</text><text x="397" y="670" font-size="28">خطوة أنجزتها ونجمة استحقتها</text><text x="397" y="750" font-size="36">مبارك لك وسام الإنجاز</text><text x="397" y="820" font-size="30">'+esc(name)+'</text><text x="397" y="880" font-size="26">أكملت '+esc(experiment)+'</text><text x="397" y="950" font-size="24">معلمتك الفخورة بك: هاجر الثقفي</text><text x="397" y="1010" font-size="21">صوّري إنجازك وأرسلي الصورة لمعلمتك لتسعدي قلبها</text></g></svg>';
+ const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='وسام-الإنجاز.svg';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
 }
 
 </script>
