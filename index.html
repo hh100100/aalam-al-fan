@@ -317,6 +317,11 @@ body>*{position:relative;z-index:1}
 #knowledgeProduction #kphome{display:block!important;visibility:visible!important;opacity:1!important}
 #knowledgeProductionHomeTile{visibility:visible!important;opacity:1!important}
 </style><!-- teacher-login-form-fix-2026-11-17 -->
+<style id="announcement-editor-visibility-fix">
+#announcementTeacherEditor[style*="display: block"]{display:block!important}
+#announcementTeacherEditor .announcement-form-grid{display:grid!important}
+#announcementCardsPublic{display:grid!important}
+</style>
 </head>
 <body>
 <header class="site-header">
@@ -793,7 +798,7 @@ async function loadPublishedPageEdits(){
  if(error){console.warn('تعذر تحميل تعديلات الصفحة المنشورة:',error.message);return}
  (data||[]).forEach(row=>{
   // الإنتاج المعرفي صفحة تعليمية ثابتة؛ لا تستبدل محتواها بنسخة تحرير قديمة أو فارغة.
-  if(row.section_id==='knowledgeProduction'||row.section_id==='plans'||row.section_id==='schedule')return;
+  if(['knowledgeProduction','knowledgeProductionFresh','announcementList','main-sections','plans','schedule'].includes(row.section_id))return;
   const target=document.getElementById(row.section_id);
   if(!target||!target.matches('section.section'))return;
   let content=target.querySelector('.section-editable-content');
@@ -809,7 +814,7 @@ async function enableInlineEditor(){
  // حمّل المحتوى المحفوظ إن كانت قاعدة بيانات التحرير جاهزة.
  savedRows.forEach(row=>{
   // الإنتاج المعرفي صفحة تعليمية ثابتة؛ لا تستبدل محتواها بنسخة تحرير قديمة أو فارغة.
-  if(row.section_id==='knowledgeProduction'||row.section_id==='plans'||row.section_id==='schedule')return;
+  if(['knowledgeProduction','knowledgeProductionFresh','announcementList','main-sections','plans','schedule'].includes(row.section_id))return;
   const target=document.getElementById(row.section_id);
   if(target&&target.matches('section.section')){
    let content=target.querySelector('.section-editable-content');
@@ -1419,6 +1424,11 @@ function renderCustomSections(){
    tile.append(ico,label);grid.appendChild(tile);
   });
  }
+ // احتفظ بأيقونة الإنتاج المعرفي الأساسية 📚 واحذف أي نسخ قديمة أُعيدت من محتوى محفوظ.
+ const productionTiles=[...grid.querySelectorAll('a.tile')].filter(tile=>normalizeHomeTileName(tile.textContent).includes('الانتاج المعرفي'));
+ const preferred=grid.querySelector('#knowledgeProductionHomeTile');
+ productionTiles.forEach(tile=>{if(tile!==preferred)tile.remove();});
+ if(preferred){const icon=preferred.querySelector('span');if(icon)icon.textContent='📚';preferred.href='#knowledgeProductionFresh';preferred.onclick=function(e){e.preventDefault();openKPFresh();};}
  if(typeof addSectionBackButtons==='function')addSectionBackButtons();
 }
 async function sendTeacherQuestion(){const input=document.getElementById('askTeacherQuestion'),btn=document.getElementById('askTeacherSend'),status=document.getElementById('askTeacherStatus');if(!input||!btn||!status)return;const question=input.value.trim();if(!question){status.textContent='اكتبي سؤالك أولًا.';return;}if(!sbClient){status.textContent='تعذر الاتصال بالخدمة الآن. حاولي لاحقًا.';return;}btn.disabled=true;btn.textContent='جارٍ الإرسال...';status.textContent='';try{const {error}=await sbClient.from('private_questions').insert({question});if(error)throw error;input.value='';status.textContent='تم إرسال سؤالك إلى المعلمة بنجاح 🌷';}catch(e){console.error('sendTeacherQuestion error',e);status.textContent='لم يتم إرسال السؤال. حاولي مرة أخرى لاحقًا.';}finally{btn.disabled=false;btn.textContent='إرسال السؤال ✉️';}}
@@ -1920,23 +1930,3 @@ function openKnowledgeProduction(){const sec=document.getElementById('knowledgeP
 @media(max-width:600px){.announcement-form-grid{grid-template-columns:1fr}#announcementCardsPublic,#announcementAdminList{grid-template-columns:1fr!important}#announcementTeacherEditor.announcement-editor-card{padding:15px}}
 </style>
 </body></html>
-<style id="announcement-cards-layout">
-/* تنسيق الإعلانات: بطاقات واضحة وإدارة سهلة للمعلمة */
-#announcementCardsPublic{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:18px}
-.announcement-public-card{background:#fff;border:2px solid #ead8f5;border-radius:22px;padding:20px;box-shadow:0 7px 18px #62358a12;min-width:0;display:flex;flex-direction:column;gap:8px}
-.announcement-public-card h3{color:#4c167b!important;font-weight:900!important;margin:4px 0 8px!important;font-size:20px!important}
-.announcement-public-card p{color:#171717!important;line-height:1.9;margin:0!important;font-size:16px}
-.announcement-public-card time{color:#887795;font-size:12px;margin-top:auto}
-.announcement-public-card.pinned{border:2px solid #c9a3e6;background:linear-gradient(145deg,#fff,#f7efff)}
-.announcement-pin{align-self:flex-start;background:#eee0fa;color:#4c167b;border-radius:12px;padding:7px 12px;font-weight:800}
-#announcementTeacherEditor{display:none;margin-top:22px;padding:18px;border:2px solid #d7bce8;border-radius:22px;background:#fffaff}
-#announcementTeacherEditor h3{color:#4c167b}
-#announcementTeacherEditor .admin-actions button{background:#6b35a0;color:#fff;border-radius:14px;padding:10px 16px}
-#announcementAdminList{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
-.announcement-admin-row{border:2px solid #ead8f5;border-radius:20px;background:#fff;padding:16px;display:flex;flex-direction:column;gap:8px}
-.announcement-admin-row h4{color:#4c167b;font-weight:900;font-size:18px;margin:0}
-.announcement-admin-row p{color:#171717;line-height:1.8;margin:0}
-.announcement-admin-row .admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
-.announcement-admin-row .admin-actions button{border-radius:12px}
-@media(max-width:560px){#announcementCardsPublic,#announcementAdminList{grid-template-columns:1fr!important}.announcement-public-card,.announcement-admin-row{padding:16px}}
-</style>
