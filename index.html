@@ -1646,7 +1646,7 @@ function addSectionLink(section){
 const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sec=id=>customSectionsCache.find(x=>x.id===id);
 async function save(){saveCustomSections(customSectionsCache);await persistAllSections();renderCustomSections();renderAdminLists();}
-function cardHtml(c){let m='';if(c.type==='image')m='<img style="max-width:100%;border-radius:12px" src="'+E(c.url)+'">';if(c.type==='video')m='<video controls style="width:100%" src="'+E(c.url)+'"></video>';if(c.type==='file'||c.type==='link')m='<p><a target="_blank" rel="noopener" href="'+E(c.url)+'">📎 فتح '+(c.type==='file'?'الملف':'الرابط')+'</a></p>';return '<article class="card"><h3>'+E(c.title)+'</h3><p>'+E(c.body||'')+'</p>'+m+'</article>'}
+function cardHtml(c){let m='';if(c.type==='image')m='<img style="max-width:100%;border-radius:12px" src="'+E(c.url)+'">';if(c.type==='video')m='<video controls style="width:100%" src="'+E(c.url)+'"></video>';if(c.type==='file'){const downloadUrl=E(c.url)+(String(c.url||'').includes('?')?'&':'?')+'download='+encodeURIComponent((c.title||'file')+'.pdf');m='<div class="pdf-resource-card"><a class="pdf-cover-link" href="'+E(c.url)+'" target="_blank" rel="noopener" aria-label="فتح ملف '+E(c.title)+'"><img class="pdf-cover-image" src="'+E(c.cover_url||'')+'" alt="غلاف '+E(c.title)+'"></a><div class="pdf-resource-actions"><a class="pdf-open-action" href="'+E(c.url)+'" target="_blank" rel="noopener">فتح الملف</a><a class="pdf-download-action" href="'+downloadUrl+'" target="_blank" rel="noopener">تحميل الملف</a></div></div>'}if(c.type==='link')m='<p><a target="_blank" rel="noopener" href="'+E(c.url)+'">🔗 فتح الرابط</a></p>';return '<article class="card"><h3>'+E(c.title)+'</h3><p>'+E(c.body||'')+'</p>'+m+'</article>'}
 window.addKnowledgeItem=async function(parentId){
  if(!currentAdmin)return alert('سجّلي الدخول بحساب المعلمة أولًا.');
  const s=sec('production-knowledge');if(!s)return;
@@ -1656,8 +1656,31 @@ window.addKnowledgeItem=async function(parentId){
  const c={id:'item-'+Date.now(),type,title:title.trim(),body:'',parent:parentId||null};
  if(type==='text'||type==='folder')c.body=prompt(type==='text'?'اكتبي النص':'وصف المجلد')||'';
  if(type==='link'){try{const u=new URL(prompt('الصقي الرابط:'));if(!['http:','https:'].includes(u.protocol))throw 0;c.url=u.href}catch(e){return alert('الرابط غير صحيح.')}}
- if(['image','video','file'].includes(type)){
-  const input=document.createElement('input');input.type='file';input.accept=type==='image'?'image/*':type==='video'?'video/mp4,video/webm':'.pdf';
+ if(type==='file'){
+  const pdfInput=document.createElement('input');pdfInput.type='file';pdfInput.accept='application/pdf,.pdf';
+  pdfInput.onchange=()=>{
+   const pdf=pdfInput.files&&pdfInput.files[0];if(!pdf)return;
+   if(pdf.size>5*1024*1024)return alert('الحد الأعلى لملف PDF هو 5 ميجابايت.');
+   const coverInput=document.createElement('input');coverInput.type='file';coverInput.accept='image/*';
+   coverInput.onchange=async()=>{
+    const cover=coverInput.files&&coverInput.files[0];if(!cover)return;
+    if(cover.size>5*1024*1024)return alert('الحد الأعلى لصورة الغلاف هو 5 ميجابايت.');
+    if(!sbClient)return alert('تعذر الاتصال بمخزن الملفات. سجّلي الدخول وحاولي مرة أخرى.');
+    const stamp=Date.now(),clean=v=>v.name.replace(/[^a-zA-Z0-9._-]/g,'_'),bucket=sbClient.storage.from('aalam-site-media');
+    const pdfPath='knowledge/'+stamp+'-'+clean(pdf),coverPath='knowledge/covers/'+stamp+'-'+clean(cover);
+    const pdfUp=await bucket.upload(pdfPath,pdf,{upsert:false,contentType:'application/pdf'});
+    if(pdfUp.error)return alert('تعذر رفع ملف PDF: '+pdfUp.error.message);
+    const coverUp=await bucket.upload(coverPath,cover,{upsert:false,contentType:cover.type||'image/jpeg'});
+    if(coverUp.error)return alert('تم رفع PDF لكن تعذر رفع صورة الغلاف: '+coverUp.error.message);
+    c.url=bucket.getPublicUrl(pdfPath).data.publicUrl;c.storage_path=pdfPath;c.cover_url=bucket.getPublicUrl(coverPath).data.publicUrl;c.cover_storage_path=coverPath;
+    s.cards.push(c);try{await save();alert('تمت إضافة الملف مع صورة الغلاف ونشرهما بنجاح.')}catch(e){alert('تعذر الحفظ: '+e.message)}
+   };
+   alert('اختاري الآن صورة الغلاف الطولية المصممة للملف.');coverInput.click();
+  };
+  pdfInput.click();return;
+ }
+ if(['image','video'].includes(type)){
+  const input=document.createElement('input');input.type='file';input.accept=type==='image'?'image/*':'video/mp4,video/webm';
   input.onchange=async()=>{const f=input.files[0];if(!f)return;if(f.size>5*1024*1024)return alert('الحد الأعلى 5 ميجابايت.');const path='knowledge/'+Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const up=await sbClient.storage.from('aalam-site-media').upload(path,f,{upsert:false,contentType:f.type});if(up.error)return alert('تعذر الرفع: '+up.error.message);c.url=sbClient.storage.from('aalam-site-media').getPublicUrl(path).data.publicUrl;c.storage_path=path;s.cards.push(c);try{await save();alert('تمت الإضافة والنشر.')}catch(e){alert('تعذر الحفظ: '+e.message)}};
   input.click();return;
  }
@@ -1938,5 +1961,15 @@ function openKnowledgeProduction(){const sec=document.getElementById('knowledgeP
 #announcementAdminList .admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
 #announcementAdminList .admin-actions button{border-radius:11px;padding:8px 12px}
 @media(max-width:600px){.announcement-form-grid{grid-template-columns:1fr}#announcementCardsPublic,#announcementAdminList{grid-template-columns:1fr!important}#announcementTeacherEditor.announcement-editor-card{padding:15px}}
+</style>
+<style id="pdf-cover-card-style">
+.pdf-resource-card{width:min(100%,300px);margin:16px auto 4px;display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.pdf-cover-link{display:block;width:100%;aspect-ratio:210/297;overflow:hidden;border-radius:14px;background:#f7f1fb;box-shadow:0 5px 18px rgba(66,42,84,.16);border:1px solid #e5d8ef}
+.pdf-cover-image{display:block;width:100%;height:100%;object-fit:cover}
+.pdf-resource-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pdf-resource-actions a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;border-radius:12px;text-decoration:none;font-weight:800;text-align:center;box-sizing:border-box}
+.pdf-open-action{background:#7952a0;color:#fff}
+.pdf-download-action{background:#eee4f5;color:#573875}
+@media(max-width:480px){.pdf-resource-card{width:min(100%,260px)}}
 </style>
 </body></html>
