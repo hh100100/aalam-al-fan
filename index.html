@@ -1458,6 +1458,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
 function openAzkar(type){const c=document.getElementById('azkarChoices'),m=document.getElementById('morningAzkar'),e=document.getElementById('eveningAzkar');if(c)c.style.display='none';if(m)m.style.display=type==='morning'?'block':'none';if(e)e.style.display=type==='evening'?'block':'none';}
 function closeAzkar(){const c=document.getElementById('azkarChoices'),m=document.getElementById('morningAzkar'),e=document.getElementById('eveningAzkar');if(c)c.style.display='grid';if(m)m.style.display='none';if(e)e.style.display='none';}
 function showSiteSection(id, updateHash=true){
+ if(id==='knowledgeProductionFresh'){openKPFresh();return true;}
  const home=document.getElementById('main-sections');
  const target=id==='home'?home:document.getElementById(id);
  if(!home||!target)return false;
@@ -1491,6 +1492,12 @@ document.addEventListener('click',function(ev){
  }
  const link=ev.target.closest('a[href^="#"]');
  if(!link)return;
+ if(link.id==='knowledgeProductionHomeTile'){
+  ev.preventDefault();
+  ev.stopImmediatePropagation();
+  openKPFresh();
+  return;
+ }
  const id=decodeURIComponent(link.getAttribute('href').slice(1));
  if(document.getElementById(id)){
   ev.preventDefault();
