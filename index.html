@@ -817,7 +817,7 @@ async function submitLabExperiment(key){
   if(up.error)throw up.error;
   const ins=await sbClient.from('gallery_submissions').insert([{student_name:student.name,class_name:student.className,title:exp.name,category:exp.category,storage_path:path,status:'lab_badge'}]);
   if(ins.error){await sbClient.storage.from('student-artworks-pending').remove([path]);throw ins.error}
-  input.value='';status.textContent='وصلت صورتك بنجاح! 🌟 ستراجع معلمتك التجربة، وبعد اعتمادها سيظهر وسام الإنجاز باسمك.';
+  input.value='';status.textContent='وصلت صورتك بنجاح! 🌟 تستحقين وسام الإنجاز فورًا! اختاري «عرض أوسمتي» لتشاهديه وتحميله أو طباعته. وستراجع معلمتك صورتك لاحقًا.';
  }catch(e){console.error(e);status.textContent='تعذر إرسال الصورة: '+(e.message||'حاولي مرة أخرى.')}
  finally{button.disabled=false}
 }
