@@ -866,7 +866,7 @@ async function loadPublishedPageEdits(){
  if(error){console.warn('تعذر تحميل تعديلات الصفحة المنشورة:',error.message);return}
  (data||[]).forEach(row=>{
   // الإنتاج المعرفي صفحة تعليمية ثابتة؛ لا تستبدل محتواها بنسخة تحرير قديمة أو فارغة.
-  if(['knowledgeProduction','knowledgeProductionFresh','announcementList','main-sections','plans','schedule'].includes(row.section_id))return;
+  if(['knowledgeProduction','knowledgeProductionFresh','announcementList','main-sections','plans','schedule','featured-art-lab'].includes(row.section_id))return;
   const target=document.getElementById(row.section_id);
   if(!target||!target.matches('section.section'))return;
   let content=target.querySelector('.section-editable-content');
@@ -882,7 +882,7 @@ async function enableInlineEditor(){
  // حمّل المحتوى المحفوظ إن كانت قاعدة بيانات التحرير جاهزة.
  savedRows.forEach(row=>{
   // الإنتاج المعرفي صفحة تعليمية ثابتة؛ لا تستبدل محتواها بنسخة تحرير قديمة أو فارغة.
-  if(['knowledgeProduction','knowledgeProductionFresh','announcementList','main-sections','plans','schedule'].includes(row.section_id))return;
+  if(['knowledgeProduction','knowledgeProductionFresh','announcementList','main-sections','plans','schedule','featured-art-lab'].includes(row.section_id))return;
   const target=document.getElementById(row.section_id);
   if(target&&target.matches('section.section')){
    let content=target.querySelector('.section-editable-content');
