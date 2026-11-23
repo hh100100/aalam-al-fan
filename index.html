@@ -354,7 +354,23 @@ body>*{position:relative;z-index:1}
  <button type="button" class="secondary" onclick="toggleTicker(this)" aria-label="إيقاف أو تشغيل الإعلانات">⏸ إيقاف</button>
 </div>
 <main>
-<section class="section" id="announcementList"><h2>📢 الإعلانات</h2><div id="announcementCardsPublic" class="announcement-cards-public"><p class="muted">جارٍ تحميل الإعلانات...</p></div><div id="announcementTeacherEditor" style="display:none;margin-top:22px;padding:18px;border:2px dashed #d7bce8;border-radius:20px;background:#fffaff"><h3>✏️ إدارة الإعلانات</h3><div class="admin-grid"><div><label for="announcementTitleInput">عنوان الإعلان</label><input id="announcementTitleInput" maxlength="120" placeholder="عنوان الإعلان"></div><div><label for="announcementPinnedInput">التثبيت</label><select id="announcementPinnedInput"><option value="false">غير مثبت</option><option value="true">تثبيت 📌</option></select></div></div><label for="announcementDescInput">وصف الإعلان</label><textarea id="announcementDescInput" rows="3" placeholder="اكتبي وصف الإعلان"></textarea><div class="admin-actions"><button type="button" onclick="addSiteAnnouncement()">＋ إضافة إعلان</button></div><div id="announcementAdminList" class="admin-list"></div></div></section>
+<section class="section" id="announcementList">
+<h2>📢 الإعلانات</h2>
+<p class="announcement-intro">تابعوا هنا جميع إعلانات عالم الفن الرقمي، والإعلان المثبّت يظهر دائمًا في الأعلى.</p>
+<div id="announcementCardsPublic" class="announcement-cards-public"><p class="muted">جارٍ تحميل الإعلانات...</p></div>
+<div id="announcementTeacherEditor" class="announcement-editor-card" style="display:none">
+ <div class="announcement-editor-heading"><span>✏️</span><div><h3>إضافة إعلان جديد</h3><p>اكتبي عنوان الإعلان ووصفه، ثم انشريه ليظهر للطلاب والطالبات.</p></div></div>
+ <div class="announcement-form-grid">
+  <div class="announcement-field"><label for="announcementTitleInput">عنوان الإعلان</label><input id="announcementTitleInput" maxlength="120" placeholder="اكتبي عنوانًا واضحًا للإعلان"></div>
+  <div class="announcement-field"><label for="announcementPinnedInput">تثبيت الإعلان</label><select id="announcementPinnedInput"><option value="false">نشر عادي</option><option value="true">تثبيت في أعلى الإعلانات 📌</option></select></div>
+ </div>
+ <div class="announcement-field"><label for="announcementDescInput">وصف الإعلان</label><textarea id="announcementDescInput" rows="4" placeholder="اكتبي تفاصيل الإعلان هنا..."></textarea></div>
+ <div class="admin-actions"><button type="button" onclick="addSiteAnnouncement()">📣 نشر الإعلان</button></div>
+ <h3 class="announcement-management-title">إدارة الإعلانات المنشورة</h3>
+ <p class="announcement-management-hint">يمكنك تثبيت إعلان أو إلغاء تثبيته أو تعديله أو حذفه.</p>
+ <div id="announcementAdminList" class="admin-list"></div>
+</div>
+</section>
 <section class="section" id="main-sections"><h2>اكتشف أقسام عالم الفن</h2><div class="grid">
 <a class="tile" href="#plans"><span>🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span>📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span>📖</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span>💡</span>إثراءات</a><a class="tile" href="#gallery"><span>🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span>🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span>💌</span>اسأل معلمتي</a><a class="tile" href="#kit"><span>🎒</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span>🏆</span>تحدي الأسبوع</a><a class="tile" id="studentPointsHomeTile" href="#student-points" onclick="showSiteSection('student-points');return false;"><span>⭐</span><strong>نقاطي</strong></a>
  <a class="tile" id="knowledgeProductionHomeTile" href="#knowledgeProductionFresh" onclick="openKPFresh();return false;"><span>📚</span><strong>الإنتاج المعرفي</strong></a><a class="tile" href="#featured-art-lab"><span>🧪</span><strong>مختبر الفن والتجريب</strong></a><a class="tile" href="#featured-national-art"><span>🇸🇦</span><strong>الفن والهوية الوطنية</strong></a><a class="tile" href="#featured-digital-museum"><span>🖼️</span><strong>المتحف الفني الرقمي</strong></a><a class="tile" href="#featured-sustainable-art"><span>♻️</span><strong>فنون مستدامة</strong></a></div></section>
@@ -1781,16 +1797,16 @@ function renderSiteAnnouncements(){
  if(!list.length){host.innerHTML='<p class="muted">لا توجد إعلانات حاليًا.</p>';return}
  list.forEach(item=>{const card=document.createElement('article');card.className='announcement-public-card'+(item.pinned?' pinned':'');
  if(item.pinned){const pin=document.createElement('span');pin.className='announcement-pin';pin.textContent='📌 إعلان مثبت';card.appendChild(pin)}
- const h=document.createElement('h3');h.textContent=item.title||'إعلان';card.appendChild(h);
- const p=document.createElement('p');p.textContent=item.description||'';card.appendChild(p);
+ const h=document.createElement('h3');h.className='announcement-title';h.textContent=item.title||'إعلان';card.appendChild(h);
+ const p=document.createElement('p');p.className='announcement-description';p.textContent=item.description||'';card.appendChild(p);
  if(item.created_at){const t=document.createElement('time');t.textContent=new Date(item.created_at).toLocaleDateString('ar-SA');card.appendChild(t)}host.appendChild(card)});
 }
 function setAnnouncementTeacherEditor(){const box=document.getElementById('announcementTeacherEditor');if(box)box.style.display=currentAdmin?'block':'none';}
 function renderAnnouncementAdminList(){
  const host=document.getElementById('announcementAdminList');if(!host)return;host.replaceChildren();
  siteAnnouncements.forEach((item,index)=>{const row=document.createElement('div');row.className='announcement-admin-row';
- const h=document.createElement('h4');h.textContent=(item.pinned?'📌 ':'')+(item.title||'إعلان');row.appendChild(h);
- const p=document.createElement('p');p.textContent=item.description||'';row.appendChild(p);
+ const h=document.createElement('h4');h.className='announcement-title';h.textContent=(item.pinned?'📌 ':'')+(item.title||'إعلان');row.appendChild(h);
+ const p=document.createElement('p');p.className='announcement-description';p.textContent=item.description||'';row.appendChild(p);
  const actions=document.createElement('div');actions.className='admin-actions';
  const pin=document.createElement('button');pin.type='button';pin.className='secondary';pin.textContent=item.pinned?'إلغاء التثبيت':'تثبيت 📌';pin.onclick=()=>toggleAnnouncementPin(index);actions.appendChild(pin);
  const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent='تعديل';edit.onclick=()=>editSiteAnnouncement(index);actions.appendChild(edit);
@@ -1873,6 +1889,36 @@ function openKnowledgeProduction(){const sec=document.getElementById('knowledgeP
  ensurePointsTile();
 })();
 </script>
+<style id="announcement-cards-refresh">
+#announcementList .announcement-intro{color:#77618b;text-align:center;line-height:1.9;margin:8px auto 18px}
+#announcementCardsPublic{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:16px;margin:18px 0 24px}
+#announcementCardsPublic .announcement-public-card{display:flex;flex-direction:column;gap:10px;min-width:0;padding:18px;border:1px solid #e6d7f2;border-radius:22px;background:linear-gradient(145deg,#fff,#fbf7ff);box-shadow:0 7px 20px #56347712}
+#announcementCardsPublic .announcement-public-card.pinned{border:2px solid #d8ad55;background:linear-gradient(145deg,#fffdf4,#fff7e5);order:-1}
+#announcementCardsPublic .announcement-title,#announcementAdminList .announcement-title{display:block;margin:0;padding:11px 14px;border-radius:14px;background:#f0e4fb;color:#65338c!important;font-size:19px;font-weight:900;line-height:1.6}
+#announcementCardsPublic .announcement-description,#announcementAdminList .announcement-description{display:block;margin:0;padding:13px 14px;border-radius:14px;background:#eef7ff;color:#31536c!important;font-size:16px;line-height:1.95;white-space:pre-wrap}
+#announcementCardsPublic .announcement-public-card time{margin-top:auto;padding-top:5px;color:#8d7b9b;font-size:12px}
+#announcementCardsPublic .announcement-pin{align-self:flex-start;margin:0;padding:7px 12px;border-radius:12px;background:#fff0c6;color:#79530c;font-weight:900}
+#announcementTeacherEditor.announcement-editor-card{margin:26px 0 10px;padding:20px;border:2px solid #d9c2eb;border-radius:24px;background:linear-gradient(145deg,#fffaff,#f7f0ff);box-shadow:0 8px 22px #56347710}
+.announcement-editor-heading{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.announcement-editor-heading>span{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:#eadcf8;font-size:25px}
+.announcement-editor-heading h3{margin:0 0 4px;color:#65338c}
+.announcement-editor-heading p,.announcement-management-hint{margin:0;color:#796b85;line-height:1.8}
+.announcement-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.announcement-field{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.announcement-field label{font-weight:800;color:#62417b}
+.announcement-field input,.announcement-field select,.announcement-field textarea{width:100%;box-sizing:border-box;border:1px solid #d9c7e8;border-radius:14px;background:#fff;padding:12px 14px;font:inherit;color:#40334a;outline:none}
+.announcement-field input:focus,.announcement-field select:focus,.announcement-field textarea:focus{border-color:#9568b7;box-shadow:0 0 0 3px #eadcf8}
+#announcementTeacherEditor .admin-actions{display:flex;justify-content:flex-start;margin:14px 0 22px}
+#announcementTeacherEditor .admin-actions button{border:0;border-radius:14px;background:#70409a;color:#fff;padding:12px 22px;font-weight:900;font:inherit;cursor:pointer}
+.announcement-management-title{margin:20px 0 5px;color:#65338c}
+#announcementAdminList{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:13px;margin-top:14px}
+#announcementAdminList .announcement-admin-row{display:flex;flex-direction:column;gap:10px;padding:15px;border:1px solid #e5d5f0;border-radius:19px;background:#fff;box-shadow:0 4px 15px #5634770d}
+#announcementAdminList .announcement-title{font-size:16px}
+#announcementAdminList .announcement-description{font-size:14px}
+#announcementAdminList .admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
+#announcementAdminList .admin-actions button{border-radius:11px;padding:8px 12px}
+@media(max-width:600px){.announcement-form-grid{grid-template-columns:1fr}#announcementCardsPublic,#announcementAdminList{grid-template-columns:1fr!important}#announcementTeacherEditor.announcement-editor-card{padding:15px}}
+</style>
 </body></html>
 <style id="announcement-cards-layout">
 /* تنسيق الإعلانات: بطاقات واضحة وإدارة سهلة للمعلمة */
