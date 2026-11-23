@@ -1609,35 +1609,55 @@ function chooseSectionMedia(section, accept){
    if(!content)throw new Error('تعذر العثور على مساحة المحتوى داخل القسم.');
    if(file.type==='application/pdf'||/\.pdf$/i.test(file.name)){
     if(file.size>20*1024*1024)throw new Error('حجم ملف PDF كبير ('+(file.size/1024/1024).toFixed(1)+' ميجابايت). الحد الأعلى المسموح 20 ميجابايت؛ قلّلي حجمه ثم أعيدي رفعه.');
-    const coverInput=document.createElement('input');coverInput.type='file';coverInput.accept='image/*';coverInput.style.display='none';
-    document.body.appendChild(coverInput);
-    const cover=await new Promise(resolve=>{coverInput.onchange=()=>resolve(coverInput.files&&coverInput.files[0]||null);coverInput.click()});
-    coverInput.remove();
-    if(!cover)return;
-    const preparedCover=await compressSiteImage(cover);
-    if(preparedCover.size>8*1024*1024)throw new Error('حجم صورة الغلاف كبير. الحد الأعلى 8 ميجابايت؛ اختاري صورة أصغر.');
+    setUploadStatus('⏳ جارٍ تجهيز صورة الصفحة الأولى من ملف PDF...');
     const title=(file.name.replace(/\.pdf$/i,'')||'ملف PDF');
-    const stamp=Date.now(),safeName=v=>v.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-    const pdfPath='site/'+stamp+'-'+safeName(file);
-    const coverPath='site/covers/'+stamp+'-'+safeName(preparedCover);
-    setUploadStatus('⏳ جارٍ رفع ملف PDF وصورة الغلاف... انتظري حتى يكتمل الرفع، ولا تغلقي الصفحة.');
+    const stamp=Date.now(),safeName=v=>v.replace(/[^a-zA-Z0-9._-]/g,'_');
+    // استخراج صورة الغلاف تلقائياً من الصفحة الأولى للملف نفسه، دون طلب صورة منفصلة.
+    if(!window.pdfjsLib){
+     await new Promise((resolve,reject)=>{
+      const script=document.createElement('script');
+      script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.onload=resolve;script.onerror=()=>reject(new Error('تعذر تحميل أداة قراءة PDF. تحققي من اتصال الإنترنت ثم أعيدي المحاولة.'));
+      document.head.appendChild(script);
+     });
+    }
+    if(!window.pdfjsLib)throw new Error('تعذر تشغيل أداة قراءة ملف PDF.');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdfData=await file.arrayBuffer();
+    const pdfDoc=await window.pdfjsLib.getDocument({data:pdfData}).promise;
+    const firstPage=await pdfDoc.getPage(1);
+    const baseViewport=firstPage.getViewport({scale:1});
+    const scale=Math.min(2,1100/Math.max(baseViewport.width,baseViewport.height));
+    const viewport=firstPage.getViewport({scale});
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+    const context=canvas.getContext('2d');
+    await firstPage.render({canvasContext:context,viewport}).promise;
+    const coverBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.88));
+    canvas.width=0;canvas.height=0;
+    if(!coverBlob)throw new Error('تعذر استخراج صورة الصفحة الأولى من ملف PDF.');
+    const coverFile=new File([coverBlob],title+'-page-1.jpg',{type:'image/jpeg'});
+    if(coverFile.size>8*1024*1024)throw new Error('صورة الصفحة الأولى أكبر من الحد المسموح 8 ميجابايت.');
+    const pdfPath='site/'+stamp+'-'+safeName(file.name);
+    const coverPath='site/covers/'+stamp+'-'+safeName(coverFile.name);
+    setUploadStatus('⏳ جارٍ رفع ملف PDF وصورة صفحته الأولى... انتظري حتى يكتمل الرفع، ولا تغلقي الصفحة.');
     const pdfUp=await bucket.upload(pdfPath,file,{contentType:'application/pdf',upsert:false});
     if(pdfUp.error)throw pdfUp.error;
-    const coverUp=await bucket.upload(coverPath,preparedCover,{contentType:preparedCover.type||'image/jpeg',upsert:false});
+    const coverUp=await bucket.upload(coverPath,coverFile,{contentType:'image/jpeg',upsert:false});
     if(coverUp.error){await bucket.remove([pdfPath]);throw coverUp.error}
     const pdfUrl=bucket.getPublicUrl(pdfPath).data.publicUrl;
     const coverUrl=bucket.getPublicUrl(coverPath).data.publicUrl;
     const card=document.createElement('article');card.className='pdf-resource-card';card.style.width='min(100%,300px)';
     const coverLink=document.createElement('a');coverLink.className='pdf-cover-link';coverLink.href=pdfUrl;coverLink.target='_blank';coverLink.rel='noopener noreferrer';coverLink.setAttribute('aria-label','فتح ملف '+title);
-    const img=document.createElement('img');img.className='pdf-cover-image';img.src=coverUrl;img.alt='غلاف '+title;img.loading='lazy';coverLink.appendChild(img);card.appendChild(coverLink);
+    const img=document.createElement('img');img.className='pdf-cover-image';img.src=coverUrl;img.alt='الصفحة الأولى من '+title;img.loading='lazy';coverLink.appendChild(img);card.appendChild(coverLink);
     const actions=document.createElement('div');actions.className='pdf-resource-actions';
     const open=document.createElement('a');open.className='pdf-open-action';open.href=pdfUrl;open.target='_blank';open.rel='noopener noreferrer';open.textContent='فتح الملف';
     const download=document.createElement('a');download.className='pdf-download-action';download.href=pdfUrl;download.target='_blank';download.rel='noopener noreferrer';download.download=title+'.pdf';download.textContent='تحميل الملف';
     actions.append(open,download);card.appendChild(actions);
     card.dataset.siteMediaPath=pdfPath;card.dataset.siteCoverPath=coverPath;card.dataset.sitePdfTitle=title;
     content.appendChild(card);addInlineElementControls(section);
-    setUploadStatus('✅ اكتمل رفع الملف والغلاف. اضغطي «حفظ ونشر» لإظهارهما للطلاب والطالبات.');
-    alert('تم رفع الملف وصورة الغلاف. اضغطي «حفظ ونشر» لإظهارهما للطلاب والطالبات.');
+    setUploadStatus('✅ اكتمل رفع الملف وصورة الصفحة الأولى. اضغطي «حفظ ونشر» لإظهارهما للطلاب والطالبات.');
+    alert('تم رفع ملف PDF واستخراج صورة الصفحة الأولى تلقائياً. اضغطي «حفظ ونشر» لإظهارهما للطلاب والطالبات.');
     return;
    }
    let uploadFile=file;
