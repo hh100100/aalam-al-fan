@@ -1926,7 +1926,7 @@ function celebrateBoostBoard(){
  const stage=document.getElementById('weeklyBoostStage'),host=document.getElementById('honorRollList');if(!stage)return;
  stage.querySelectorAll('.boost-celebration').forEach(x=>x.remove());
  const layer=document.createElement('div');layer.className='boost-celebration';layer.setAttribute('aria-hidden','true');
- for(let i=0;i<24;i++){const b=document.createElement('i');b.className='boost-balloon';b.style.left=((i*43+5)%96)+'%';b.style.setProperty('--delay',(i*.09)+'s');layer.appendChild(b)}
+ for(let i=0;i<24;i++){const b=document.createElement('i');b.className='boost-balloon';b.style.left=((i*43+5)%96)+'%';b.style.setProperty('--i',String(i));b.style.setProperty('--delay',(i*.09)+'s');layer.appendChild(b)}
  for(let i=0;i<28;i++){const b=document.createElement('i');b.className='boost-bubble';b.style.left=((i*31+7)%98)+'%';b.style.setProperty('--delay',(i*.045)+'s');b.style.setProperty('--size',(8+(i%5)*5)+'px');layer.appendChild(b)}
  stage.appendChild(layer);setTimeout(()=>layer.remove(),6500);
  if(host){host.classList.remove('honor-pop');void host.offsetWidth;host.classList.add('honor-pop')}
@@ -2274,4 +2274,12 @@ window.saudiMessage=async()=>{const input=document.getElementById('saudiMsg'),ro
 @keyframes boostBubbleRise{0%{transform:translateY(0) scale(.7);opacity:0}15%{opacity:.9}100%{transform:translateY(-520px) translateX(24px) scale(1.2);opacity:0}}
 @media(max-width:520px){.boost-row{padding:11px;gap:9px}.boost-rank{flex-basis:36px;height:36px}.boost-student strong{font-size:14px}.boost-points{font-size:12px;padding:7px 9px}}
 </style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+ const stage=document.getElementById('weeklyBoostStage');
+ if(stage)stage.addEventListener('click',function(e){if(!e.target.closest('button'))window.revealHonorRoll();});
+ setBoostTeacherControls();
+ loadPublishedBoostBoard();
+});
+</script>
 </body></html>
