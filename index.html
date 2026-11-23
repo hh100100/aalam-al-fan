@@ -1813,23 +1813,28 @@ async function saveTickerMessages(){if(!currentAdmin||!sbClient){alert('سجّل
 function openKnowledgeProduction(){const sec=document.getElementById('knowledgeProduction');if(!sec)return;showSiteSection('knowledgeProduction');sec.style.display='block';sec.classList.add('active-section');const home=document.getElementById('kphome');if(home)home.style.display='block';document.querySelectorAll('#kppages .kppage').forEach(p=>p.style.display='none');}
 </script>
 
-<!-- Restore stable student points tile -->
+
+<!-- Stable fix for Points tile: reinsert into home grid after dynamic renders -->
 <style>
-#studentPointsHomeTile{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;min-height:148px!important}
-#studentPointsHomeTile>span{display:block!important;visibility:visible!important;opacity:1!important;font-size:clamp(48px,5vw,64px)!important;line-height:1.15!important;margin:0 auto 8px!important}
-#studentPointsHomeTile>strong{display:block!important;visibility:visible!important;opacity:1!important}
+#main-sections #studentPointsHomeTile{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-height:148px!important}
+#main-sections #studentPointsHomeTile span{display:grid!important;visibility:visible!important;opacity:1!important;font-size:48px!important;line-height:1.2!important;margin:0 auto 8px!important}
+#main-sections #studentPointsHomeTile strong{display:block!important;visibility:visible!important;opacity:1!important}
 </style>
 <script>
 (function(){
- function restoreStudentPointsTile(){
-  const home=document.getElementById('main-sections');if(!home)return;
-  const grid=home.querySelector('.grid');if(!grid)return;
+ function ensurePointsTile(){
+  const grid=document.querySelector('#main-sections .grid');if(!grid)return;
   let tile=document.getElementById('studentPointsHomeTile');
-  if(!tile){tile=document.createElement('a');tile.className='tile';tile.id='studentPointsHomeTile';tile.href='#student-points';tile.innerHTML='<span>⭐</span><strong>نقاطي</strong>';const kp=document.getElementById('knowledgeProductionHomeTile');if(kp&&kp.parentNode===grid)grid.insertBefore(tile,kp);else grid.appendChild(tile);}
-  tile.onclick=function(ev){ev.preventDefault();if(typeof showSiteSection==='function')showSiteSection('student-points');};
-  tile.style.display='flex';tile.style.visibility='visible';tile.style.opacity='1';
+  if(!tile){tile=document.createElement('a');tile.id='studentPointsHomeTile';tile.className='tile';tile.innerHTML='<span>⭐</span><strong>نقاطي</strong>';}
+  if(tile.parentElement!==grid)grid.appendChild(tile);
+  tile.href='#student-points';tile.style.display='flex';tile.style.visibility='visible';tile.style.opacity='1';
+  tile.onclick=function(e){e.preventDefault();if(typeof window.showSiteSection==='function')window.showSiteSection('student-points');};
  }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restoreStudentPointsTile);else restoreStudentPointsTile();
+ window.addEventListener('DOMContentLoaded',ensurePointsTile);
+ const main=document.getElementById('main-sections');if(main){new MutationObserver(ensurePointsTile).observe(main,{childList:true,subtree:true});}
+ const originalRender=window.renderCustomSections;
+ if(typeof originalRender==='function')window.renderCustomSections=function(){originalRender.apply(this,arguments);ensurePointsTile();};
+ ensurePointsTile();
 })();
 </script>
 </body></html>
