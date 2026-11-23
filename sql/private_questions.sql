@@ -8,7 +8,6 @@ create table if not exists public.private_questions (
 alter table public.private_questions enable row level security;
 
 grant insert on table public.private_questions to anon, authenticated;
-grant usage, select on sequence public.private_questions_id_seq to anon, authenticated;
 
 drop policy if exists "Students can send teacher questions" on public.private_questions;
 create policy "Students can send teacher questions"
