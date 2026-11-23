@@ -1795,6 +1795,24 @@ async function saveTickerMessages(){if(!currentAdmin||!sbClient){alert('سجّل
 </style>
 
 
+
+<script>
+(function(){
+ function restoreStudentPointsTile(){
+  const section=document.getElementById('main-sections');
+  const grid=section&&section.querySelector('.grid');
+  if(!grid)return;
+  let tile=document.getElementById('studentPointsHomeTile');
+  if(!tile){tile=document.createElement('a');tile.id='studentPointsHomeTile';tile.className='tile';tile.href='#student-points';tile.innerHTML='<span>⭐</span><strong>نقاطي</strong>';grid.appendChild(tile);}
+  tile.className='tile';tile.style.setProperty('display','flex','important');tile.style.setProperty('visibility','visible','important');tile.style.setProperty('opacity','1','important');tile.style.setProperty('min-height','148px','important');tile.style.setProperty('flex-direction','column','important');tile.style.setProperty('align-items','center','important');tile.style.setProperty('justify-content','center','important');
+  tile.onclick=function(ev){ev.preventDefault();if(typeof showSiteSection==='function')showSiteSection('student-points');};
+ }
+ document.addEventListener('DOMContentLoaded',restoreStudentPointsTile);
+ window.addEventListener('load',restoreStudentPointsTile);
+ setTimeout(restoreStudentPointsTile,500);
+ setTimeout(restoreStudentPointsTile,1800);
+})();
+</script>
 </body></html>
 <style id="announcement-cards-layout">
 /* تنسيق الإعلانات: بطاقات واضحة وإدارة سهلة للمعلمة */
