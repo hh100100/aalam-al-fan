@@ -1412,10 +1412,21 @@ function renderCustomSections(){
    tile.append(ico,label);grid.appendChild(tile);
   });
   // احتفظ بأيقونة الإنتاج المعرفي الأساسية 📚 واحذف أي نسخ قديمة أُعيدت من محتوى محفوظ.
-  const productionTiles=[...grid.querySelectorAll('a.tile')].filter(tile=>normalizeHomeTileName(tile.textContent).includes('الانتاج المعرفي'));
   const preferred=grid.querySelector('#knowledgeProductionHomeTile');
-  productionTiles.forEach(tile=>{if(tile!==preferred)tile.remove();});
-  if(preferred){const icon=preferred.querySelector('span');if(icon)icon.textContent='📚';preferred.href='#knowledgeProductionFresh';preferred.onclick=function(e){e.preventDefault();openKPFresh();};}
+  // احذف أي بطاقة/زر مكرر يحمل اسم الإنتاج المعرفي، مهما كان نوع العنصر أو رمزه.
+  [...grid.querySelectorAll('a,button,[role="button"],.tile')].forEach(tile=>{
+   if(tile===preferred)return;
+   const label=normalizeHomeTileName(tile.textContent);
+   if(label.includes('الانتاج المعرفي'))tile.remove();
+  });
+  if(preferred){
+   const icon=preferred.querySelector('span');
+   if(icon)icon.textContent='📚';
+   const label=preferred.querySelector('strong');
+   if(label)label.textContent='الإنتاج المعرفي';
+   preferred.href='#knowledgeProductionFresh';
+   preferred.onclick=function(e){e.preventDefault();openKPFresh();};
+  }
  }
  if(typeof addSectionBackButtons==='function')addSectionBackButtons();
 }
