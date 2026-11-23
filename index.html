@@ -751,7 +751,7 @@ async function loadGallerySubmissions(){
    const card=document.createElement('article');card.className='admin-list-item';card.style.display='block';
    const head=document.createElement('strong');head.textContent=(item.student_name||'طالب/طالبة')+' — '+(item.class_name||'');card.appendChild(head);
    const p=document.createElement('p');p.textContent=item.title||'عمل فني';card.appendChild(p);
-   const state=document.createElement('p');state.className='muted';state.textContent='الحالة: '+({pending:'بانتظار المراجعة',revision:'يحتاج إلى تعديل',private:'محفوظ بشكل خاص',published:'معتمد'}[item.status]||item.status);card.appendChild(state);
+   const state=document.createElement('p');state.className='muted';state.textContent='الحالة: '+({pending:'بانتظار المراجعة',lab_badge:'أُصدر الوسام تلقائيًا — بانتظار تحقق المعلمة',revision:'يحتاج إلى تعديل',private:'محفوظ بشكل خاص',published:'تمت المراجعة والاعتماد'}[item.status]||item.status);card.appendChild(state);
    if(item.created_at){const d=document.createElement('small');d.textContent=new Date(item.created_at).toLocaleString('ar-SA');card.appendChild(d)}
    if(item.storage_path){const signed=await sbClient.storage.from('student-artworks-pending').createSignedUrl(item.storage_path,300);if(!signed.error&&signed.data?.signedUrl){const a=document.createElement('a');a.href=signed.data.signedUrl;a.target='_blank';a.rel='noopener';a.textContent='فتح صورة العمل';a.style.display='block';a.style.margin='8px 0';card.appendChild(a)}}
    const note=document.createElement('input');note.placeholder='ملاحظة للمعلمة (اختياري)';note.value=item.teacher_note||'';card.appendChild(note);
@@ -815,7 +815,7 @@ async function submitLabExperiment(key){
   const path='pending/lab-'+key+'-'+crypto.randomUUID()+'.'+ext;
   const up=await sbClient.storage.from('student-artworks-pending').upload(path,file,{upsert:false,contentType:file.type});
   if(up.error)throw up.error;
-  const ins=await sbClient.from('gallery_submissions').insert([{student_name:student.name,class_name:student.className,title:exp.name,category:exp.category,storage_path:path,status:'pending'}]);
+  const ins=await sbClient.from('gallery_submissions').insert([{student_name:student.name,class_name:student.className,title:exp.name,category:exp.category,storage_path:path,status:'lab_badge'}]);
   if(ins.error){await sbClient.storage.from('student-artworks-pending').remove([path]);throw ins.error}
   input.value='';status.textContent='وصلت صورتك بنجاح! 🌟 ستراجع معلمتك التجربة، وبعد اعتمادها سيظهر وسام الإنجاز باسمك.';
  }catch(e){console.error(e);status.textContent='تعذر إرسال الصورة: '+(e.message||'حاولي مرة أخرى.')}
@@ -824,12 +824,12 @@ async function submitLabExperiment(key){
 async function showMyLabBadges(){
  const student=labSelectedStudent(),host=document.getElementById('labBadgesHost');if(!host)return;
  if(!student){host.innerHTML='<h3>🏅 أوسمة إنجازي</h3><p>اختاري اسمك وصفك أولًا.</p>';return}
- host.innerHTML='<h3>🏅 أوسمة إنجازي</h3><p>جارٍ البحث عن الأوسمة المعتمدة...</p>';
- const q=await sbClient.from('gallery_submissions').select('title,category,status').eq('student_name',student.name).eq('class_name',student.className).eq('status','published');
+ host.innerHTML='<h3>🏅 أوسمة إنجازي</h3><p>جارٍ البحث عن أوسمتك...</p>';
+ const q=await sbClient.from('gallery_submissions').select('title,category,status').eq('student_name',student.name).eq('class_name',student.className).in('status',['lab_badge','published']);
  if(q.error){host.innerHTML='<h3>🏅 أوسمة إنجازي</h3><p>تعذر تحميل الأوسمة الآن.</p>';return}
  const rows=(q.data||[]).filter(x=>String(x.category||'').startsWith('lab-'));
  host.innerHTML='<h3>🏅 أوسمة إنجازي</h3>';
- if(!rows.length){host.insertAdjacentHTML('beforeend','<p>لا يوجد وسام معتمد حتى الآن. أرسلي صورة تجربتك وانتظري مراجعة المعلمة. 🌟</p>');return}
+ if(!rows.length){host.insertAdjacentHTML('beforeend','<p>لم ترفعي صورة تجربة بعد. ارفعي صورتك وسيظهر وسامك مباشرة! 🌟</p>');return}
  rows.forEach((item,i)=>{
   const card=document.createElement('article');card.className='lab-certificate';card.id='lab-certificate-'+i;
   card.innerHTML='<div class="lab-certificate-school">الطفولة المبكرة بالابتدائية الحادية والتسعون</div><div class="lab-certificate-site">عالم الفن الرقمي</div><div class="lab-medal-art"><span>🏅</span><b>وسام الإنجاز</b></div><div class="lab-certificate-ribbon">خطوة أنجزتها ونجمة استحقتها</div><h2>مبارك لك وسام الإنجاز</h2><p class="lab-certificate-name"></p><p class="lab-certificate-experiment"></p><p>معلمتك الفخورة بك:</p><strong>هاجر الثقفي</strong><p class="lab-certificate-note">صوّري إنجازك وأرسلي الصورة لمعلمتك لتسعدي قلبها</p><small>اختر اسمك ثم صوّر/ي البطاقة</small>';
