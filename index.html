@@ -234,6 +234,7 @@ body>*{position:relative;z-index:1}
 .honor-pop{animation:honorPop .65s ease both}
 .fireworks{position:absolute;inset:0;pointer-events:none;z-index:4}
 .fireworks i{position:absolute;left:calc((var(--n)*37 + 9)% 100%);top:10%;width:7px;height:7px;border-radius:50%;background:hsl(calc(var(--n)*37),85%,58%);animation:firework 1.5s ease-out both;animation-delay:calc(var(--n)*.035s)}
+.honor-balloons{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden}.honor-balloons i{position:absolute;bottom:-100px;width:32px;height:42px;border-radius:50% 50% 45% 45%;background:hsl(calc(var(--n)*43),80%,70%);box-shadow:inset -5px -6px 10px #0001;animation:honorBalloon 5s ease-in both;animation-delay:calc(var(--n)*.18s)}.honor-balloons i:after{content:'';position:absolute;left:50%;top:40px;width:1px;height:45px;background:#aaa8}@keyframes honorBalloon{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:1}100%{transform:translateY(-110vh) translateX(calc((var(--n)%2)*24px));opacity:0}}
 @keyframes honorFloat{50%{transform:translateY(-9px) rotate(4deg)}}
 @keyframes podiumRise{from{opacity:0;transform:translateY(45px) rotateY(-8deg)}to{opacity:1;transform:translateY(0) rotateY(-8deg)}}
 @keyframes honorPop{from{opacity:.2;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
@@ -1857,7 +1858,7 @@ window.revealHonorRoll=async function(){
  const medals=['🥇','🥈','🥉'];
  const podium=top.map((x,i)=>'<div class="podium-card place-'+(i+1)+'"><div class="medal">'+medals[i]+'</div><div class="student-crown">👑</div><strong>'+E(x.student_name)+'</strong><span>'+E(x.class_name)+'</span><b>'+x.activity_count+' تفاعلات</b><div class="podium-base">'+(i===0?'المركز الأول':i===1?'المركز الثاني':'المركز الثالث')+'</div></div>').join('');
  const others=rest.map(x=>'<div class="honor-row"><span class="honor-rank">#'+x.rank+'</span><strong>'+E(x.student_name)+'</strong><span>'+E(x.class_name)+'</span><b>⭐ '+x.activity_count+'</b></div>').join('');
- host.innerHTML='<div class="fireworks" aria-hidden="true">'+Array.from({length:18},(_,i)=>'<i style="left:'+((i*37+9)%100)+'%;--n:'+i+'"></i>').join('')+'</div><div class="podium-wrap">'+podium+'</div>'+(others?'<h3 class="honor-others-title">🌟 بقية المتميزين</h3><div class="honor-others">'+others+'</div>':'');
+ host.innerHTML='<div class="fireworks" aria-hidden="true">'+Array.from({length:18},(_,i)=>'<i style="left:'+((i*37+9)%100)+'%;--n:'+i+'"></i>').join('')+'</div><div class="honor-balloons" aria-hidden="true">'+Array.from({length:12},(_,i)=>'<i style="left:'+((i*83+7)%100)+'%;--n:'+i+'"></i>').join('')+'</div><div class="podium-wrap">'+podium+'</div>'+(others?'<h3 class="honor-others-title">🌟 بقية المتميزين</h3><div class="honor-others">'+others+'</div>':'');
  host.classList.remove('honor-pop');void host.offsetWidth;host.classList.add('honor-pop');
 };
 window.renderCustomSections=function(){
@@ -2111,4 +2112,7 @@ function openKnowledgeProduction(){const sec=document.getElementById('knowledgeP
 .pdf-download-action{background:#eee4f5;color:#573875}
 @media(max-width:480px){.pdf-resource-card{width:min(100%,260px)}}
 </style>
+<script>
+(function(){function openStars(){if(typeof window.revealHonorRoll==='function')window.revealHonorRoll();}document.addEventListener('click',function(e){const a=e.target.closest('a[href="#stars"]');if(a){setTimeout(openStars,150);}});window.addEventListener('hashchange',function(){if(location.hash==='#stars')openStars();});if(location.hash==='#stars')setTimeout(openStars,900);})();
+</script>
 </body></html>
