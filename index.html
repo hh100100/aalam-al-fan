@@ -568,7 +568,148 @@ body>*{position:relative;z-index:1}
 <details class="saudi-accordion" id="sGuess"><summary>🧩 اكتشف المنطقة من فنّها — اختبار من ٣ أسئلة</summary><div class="saudi-inner"><p>شاهد الصورة، ثم اختر الإجابة الصحيحة. ستظهر لك تغذية راجعة بعد كل إجابة.</p><div id="saudiQuizApp" class="saudi-quiz"><div class="quiz-progress" id="saudiQuizProgress">السؤال ١ من ٣</div><img id="saudiQuizImage" src="https://portalcdn.spa.gov.sa/backend/original/202401/F4x9Ml0WyJkrM0IQ7BrLwRpcElGqhX9a1RTXhht9.jpg" alt="زخارف القط العسيري"><h3 id="saudiQuizQuestion">إلى أي منطقة ينتمي فن القط العسيري؟</h3><div id="saudiQuizChoices" class="quiz-choices"><button onclick="saudiQuizAnswer(0)">نجد</button><button onclick="saudiQuizAnswer(1)">عسير</button><button onclick="saudiQuizAnswer(2)">الحجاز</button></div><strong id="saudiQuizFeedback">اختر الإجابة الصحيحة 🌟</strong><div class="quiz-actions"><button id="saudiQuizNext" onclick="saudiQuizNext()" disabled>السؤال التالي</button><button onclick="saudiQuizReset()">إعادة المحاولة 🔄</button></div></div></div></details>
 <details class="saudi-accordion" id="sMessages"><summary>💌 رسائل الوطن — اكتب رسالة تصل للجميع</summary><div class="saudi-inner"><p>اختر صفتك، ثم اكتب رسالة جميلة لوطننا. لا نطلب اسمك، وستظهر الرسالة للجميع بعد إرسالها.</p><div class="saudi-msgform"><select id="saudiMsgRole" aria-label="صفة المشارك"><option value="طالب">طالب</option><option value="زائر">زائر</option></select><input id="saudiMsg" maxlength="180" placeholder="أكتب رسالة جميلة إلى وطني…"><button onclick="saudiMessage()">إرسال رسالتي 💚</button></div><small id="saudiMessageStatus">تظهر الرسائل هنا بعد نشرها في سجل الرسائل المشترك.</small><div id="saudiWall" aria-live="polite"></div></div></details>
 <div class="saudi-foot">💚 وطننا إلهامنا، وفنّنا حكايتنا 💚</div></section><section class="section" id="featured-digital-museum"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button><h2>🖼️ المتحف الفني الرقمي</h2><p>مساحة للاحتفاء بأعمال الطلاب والطالبات وإبداعهم.</p><div class="cards"><article class="card"><h3>🌟 معرض إبداعاتنا</h3><p>نعرض الأعمال الفنية المميزة ونكتب بجانب كل عمل عنوانًا ووصفًا قصيرًا.</p></article><article class="card"><h3>🇸🇦 معرض وطني بريشتي</h3><p>لوحات ومجسمات تعبر عن الوطن ومعالم المملكة وتراثها.</p></article><article class="card"><h3>🧵 معرض الخامات والتقنيات</h3><p>أعمال تستخدم النسيج والطباعة والكولاج والتشكيل والخامات المتنوعة.</p></article><article class="card"><h3>🏆 نجوم الإبداع</h3><p>نحتفي بالمحاولة والتطور والمهارات الفنية، فلكل عمل بصمته الجميلة.</p></article></div></section>
-<section class="section" id="featured-sustainable-art"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button><h2>♻️ فنون مستدامة</h2><p>نمنح الخامات المستعملة حياة جديدة ونحوّلها إلى إبداع.</p><div class="cards"><article class="card"><h3>📦 مدينة من الكرتون</h3><p>استخدمي علبًا كرتونية نظيفة لتكوين بيوت ومبانٍ صغيرة وزينيها بالألوان.</p></article><article class="card"><h3>📰 كولاج الورق</h3><p>قصّي أوراقًا مستعملة نظيفة إلى أشكال ورتبيها لتكوين لوحة جديدة.</p></article><article class="card"><h3>🧢 لوحة الأغطية</h3><p>رتبي أغطية نظيفة حسب اللون لتكوين أشكال هندسية أو زهرة على قاعدة كرتونية.</p></article><article class="card"><h3>🫙 منظم فني</h3><p>حوّلي علبة نظيفة إلى منظم للأقلام وزينيها بقصاصات الورق والملصقات.</p></article></div></section></main>
+<section class="section" id="featured-sustainable-art">
+<button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button>
+<div class="sustain-shell" dir="rtl">
+<header class="sustain-hero"><div class="sustain-leaf">♻️</div><h2>فنون مستدامة</h2><p>«الأرض أجمل بإبداعنا»</p><span>نحوّل الأشياء البسيطة إلى أفكار فنية جميلة 🌱</span></header>
+<div id="sustainHome" class="sustain-home">
+<p class="sustain-instruction">اختاري القسم الذي تحبين اكتشافه، وسيفتح محتواه وحده ✨</p>
+<div class="sustain-menu">
+<button class="sustain-menu-card sustain-c1" onclick="openSustainPanel('reuse')"><span>♻️</span><strong>الفن من بقايا الأشياء</strong><small>أعمال فنية من خامات مستهلكة</small></button>
+<button class="sustain-menu-card sustain-c2" onclick="openSustainPanel('ideas')"><span>🧵</span><strong>أفكار من خامات بسيطة</strong><small>أفكار سهلة وخطوات مصورة</small></button>
+<button class="sustain-menu-card sustain-c3" onclick="openSustainPanel('before')"><span>✨</span><strong>قبل وبعد</strong><small>شاهدي كيف تتغير الأشياء</small></button>
+<button class="sustain-menu-card sustain-c4" onclick="openSustainPanel('bank')"><span>🧺</span><strong>بنك الخامات</strong><small>اضغطي على الخامة لاكتشاف أفكارها</small></button>
+<button class="sustain-menu-card sustain-c5" onclick="openSustainPanel('journey')"><span>🚀</span><strong>رحلة الخامة</strong><small>اكتشفي التحول خطوة بخطوة</small></button>
+</div></div>
+<div id="sustainPanel-reuse" class="sustain-panel" hidden><button class="sustain-back" onclick="closeSustainPanel()">↩ عودة للأقسام</button><h3>♻️ الفن من بقايا الأشياء</h3><p class="sustain-lead">أشياء نظن أنها انتهت، لكنها قد تصبح بداية عمل فني جديد!</p><div class="sustain-art-grid">
+<article class="sustain-art-card"><div class="sustain-art-visual visual-paper">📦 🏙️</div><h4>مدينة من الكرتون</h4><p>استخدمي قطع الكرتون النظيفة لصنع بيوت ومبانٍ صغيرة، ثم زيّنيها بالألوان والنوافذ الورقية.</p></article>
+<article class="sustain-art-card"><div class="sustain-art-visual visual-paper">📰 🎨</div><h4>لوحة من الورق القديم</h4><p>قصّي الأوراق النظيفة إلى أشكال، ورتّبيها لتكوين زهرة أو منظر طبيعي بطريقة الكولاج.</p></article>
+<article class="sustain-art-card"><div class="sustain-art-visual visual-plastic">🧴 🌷</div><h4>مجسمات من العبوات والأغطية</h4><p>حوّلي العبوات والأغطية النظيفة إلى مزهرية أو زهرة أو شكل هندسي ملوّن، بمساعدة شخص بالغ عند القص.</p></article>
+<article class="sustain-art-card"><div class="sustain-art-visual visual-fabric">🧵 🦋</div><h4>لوحة من بقايا الأقمشة</h4><p>اجمعي قصاصات القماش ورتّبيها على ورق مقوّى لتكوين فراشة أو شجرة أو لوحة ملوّنة.</p></article>
+</div></div>
+<div id="sustainPanel-ideas" class="sustain-panel" hidden><button class="sustain-back" onclick="closeSustainPanel()">↩ عودة للأقسام</button><h3>🧵 أفكار من خامات بسيطة</h3><p class="sustain-lead">اختاري بطاقة لتشاهدي الأدوات والطريقة السهلة.</p><div class="sustain-idea-grid">
+<button class="sustain-idea" onclick="showSustainIdea('roll')"><span>🧻</span><strong>ماذا أصنع من رول الكرتون؟</strong><small>اضغطي لاكتشاف الفكرة</small></button>
+<button class="sustain-idea" onclick="showSustainIdea('paper')"><span>📰</span><strong>٥ أفكار من الورق القديم</strong><small>اضغطي لاكتشاف الأفكار</small></button>
+<button class="sustain-idea" onclick="showSustainIdea('box')"><span>📦</span><strong>علبة تتحول إلى منظم</strong><small>اضغطي لمعرفة الطريقة</small></button>
+</div><div id="sustainIdeaDetail" class="sustain-detail" hidden></div></div>
+<div id="sustainPanel-before" class="sustain-panel" hidden><button class="sustain-back" onclick="closeSustainPanel()">↩ عودة للأقسام</button><h3>✨ قبل وبعد</h3><p class="sustain-lead">تأملي الشيء قبل إعادة استخدامه، ثم شاهدي الفكرة الفنية التي يمكن أن يصبح عليها.</p><div class="sustain-before-grid">
+<article class="sustain-before-card"><div class="sustain-before-pair"><div><span>🧴</span><b>قبل</b><small>عبوة فارغة ونظيفة</small></div><i>←</i><div><span>🌷</span><b>بعد</b><small>مزهرية فنية</small></div></div></article>
+<article class="sustain-before-card"><div class="sustain-before-pair"><div><span>📦</span><b>قبل</b><small>كرتون قديم</small></div><i>←</i><div><span>🏠</span><b>بعد</b><small>مجسم معماري</small></div></div></article>
+<article class="sustain-before-card"><div class="sustain-before-pair"><div><span>📰</span><b>قبل</b><small>أوراق صحف</small></div><i>←</i><div><span>🖼️</span><b>بعد</b><small>لوحة كولاج</small></div></div></article>
+</div></div>
+<div id="sustainPanel-bank" class="sustain-panel" hidden><button class="sustain-back" onclick="closeSustainPanel()">↩ عودة للأقسام</button><h3>🧺 بنك الخامات</h3><p class="sustain-lead">اضغطي على أي خامة، وستظهر لك أفكار فنية يمكن تنفيذها بها.</p><div class="sustain-materials">
+<button onclick="showSustainMaterial('paper')">📰 <b>الورق</b></button><button onclick="showSustainMaterial('cardboard')">📦 <b>الكرتون</b></button><button onclick="showSustainMaterial('bottles')">🧴 <b>العبوات</b></button><button onclick="showSustainMaterial('caps')">🔴 <b>الأغطية</b></button><button onclick="showSustainMaterial('fabric')">🧵 <b>الأقمشة</b></button><button onclick="showSustainMaterial('sticks')">🪵 <b>الأعواد</b></button>
+</div><div id="sustainMaterialDetail" class="sustain-detail" aria-live="polite">اختاري خامة من البطاقات أعلاه 🌱</div></div>
+<div id="sustainPanel-journey" class="sustain-panel" hidden><button class="sustain-back" onclick="closeSustainPanel()">↩ عودة للأقسام</button><h3>🚀 رحلة الخامة</h3><p class="sustain-lead">اختاري خامة بشكلها العادي، ثم اضغطي «اكتشف التحول» لتشاهدي ما يمكن أن تصنعه يداك.</p><div class="sustain-journey-picker"><label for="sustainJourneyMaterial">اختاري الخامة</label><select id="sustainJourneyMaterial"><option value="newspaper">📰 ورق قديم</option><option value="carton">📦 كرتون</option><option value="bottle">🧴 عبوة فارغة</option><option value="fabric">🧵 بقايا قماش</option><option value="caps">🔴 أغطية ملونة</option></select><div class="sustain-journey-start" id="sustainJourneyStart">📰<strong>ورق قديم</strong><small>خامة بسيطة تنتظر فكرة جديدة</small></div><button class="sustain-discover" onclick="revealSustainJourney()">🎨 اكتشف التحول</button><div id="sustainJourneyResult" class="sustain-detail" hidden></div></div></div>
+<p class="sustain-footer">كل خامة تحمل فرصة جديدة للإبداع… فلنحافظ على أرضنا بفنّنا 💚</p>
+</div>
+</section>
+<style>
+#featured-sustainable-art .sustain-shell{max-width:1050px;margin:0 auto;color:#355b4b}
+#featured-sustainable-art .sustain-hero{text-align:center;padding:24px 15px;margin:8px 0 18px;border-radius:26px;background:linear-gradient(135deg,#e8f8e9,#fff9df);border:1px solid #d4ebd4}
+#featured-sustainable-art .sustain-leaf{font-size:43px}
+#featured-sustainable-art .sustain-hero h2{margin:4px 0;color:#34734e;font-size:30px}
+#featured-sustainable-art .sustain-hero p{font-size:22px;font-weight:900;margin:5px;color:#668d55}
+#featured-sustainable-art .sustain-hero span{font-size:14px;color:#65806d}
+#featured-sustainable-art .sustain-instruction,.sustain-lead{text-align:center;line-height:1.9;color:#668071}
+#featured-sustainable-art .sustain-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+#featured-sustainable-art .sustain-menu-card{border:1px solid #dcebdc;border-radius:22px;min-height:145px;padding:17px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;font:inherit;box-shadow:0 5px 16px #345c4010;transition:transform .18s,box-shadow .18s}
+#featured-sustainable-art .sustain-menu-card:active{transform:scale(.98)}
+#featured-sustainable-art .sustain-menu-card>span{font-size:37px}
+#featured-sustainable-art .sustain-menu-card strong{font-size:17px}
+#featured-sustainable-art .sustain-menu-card small{font-size:12px;font-weight:500}
+#featured-sustainable-art .sustain-c1{background:#eff9ed;color:#477b4e}
+#featured-sustainable-art .sustain-c2{background:#f0f7ff;color:#47718d}
+#featured-sustainable-art .sustain-c3{background:#fff4e8;color:#9a6a39}
+#featured-sustainable-art .sustain-c4{background:#f6f0ff;color:#76589b}
+#featured-sustainable-art .sustain-c5{background:#eaf8f4;color:#36796a}
+#featured-sustainable-art .sustain-panel{background:#fbfffb;border:1px solid #dcebdc;border-radius:22px;padding:16px;margin-top:14px}
+#featured-sustainable-art .sustain-panel h3{text-align:center;color:#39794f;font-size:23px;margin:8px 0}
+#featured-sustainable-art .sustain-back{border:0;border-radius:12px;padding:9px 14px;background:#e8f3e8;color:#416b4b;font:inherit;font-weight:800;cursor:pointer}
+#featured-sustainable-art .sustain-art-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#featured-sustainable-art .sustain-art-card{background:white;border:1px solid #e3eee3;border-radius:18px;padding:12px;box-shadow:0 3px 12px #315d3510}
+#featured-sustainable-art .sustain-art-card h4{color:#477b4e;margin:8px 0}
+#featured-sustainable-art .sustain-art-card p{font-size:14px;line-height:1.9;margin:0}
+#featured-sustainable-art .sustain-art-visual{height:120px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:43px;background:linear-gradient(135deg,#edf8ec,#f8f5e9)}
+#featured-sustainable-art .visual-plastic{background:linear-gradient(135deg,#e8f8f5,#f4fff8)}
+#featured-sustainable-art .visual-fabric{background:linear-gradient(135deg,#f7eefb,#fff5f7)}
+#featured-sustainable-art .sustain-idea-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#featured-sustainable-art .sustain-idea{border:1px solid #dcebdc;border-radius:17px;padding:14px 9px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:7px;color:#416d4c;font:inherit;cursor:pointer}
+#featured-sustainable-art .sustain-idea span{font-size:31px}
+#featured-sustainable-art .sustain-idea strong{font-size:14px}
+#featured-sustainable-art .sustain-idea small{font-size:11px;color:#819487}
+#featured-sustainable-art .sustain-detail{margin-top:15px;padding:16px;border-radius:17px;background:#eff8ed;border:1px solid #d8ead6;line-height:2;color:#45694d}
+#featured-sustainable-art .sustain-detail h4{margin:0 0 7px;color:#387449}
+#featured-sustainable-art .sustain-before-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#featured-sustainable-art .sustain-before-card{background:#fff;border:1px solid #e8ebdd;border-radius:18px;padding:13px}
+#featured-sustainable-art .sustain-before-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;text-align:center;gap:5px}
+#featured-sustainable-art .sustain-before-pair span{display:block;font-size:39px;margin:8px}
+#featured-sustainable-art .sustain-before-pair b{display:block;color:#56805b}
+#featured-sustainable-art .sustain-before-pair small{display:block;font-size:11px;color:#77867b;line-height:1.6}
+#featured-sustainable-art .sustain-before-pair i{font-size:23px;color:#91b28f}
+#featured-sustainable-art .sustain-materials{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#featured-sustainable-art .sustain-materials button{border:1px solid #e1e9dc;border-radius:15px;padding:14px 8px;background:white;color:#4c7552;font:inherit;font-size:16px;cursor:pointer}
+#featured-sustainable-art .sustain-materials button b{display:block;margin-top:5px}
+#featured-sustainable-art .sustain-journey-picker{max-width:570px;margin:15px auto;text-align:center}
+#featured-sustainable-art .sustain-journey-picker label{display:block;font-weight:800;margin-bottom:8px}
+#featured-sustainable-art .sustain-journey-picker select{width:100%;padding:12px;border:1px solid #cfe2cf;border-radius:12px;font:inherit;background:#fff}
+#featured-sustainable-art .sustain-journey-start{margin:14px auto;padding:18px;border-radius:18px;background:#fff;border:1px dashed #b7d5b8;font-size:42px}
+#featured-sustainable-art .sustain-journey-start strong,#featured-sustainable-art .sustain-journey-start small{display:block;font-size:15px;margin-top:5px}
+#featured-sustainable-art .sustain-discover{border:0;border-radius:14px;padding:13px 22px;background:#4b9560;color:white;font:inherit;font-weight:900;cursor:pointer}
+#featured-sustainable-art .sustain-footer{text-align:center;margin:22px 0 5px;color:#6b8d71;font-weight:800}
+@media(max-width:620px){#featured-sustainable-art .sustain-menu{grid-template-columns:1fr 1fr;gap:9px}#featured-sustainable-art .sustain-menu-card{min-height:135px;padding:12px 7px}#featured-sustainable-art .sustain-menu-card strong{font-size:14px}#featured-sustainable-art .sustain-menu-card small{font-size:10px}#featured-sustainable-art .sustain-art-grid{grid-template-columns:1fr 1fr}#featured-sustainable-art .sustain-idea-grid{grid-template-columns:1fr}#featured-sustainable-art .sustain-before-grid{grid-template-columns:1fr}#featured-sustainable-art .sustain-materials{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script>
+function openSustainPanel(key){
+ document.getElementById('sustainHome').hidden=true;
+ document.querySelectorAll('#featured-sustainable-art .sustain-panel').forEach(p=>p.hidden=true);
+ const panel=document.getElementById('sustainPanel-'+key);if(panel)panel.hidden=false;
+ if(key==='journey')updateSustainJourneyStart();
+}
+function closeSustainPanel(){
+ document.querySelectorAll('#featured-sustainable-art .sustain-panel').forEach(p=>p.hidden=true);
+ document.getElementById('sustainHome').hidden=false;
+}
+const sustainIdeas={
+ roll:{title:'🧻 ماذا يمكن أن أصنع من رول الكرتون؟',materials:'رول كرتون نظيف، ورق ملون، ألوان، غراء، ومقص آمن بمساعدة شخص بالغ.',steps:['زيّني الرول بالألوان أو غلّفيه بورق ملون.','أضيفي أجنحة ورقية ليصبح فراشة، أو أذنين ليصبح حيوانًا لطيفًا.','يمكن جمع عدة رولات لصنع حامل أقلام أو منظار للّعب التخيلي.'],result:'أفكارنا: فراشة 🦋، حامل أقلام ✏️، أو شخصية كرتونية 🐰.'},
+ paper:{title:'📰 خمس أفكار فنية من الورق القديم',materials:'أوراق نظيفة مستعملة، ورق مقوّى، غراء، ألوان، ومقص آمن.',steps:['لوحة كولاج من قصاصات بألوان مختلفة.','زهور ورقية لتزيين بطاقة.','شرائط ورقية لصنع نسيج بسيط.','كرات ورقية صغيرة لتكوين لوحة بارزة.','أشكال مطوية مثل المروحة أو القارب.'],result:'اختاري فكرة واحدة وامنحي الورق فرصة جديدة! 🌼'},
+ box:{title:'📦 كيف أحوّل علبة إلى منظم أدوات فنية؟',materials:'علبة كرتونية نظيفة، ورق تغليف، غراء، ألوان، وقطع كرتون صغيرة.',steps:['تأكدي أن العلبة نظيفة وجافة، واطلبي مساعدة شخص بالغ إذا احتجتِ إلى قصها.','غلّفي العلبة بورق ملون أو زيّنيها برسوماتك.','ضعي فواصل كرتونية صغيرة داخلها لتقسيم الأقلام والأدوات.','اكتبي بطاقة جميلة باسم المنظم وضعيه على مكتبك.'],result:'أصبح لدينا منظم جميل يساعدنا على ترتيب أدواتنا الفنية! ✏️'}
+};
+function showSustainIdea(key){
+ const item=sustainIdeas[key],host=document.getElementById('sustainIdeaDetail');if(!item||!host)return;
+ host.hidden=false;host.innerHTML='<h4>'+item.title+'</h4><p><b>الأدوات:</b> '+item.materials+'</p><p><b>الطريقة:</b></p><ol>'+item.steps.map(x=>'<li>'+x+'</li>').join('')+'</ol><p><b>'+item.result+'</b></p>';
+}
+const sustainMaterials={
+ paper:{name:'الورق القديم',ideas:['لوحة كولاج من القصاصات.','زهور وورود ورقية.','شرائط للنسيج الورقي.','بطاقات تهنئة مزخرفة.']},
+ cardboard:{name:'الكرتون',ideas:['بيوت ومبانٍ مصغّرة.','منظم للأقلام والألوان.','إطارات صور مزينة.','أشكال هندسية ومجسمات.']},
+ bottles:{name:'العبوات البلاستيكية النظيفة',ideas:['مزهرية للزهور الورقية.','حامل أدوات بعد تجهيزها بمساعدة شخص بالغ.','أجراس أو أشكال معلّقة للزينة.']},
+ caps:{name:'الأغطية الملونة',ideas:['فسيفساء من الألوان.','زهور وأشكال هندسية.','لوحة حروف أو أرقام.']},
+ fabric:{name:'بقايا الأقمشة',ideas:['لوحة كولاج ملمسية.','فراشات وورود من القماش.','دمى قماشية بسيطة بمساعدة شخص بالغ.']},
+ sticks:{name:'الأعواد الخشبية النظيفة',ideas:['إطار صورة صغير.','بيت أو سياج مصغّر.','ترتيب زخرفي هندسي.']}
+};
+function showSustainMaterial(key){
+ const item=sustainMaterials[key],host=document.getElementById('sustainMaterialDetail');if(!item||!host)return;
+ host.innerHTML='<h4>🌱 أفكار من '+item.name+'</h4><ul>'+item.ideas.map(x=>'<li>'+x+'</li>').join('')+'</ul><p>تأكدي من نظافة الخامة، واستخدمي الأدوات الحادة بمساعدة شخص بالغ.</p>';
+}
+const sustainJourney={
+ newspaper:{icon:'📰',name:'ورق قديم',ideas:['لوحة كولاج من القصاصات','مجسم ورقي بسيط','زخرفة وشرائط ورقية','بطاقة فنية جديدة']},
+ carton:{icon:'📦',name:'كرتون',ideas:['مجسم معماري صغير','منظم للأدوات الفنية','إطار لوحة','لعبة تركيب أشكال']},
+ bottle:{icon:'🧴',name:'عبوة فارغة',ideas:['مزهرية فنية','حامل أقلام','مجسم ملوّن','قطعة زينة']},
+ fabric:{icon:'🧵',name:'بقايا قماش',ideas:['لوحة ملمسية','زهور قماشية','فراشة مزخرفة','دمية بسيطة']},
+ caps:{icon:'🔴',name:'أغطية ملونة',ideas:['لوحة فسيفساء','زهرة من الأغطية','أشكال هندسية','تصميم فني بالألوان']}
+};
+function updateSustainJourneyStart(){
+ const sel=document.getElementById('sustainJourneyMaterial'),item=sustainJourney[sel.value],start=document.getElementById('sustainJourneyStart');
+ if(item)start.innerHTML=item.icon+'<strong>'+item.name+'</strong><small>خامة بسيطة تنتظر فكرة جديدة</small>';
+ const result=document.getElementById('sustainJourneyResult');if(result)result.hidden=true;
+}
+function revealSustainJourney(){
+ const sel=document.getElementById('sustainJourneyMaterial'),item=sustainJourney[sel.value],host=document.getElementById('sustainJourneyResult');if(!item||!host)return;
+ host.hidden=false;host.innerHTML='<h4>✨ ماذا أصبحت '+item.name+'؟</h4><div style="font-size:28px;text-align:center;margin:8px"> '+item.icon+' ⬇️ 🎨 ⬇️ </div><ul>'+item.ideas.map(x=>'<li>'+x+'</li>').join('')+'</ul><p>رائع! بفكرتك أصبحت الخامة عملًا فنيًا جديدًا 💚</p>';
+}
+document.addEventListener('change',function(e){if(e.target&&e.target.id==='sustainJourneyMaterial')updateSustainJourneyStart();});
+</script>
+</main></main>
 <style>
 #knowledgeProductionFresh{box-sizing:border-box;color:#453653}
 #knowledgeProductionFresh *{box-sizing:border-box}
