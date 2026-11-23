@@ -1708,7 +1708,18 @@ window.renderCustomSections=function(){
  else body='<div class="cards">'+(x.cards||[]).map(cardHtml).join('')+'</div>';
  return '<section class="added-section" id="'+E(x.id)+'"><button class="section-back secondary" onclick="showSiteSection(\'home\')">↩ العودة إلى الصفحة الرئيسية</button><h2>'+E(x.icon)+' '+E(x.name)+'</h2><p>'+E(x.desc||'')+'</p>'+body+'</section>';
  }).join('');
-  const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());readCustomSections().filter(x=>x.id!=='honor-roll'&&x.id!=='student-points').forEach(x=>{const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a)})}
+  const main=document.getElementById('main-sections'),grid=main&&main.querySelector('.section-editable-content .grid, .grid');if(grid){
+   grid.querySelectorAll('[data-custom-section-tile="1"]').forEach(e=>e.remove());
+   const normTileName=v=>String(v||'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\\u064B-\\u065F\\u0670]/g,'').replace(/[\\sـ]+/g,' ').trim().toLowerCase();
+   // لا تعِد إنشاء بطاقة الإنتاج المعرفي من بيانات الأقسام؛ لها بطاقة رئيسية ثابتة واحدة برمز 📚.
+   readCustomSections().filter(x=>x.id!=='honor-roll'&&x.id!=='student-points'&&x.id!=='production-knowledge'&&!normTileName(x.name).includes('الانتاج المعرفي')).forEach(x=>{
+    const a=document.createElement('a');a.className='tile';a.href='#'+x.id;a.dataset.customSectionTile='1';
+    a.innerHTML='<span>'+E(x.icon||'🎨')+'</span><strong>'+E(x.name)+'</strong>';grid.append(a);
+   });
+   const keep=grid.querySelector('#knowledgeProductionHomeTile');
+   [...grid.querySelectorAll('[data-custom-section-tile="1"]')].forEach(e=>{if(normTileName(e.textContent).includes('الانتاج المعرفي'))e.remove()});
+   if(keep){const icon=keep.querySelector('span'),label=keep.querySelector('strong');if(icon)icon.textContent='📚';if(label)label.textContent='الإنتاج المعرفي';keep.href='#knowledgeProductionFresh';keep.onclick=function(e){e.preventDefault();openKPFresh()};}
+  }
  const pointsManager=document.getElementById('studentPointsTeacherManager');if(pointsManager)pointsManager.style.display=currentAdmin?'block':'none';
  refreshStudentFeatures();
 };
