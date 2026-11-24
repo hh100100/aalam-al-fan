@@ -2564,6 +2564,19 @@ window.saudiMessage=async()=>{const input=document.getElementById('saudiMsg'),ro
 #main-sections .tile:hover span{transform:scale(1.06)!important}
 #main-sections .tile strong{font-size:clamp(14px,1.7vw,17px);line-height:1.5;text-align:center}
 @media(max-width:520px){#main-sections .art-home-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 5px}#main-sections .tile{padding:5px 2px!important}#main-sections .tile span{font-size:54px!important}#main-sections .tile strong{font-size:13px}}
+
+/* خلفية عالم الفن: بقع ألوان مائية خفيفة مستمرة أثناء التصفح */
+body{background-color:#fffafc!important;background-image: radial-gradient(ellipse 340px 250px at 4% 12%,rgba(194,153,235,.20),transparent 72%),
+ radial-gradient(ellipse 420px 300px at 94% 24%,rgba(248,187,215,.20),transparent 73%),
+ radial-gradient(ellipse 360px 280px at 16% 48%,rgba(169,222,207,.19),transparent 72%),
+ radial-gradient(ellipse 430px 300px at 84% 70%,rgba(255,213,158,.17),transparent 73%),
+ radial-gradient(ellipse 340px 260px at 44% 94%,rgba(203,181,240,.18),transparent 72%),
+ linear-gradient(180deg,#fffafc,#fffdf9 50%,#fafffd)!important;
+ background-size:auto!important;background-attachment:fixed!important;}
+body:before{content:""!important;display:block;position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.22;background-image:
+ radial-gradient(ellipse 150px 70px at 6% 16%,rgba(157,111,209,.18),transparent 75%),
+ radial-gradient(ellipse 190px 90px at 92% 38%,rgba(116,191,177,.17),transparent 75%),
+ radial-gradient(ellipse 160px 75px at 24% 82%,rgba(239,159,194,.17),transparent 75%);background-size:auto;background-attachment:fixed;}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
