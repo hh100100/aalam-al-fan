@@ -1129,25 +1129,25 @@ async function enableInlineEditor(){
  inlineEditMode=true;
  const gallery=document.getElementById('gallery');
  if(gallery&&!document.getElementById('teacherGalleryReview')){
-  const review=document.createElement('div');review.id='teacherGalleryReview';review.className='teacher-inline-review';
+  const review=document.createElement('div');review.id='teacherGalleryReview';review.className='teacher-inline-review';review.style.display='block';
   review.innerHTML='<h3>📥 مراجعة الأعمال الفنية الواردة</h3><p>هذه القائمة تظهر لكِ وحدك بعد تسجيل الدخول.</p><div id="gallerySubmissionsPanel" class="admin-list"></div>';
   gallery.appendChild(review);
  }
  const feedbackSection=document.getElementById('feedback');
  if(feedbackSection&&!document.getElementById('teacherFeedbackReview')){
-  const review=document.createElement('div');review.id='teacherFeedbackReview';review.className='teacher-inline-review';
+  const review=document.createElement('div');review.id='teacherFeedbackReview';review.className='teacher-inline-review';review.style.display='block';
   review.innerHTML='<h3>💌 مراجعة المشاركات الواردة — بصمتك تهمني</h3><p>لا تظهر أي مشاركة للزوار إلا بعد اعتمادك لها.</p><div id="feedbackSubmissionsPanel" class="admin-list"></div>';
   feedbackSection.appendChild(review);
  }
  const reading=document.getElementById('reading');
  if(reading&&!document.getElementById('teacherReadingReview')){
-  const review=document.createElement('div');review.id='teacherReadingReview';review.className='teacher-inline-review';
+  const review=document.createElement('div');review.id='teacherReadingReview';review.className='teacher-inline-review';review.style.display='block';
   review.innerHTML='<h3>📖 مراجعة إجابات الفهم القرائي</h3><div id="readingSubmissionsPanel" class="admin-list"></div>';
   reading.appendChild(review);
  }
  const ask=document.getElementById('ask');
  if(ask&&!document.getElementById('teacherQuestionsReview')){
-  const review=document.createElement('div');review.id='teacherQuestionsReview';review.className='teacher-inline-review';
+  const review=document.createElement('div');review.id='teacherQuestionsReview';review.className='teacher-inline-review';review.style.display='block';
   review.innerHTML='<h3>💌 الأسئلة الواردة من الطلاب والطالبات</h3><p>هذه الرسائل خاصة بحساب المعلمة ولا تظهر للزوار.</p><div id="teacherQuestionsPanel" class="admin-list"></div>';
   ask.appendChild(review);
  }
@@ -1321,7 +1321,13 @@ document.addEventListener('DOMContentLoaded',()=>{
    <h3>إدارة الموقع</h3><p class="admin-note">أدوات الإدارة متاحة بعد التحقق من حساب المعلمة.</p>
    <hr><h3>الشريط المتحرك أعلى الموقع</h3><p class="admin-note">اكتبي كل إعلان في سطر مستقل، وتظهر الرسائل بالتتابع.</p><label for="tickerMessagesInput">إعلانات الشريط</label><textarea id="tickerMessagesInput" rows="4" placeholder="كل إعلان في سطر مستقل"></textarea><div class="admin-actions"><button type="button" onclick="saveTickerMessages()">💾 حفظ إعلانات الشريط</button></div><hr>
    <h3>مراجعة المشاركات</h3>
-   <div class="admin-actions"><button type="button" onclick="loadReadingSubmissions()">مراجعة إجابات الفهم القرائي</button><button type="button" onclick="loadGallerySubmissions()">مراجعة الأعمال الفنية الواردة</button></div>
+   <p class="admin-note">اختاري القسم لفتح المشاركات الواردة ومراجعتها.</p>
+   <div class="admin-actions">
+    <button type="button" onclick="showSiteSection('ask');loadTeacherQuestions()">💌 رسائل اسأل معلمتي</button>
+    <button type="button" onclick="showSiteSection('feedback');loadFeedbackSubmissions()">⭐ تقييمات بصمتك تهمني</button>
+    <button type="button" onclick="showSiteSection('reading');loadReadingSubmissions()">📖 إجابات الفهم القرائي</button>
+    <button type="button" onclick="showSiteSection('gallery');loadGallerySubmissions()">🖼️ صور معرض إبداعاتنا</button>
+   </div>
    <div id="legacyGallerySubmissionsPanel" class="admin-list"></div><div id="legacyReadingSubmissionsPanel" class="admin-list"></div>
    <hr><h3>إضافة قسم للموقع</h3>
    <div class="admin-grid"><div><label for="sectionName">اسم القسم</label><input id="sectionName" placeholder="مثال: أنشطة إضافية"></div><div><label for="sectionIcon">الأيقونة</label><select id="sectionIcon"><option>🎨</option><option>🖌️</option><option>🧵</option><option>🌈</option><option>⭐</option><option>📚</option></select></div></div>
