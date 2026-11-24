@@ -380,9 +380,32 @@ body>*{position:relative;z-index:1}
  <div id="announcementAdminList" class="admin-list"></div>
 </div>
 </section>
-<section class="section" id="main-sections"><h2>اكتشف أقسام عالم الفن</h2><div class="grid">
-<a class="tile" href="#plans"><span>🗓️</span>الخطط والمهام الأسبوعية</a><a class="tile" href="#worksheets"><span>📝</span>الاختبارات وأوراق العمل</a><a class="tile" href="#reading"><span>📖</span>الفهم القرائي</a><a class="tile" href="#enrichment"><span>💡</span>إثراءات</a><a class="tile" href="#gallery"><span>🖼️</span>معرض إبداعاتنا</a><a class="tile" href="#quiz"><span>🎯</span>اختبر إبداعك</a><a class="tile" href="#ask"><span>💌</span>اسأل معلمتي</a><a class="tile" href="#kit"><span>🎒</span>حقيبة الفنان</a><a class="tile" href="#challenge"><span>🏆</span>تحدي الأسبوع</a><a class="tile" id="studentPointsHomeTile" href="#student-points" onclick="showSiteSection('student-points');return false;"><span>⭐</span><strong>نقاطي</strong></a>
- <a class="tile" id="knowledgeProductionHomeTile" href="#knowledgeProductionFresh" onclick="openKPFresh();return false;"><span>📚</span><strong>الإنتاج المعرفي</strong></a><a class="tile" href="#featured-art-lab"><span>🧪</span><strong>مغامرات في مختبر الفن</strong></a><a class="tile" href="#featured-national-art"><span>🇸🇦</span><strong>الفن والهوية الوطنية</strong></a><a class="tile" href="#featured-digital-museum"><span>🖼️</span><strong>المتحف الفني الرقمي</strong></a><a class="tile" href="#featured-sustainable-art"><span>♻️</span><strong>فنون مستدامة</strong></a></div></section>
+<section class="section" id="main-sections">
+<h2>اكتشف أقسام عالم الفن</h2>
+<div class="art-home-group"><h3>🎨 تعلم واكتشف</h3><div class="art-home-grid">
+<a class="tile" href="#kit"><span>🎒</span><strong>حقيبة الفنان</strong></a>
+<a class="tile" href="#plans"><span>🗓️</span><strong>الخطط والمهام الأسبوعية</strong></a>
+<a class="tile" href="#enrichment"><span>💡</span><strong>الإثراءات الفنية</strong></a>
+<a class="tile" id="knowledgeProductionHomeTile" href="#knowledgeProductionFresh" onclick="openKPFresh();return false;"><span>📚</span><strong>الإنتاج المعرفي</strong></a>
+<a class="tile" href="#reading"><span>📖</span><strong>الفهم القرائي</strong></a>
+<a class="tile" href="#worksheets"><span>📝</span><strong>الاختبارات وأوراق العمل</strong></a>
+</div></div>
+<div class="art-home-group"><h3>🧩 العب وابتكر</h3><div class="art-home-grid">
+<a class="tile" href="#quiz"><span>🎯</span><strong>اختبر إبداعك</strong></a>
+<a class="tile" href="#challenge"><span>🏆</span><strong>تحدي الأسبوع</strong></a>
+<a class="tile" href="#featured-art-lab"><span>🧪</span><strong>مغامرات في مختبر الفن</strong></a>
+<a class="tile" href="#featured-sustainable-art"><span>♻️</span><strong>فنون مستدامة</strong></a>
+</div></div>
+<div class="art-home-group"><h3>🖼️ عالم الفن</h3><div class="art-home-grid">
+<a class="tile" href="#gallery"><span>🖼️</span><strong>معرض إبداعاتنا</strong></a>
+<a class="tile" href="#featured-digital-museum"><span>🏛️</span><strong>المتحف الفني الرقمي</strong></a>
+<a class="tile" href="#featured-national-art"><span>🇸🇦</span><strong>الفن والهوية الوطنية</strong></a>
+</div></div>
+<div class="art-home-group"><h3>💌 تواصل وتابع</h3><div class="art-home-grid">
+<a class="tile" href="#ask"><span>💌</span><strong>اسأل معلمتي</strong></a>
+<a class="tile" id="studentPointsHomeTile" href="#student-points" onclick="showSiteSection('student-points');return false;"><span>⭐</span><strong>نقاطي</strong></a>
+<a class="tile" href="#reinforcement"><span>🎖️</span><strong>لوحة التعزيز</strong></a>
+</div></div></section>
 <section class="section" id="student-points"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button><h2>⭐ نقاطي</h2><p>تابع نقاطك التي حصلت عليها مقابل مشاركاتك وإبداعك.</p><div class="my-points-card"><div class="my-points-icon">⭐</div><h3>اكتشف نقاطك</h3><p>اختَر اسمك وصفك، ثم اضغط على عرض نقاطي</p><select id="myPointsStudent"><option value="">اختَر الاسم والصف</option></select><button class="my-points-button" onclick="showMyPoints()">عرض نقاطي ✨</button><div id="myPointsResult" class="my-points-result" aria-live="polite">نقاطك بانتظارك 🌟</div><div id="studentPointsTeacherManager" style="display:none" class="card"><h3>إدارة النقاط</h3><select id="pointStudent"><option value="">اختاري الاسم</option></select><label>عدد النقاط</label><input id="pointValue" type="number" min="1" max="100"><label>السبب</label><input id="pointReason"><button onclick="awardStudentPoints()">إضافة النقاط</button><button onclick="addRosterStudent()">＋ إضافة طالب / طالبة</button></div></div></section>
 <section class="section" id="azkar"><button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button><div style="max-width:950px;margin:auto"><div style="text-align:center;margin:10px auto 24px"><div style="font-size:34px">⛅️ 🤍</div><h2 style="margin:8px 0;color:#426b79">أذكار الصباح والمساء</h2><p class="muted">نورٌ لقلوبنا، وطمأنينةٌ ليومنا، وحفظٌ من الله</p></div><div id="azkarChoices" class="grid" style="gap:16px"><button type="button" onclick="openAzkar('morning')" style="text-align:center;border:1px solid #d9eee4;border-radius:24px;padding:25px 16px;background:linear-gradient(145deg,#fffdf1,#e7f7ed);color:#416b58"><span style="font-size:42px">🌅</span><h3>أذكار الصباح</h3><span>ابدأ يومك بذكر الله</span></button><button type="button" onclick="openAzkar('evening')" style="text-align:center;border:1px solid #dce2f7;border-radius:24px;padding:25px 16px;background:linear-gradient(145deg,#f8f7ff,#e8edff);color:#555e91"><span style="font-size:42px">🌙</span><h3>أذكار المساء</h3><span>اختم يومك بذكر الله</span></button></div>
 <div id="morningAzkar" style="display:none;margin-top:18px"><button type="button" class="secondary" onclick="closeAzkar()">↩ العودة إلى الأذكار</button><h2 style="text-align:center;color:#548365">🌅 أذكار الصباح</h2><div class="lesson" style="background:linear-gradient(145deg,#fffef8,#f0f9f1);border:1px solid #dcefe0">
@@ -2528,6 +2551,19 @@ window.saudiMessage=async()=>{const input=document.getElementById('saudiMsg'),ro
 @keyframes boostBalloonRise{0%{transform:translateY(0) rotate(-8deg);opacity:0}12%{opacity:1}100%{transform:translateY(-620px) rotate(12deg);opacity:0}}
 @keyframes boostBubbleRise{0%{transform:translateY(0) scale(.7);opacity:0}15%{opacity:.9}100%{transform:translateY(-520px) translateX(24px) scale(1.2);opacity:0}}
 @media(max-width:520px){.boost-row{padding:11px;gap:9px}.boost-rank{flex-basis:36px;height:36px}.boost-student strong{font-size:14px}.boost-points{font-size:12px;padding:7px 9px}}
+
+/* الصفحة الرئيسية: أيقونات بدون بطاقات أو خلفيات بيضاء */
+#main-sections{background:transparent!important;border:0!important;box-shadow:none!important;padding:12px 4px!important;overflow:visible!important}
+#main-sections>h2{text-align:center;margin-bottom:22px}
+#main-sections .art-home-group{margin:22px 0 30px}
+#main-sections .art-home-group h3{text-align:center;font-size:clamp(20px,3vw,27px);margin:0 auto 16px;padding:9px 20px;width:max-content;max-width:100%;border-radius:28px;background:linear-gradient(90deg,#e7d6f5aa,#f7dceaaa,#d9efe5aa);color:#5d3b79}
+#main-sections .art-home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:18px 12px;align-items:start}
+#main-sections .tile{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:8px 6px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;text-decoration:none!important;color:var(--ink);min-width:0;transition:transform .2s}
+#main-sections .tile:hover{transform:translateY(-4px);box-shadow:none!important}
+#main-sections .tile span{font-size:clamp(56px,7vw,82px)!important;line-height:1.05;margin:0!important;filter:drop-shadow(0 5px 4px #55317c40)!important;transform:none!important}
+#main-sections .tile:hover span{transform:scale(1.06)!important}
+#main-sections .tile strong{font-size:clamp(14px,1.7vw,17px);line-height:1.5;text-align:center}
+@media(max-width:520px){#main-sections .art-home-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 5px}#main-sections .tile{padding:5px 2px!important}#main-sections .tile span{font-size:54px!important}#main-sections .tile strong{font-size:13px}}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
