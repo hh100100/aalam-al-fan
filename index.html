@@ -531,7 +531,7 @@ body>*{position:relative;z-index:1}
 <span style="font-size:13px;color:#668c84;text-align:center">اضغطي هنا للدخول إلى المنصة ↗</span>
 </a>
 </section>
-<section class="section" id="feedback"><h2>💜 بصمتك تهمني</h2><p>رأيك يساعدنا على تقديم تجربة أجمل للجميع.</p><label>كيف كانت تجربتك؟</label><div class="stars" id="stars-input"><button type="button" onclick="rate(1)">★</button><button type="button" onclick="rate(2)">★</button><button type="button" onclick="rate(3)">★</button><button type="button" onclick="rate(4)">★</button><button type="button" onclick="rate(5)">★</button></div><label>الاسم (اختياري)</label><input placeholder="يمكنك الاكتفاء بالاسم الأول"><label>أتواصل بصفتك</label><select><option>اختاري الصفة</option><option>طالبة</option><option>ولي أمر</option><option>معلمة</option><option>زائرة</option></select><label>رأيك أو اقتراحك</label><textarea placeholder="ما الذي أعجبك؟ وما الفكرة التي تقترحينها لتطويرها؟"></textarea><p class="notice">في النسخة المنشورة، ينبغي مراجعة المشاركات واعتمادها قبل ظهورها للزوار. هذا النموذج التجريبي لا يرسل البيانات ولا يحفظها.</p><button type="button" onclick="alert('هذا نموذج استعراضي فقط. يلزم ربط الموقع بخدمة آمنة لحفظ المشاركات ومراجعتها.')">إرسال المشاركة</button></section>
+<section class="section" id="feedback"><h2>💜 بصمتك تهمني</h2><p>رأيك يساعدنا على تقديم تجربة أجمل للجميع.</p><form id="feedbackForm" onsubmit="submitFeedback(event)"><label>كيف كانت تجربتك؟</label><div class="stars" id="stars-input" role="group" aria-label="تقييم التجربة"><button type="button" aria-label="نجمة واحدة" onclick="rate(1)">★</button><button type="button" aria-label="نجمتان" onclick="rate(2)">★</button><button type="button" aria-label="ثلاث نجوم" onclick="rate(3)">★</button><button type="button" aria-label="أربع نجوم" onclick="rate(4)">★</button><button type="button" aria-label="خمس نجوم" onclick="rate(5)">★</button></div><input type="hidden" id="feedbackRating" value="0"><label for="feedbackName">الاسم (اختياري)</label><input id="feedbackName" maxlength="100" placeholder="يمكنك الاكتفاء بالاسم الأول"><label for="feedbackType">أتواصل بصفتك</label><select id="feedbackType" required><option value="">اختاري الصفة</option><option>طالبة</option><option>ولي أمر</option><option>معلمة</option><option>زائرة</option></select><label for="feedbackMessage">رأيك أو اقتراحك</label><textarea id="feedbackMessage" maxlength="3000" required placeholder="ما الذي أعجبك؟ وما الفكرة التي تقترحينها لتطويرها؟"></textarea><p id="feedbackStatus" class="notice" aria-live="polite">تُراجع المشاركات من المعلمة قبل نشرها.</p><button id="feedbackSubmit" type="submit">إرسال المشاركة</button></form><div id="approvedFeedbackList" aria-live="polite"></div></section>
 <section class="section" id="featured-art-lab">
 <button type="button" class="section-back secondary" onclick="showSiteSection('home')">↩ العودة إلى الصفحة الرئيسية</button>
 <div class="lab-heading"><div class="lab-emoji">🧪✨</div><h2>مغامرات في مختبر الفن</h2><p>شاهدي التجربة، نفّذيها، صوّري عملك، وأرسليه لمعلمتك لتحصلي على وسام إنجازك!</p></div>
@@ -847,7 +847,40 @@ async function markReadingReviewed(id){
  if(error){alert('تعذر تحديث حالة الإجابة.');return}
  loadReadingSubmissions();
 }
-function rate(n){document.querySelectorAll('#stars-input button').forEach((b,i)=>b.classList.toggle('on',i<n))}
+function rate(n){const value=Math.max(0,Math.min(5,Number(n)||0));document.querySelectorAll('#stars-input button').forEach((b,i)=>b.classList.toggle('on',i<value));const field=document.getElementById('feedbackRating');if(field)field.value=String(value)}
+async function submitFeedback(event){
+ event.preventDefault();const status=document.getElementById('feedbackStatus'),button=document.getElementById('feedbackSubmit');
+ if(!sbClient||!supabaseReady()){status.textContent='الخدمة غير متاحة حاليًا. حاولي مرة أخرى لاحقًا.';return}
+ const rating=Number(document.getElementById('feedbackRating').value),sender_type=document.getElementById('feedbackType').value;
+ const sender_name=document.getElementById('feedbackName').value.trim(),message=document.getElementById('feedbackMessage').value.trim();
+ if(rating<1||rating>5){status.textContent='اختاري عدد النجوم أولًا.';return}
+ if(!sender_type||!message){status.textContent='فضلاً اختاري الصفة واكتبي رأيك أو اقتراحك.';return}
+ button.disabled=true;status.textContent='جارٍ إرسال مشاركتك...';
+ const {error}=await sbClient.from('feedback_submissions').insert([{rating,sender_name:sender_name||null,sender_type,message}]);
+ button.disabled=false;
+ if(error){status.textContent='تعذر إرسال المشاركة الآن. تأكدي من إعداد قاعدة البيانات ثم حاولي مجددًا.';return}
+ document.getElementById('feedbackForm').reset();rate(0);status.textContent='وصلت مشاركتك بنجاح 💜 ستراجعها المعلمة قبل ظهورها للزوار.';
+}
+async function loadApprovedFeedback(){
+ const host=document.getElementById('approvedFeedbackList');if(!host||!sbClient)return;
+ const {data,error}=await sbClient.from('feedback_submissions').select('sender_name,sender_type,message,rating,created_at').eq('approved',true).order('created_at',{ascending:false}).limit(30);
+ if(error)return;host.replaceChildren();
+ (data||[]).forEach(item=>{const card=document.createElement('article');card.className='admin-list-item';card.style.display='block';const title=document.createElement('strong');title.textContent=(item.sender_name?item.sender_name+' — ':'')+item.sender_type;card.appendChild(title);const stars=document.createElement('p');stars.textContent='★'.repeat(Math.max(0,Math.min(5,item.rating||0)));card.appendChild(stars);const message=document.createElement('p');message.textContent=item.message;card.appendChild(message);host.appendChild(card)});
+}
+async function loadFeedbackSubmissions(){
+ const host=document.getElementById('feedbackSubmissionsPanel');if(!host)return;
+ if(!sbClient||!currentAdmin){host.textContent='سجّلي الدخول بحساب المعلمة أولًا.';return}
+ host.textContent='جارٍ تحميل المشاركات...';
+ const {data,error}=await sbClient.from('feedback_submissions').select('id,sender_name,sender_type,message,rating,created_at,approved').order('created_at',{ascending:false});
+ if(error){host.textContent='تعذر تحميل المشاركات. تأكدي من تنفيذ إعدادات قاعدة البيانات.';return}
+ host.replaceChildren();if(!data||!data.length){host.textContent='لا توجد مشاركات حتى الآن.';return}
+ data.forEach(item=>{const card=document.createElement('article');card.className='admin-list-item';card.style.display='block';const heading=document.createElement('strong');heading.textContent=(item.sender_name||'بدون اسم')+' — '+item.sender_type+' — '+'★'.repeat(item.rating||0);card.appendChild(heading);const date=document.createElement('p');date.className='muted';date.textContent=item.created_at?new Date(item.created_at).toLocaleString('ar-SA'):'';card.appendChild(date);const msg=document.createElement('p');msg.textContent=item.message;card.appendChild(msg);const state=document.createElement('p');state.textContent=item.approved?'منشورة ومعتمدة':'بانتظار المراجعة';card.appendChild(state);if(!item.approved){const approve=document.createElement('button');approve.type='button';approve.textContent='اعتماد ونشر';approve.onclick=()=>setFeedbackApproval(item.id,true);card.appendChild(approve)}const remove=document.createElement('button');remove.type='button';remove.className='secondary';remove.textContent='حذف';remove.onclick=()=>{if(confirm('هل تريدين حذف هذه المشاركة نهائيًا؟'))setFeedbackApproval(item.id,false,true)};card.appendChild(remove);host.appendChild(card)});
+}
+async function setFeedbackApproval(id,approved,remove=false){
+ if(!sbClient||!currentAdmin)return;const result=remove?await sbClient.from('feedback_submissions').delete().eq('id',id):await sbClient.from('feedback_submissions').update({approved}).eq('id',id);
+ if(result.error){alert('تعذر تحديث المشاركة.');return}await loadFeedbackSubmissions();await loadApprovedFeedback();
+}
+
 const galleryNames={weaving:'أعمال النسيج',printing:'أعمال الطباعة',ornament:'أعمال الزخرفة',drawing:'أعمال الرسم'};
 let activeGalleryCategory='';
 function openGalleryCategory(key){
@@ -1100,6 +1133,12 @@ async function enableInlineEditor(){
   review.innerHTML='<h3>📥 مراجعة الأعمال الفنية الواردة</h3><p>هذه القائمة تظهر لكِ وحدك بعد تسجيل الدخول.</p><div id="gallerySubmissionsPanel" class="admin-list"></div>';
   gallery.appendChild(review);
  }
+ const feedbackSection=document.getElementById('feedback');
+ if(feedbackSection&&!document.getElementById('teacherFeedbackReview')){
+  const review=document.createElement('div');review.id='teacherFeedbackReview';review.className='teacher-inline-review';
+  review.innerHTML='<h3>💌 مراجعة المشاركات الواردة — بصمتك تهمني</h3><p>لا تظهر أي مشاركة للزوار إلا بعد اعتمادك لها.</p><div id="feedbackSubmissionsPanel" class="admin-list"></div>';
+  feedbackSection.appendChild(review);
+ }
  const reading=document.getElementById('reading');
  if(reading&&!document.getElementById('teacherReadingReview')){
   const review=document.createElement('div');review.id='teacherReadingReview';review.className='teacher-inline-review';
@@ -1107,7 +1146,7 @@ async function enableInlineEditor(){
   reading.appendChild(review);
  }
  if(!loaded.error){
-  loadGallerySubmissions();loadReadingSubmissions();
+  loadGallerySubmissions();loadReadingSubmissions();loadFeedbackSubmissions();
   updateDbStatus('وضع المعلمة مفعّل. أدوات التعديل ظاهرة داخل الموقع.');
  }else{
   updateDbStatus('ظهرت أدوات التحرير، لكن يلزم إعداد جدول site_page_edits لحفظ التغييرات بشكل دائم.');
@@ -1731,6 +1770,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
  }catch(e){customSectionsCache=[]}
  if(supabaseReady()){
   sbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  loadApprovedFeedback();
   updateDbStatus('تم إعداد الاتصال. جارٍ تحميل الأقسام المنشورة...');
   // حمّل تعديلات الصفحة أولاً، ثم أضف الأقسام المحفوظة؛ حتى لا يستبدل HTML المحفوظ الأيقونات الجديدة.
   await loadPublishedPageEdits(); // يعرض التعديلات المنشورة للطلاب والطالبات أيضًا
