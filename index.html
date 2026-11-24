@@ -2577,6 +2577,20 @@ body:before{content:""!important;display:block;position:fixed;inset:0;pointer-ev
  radial-gradient(ellipse 150px 70px at 6% 16%,rgba(157,111,209,.18),transparent 75%),
  radial-gradient(ellipse 190px 90px at 92% 38%,rgba(116,191,177,.17),transparent 75%),
  radial-gradient(ellipse 160px 75px at 24% 82%,rgba(239,159,194,.17),transparent 75%);background-size:auto;background-attachment:fixed;}
+
+/* إصلاح الخلفية المائية: بقع ألوان ظاهرة وناعمة ممتدة خلف المحتوى */
+html{background:#fffafc!important;}
+body{background:#fffafc!important;background-image: radial-gradient(ellipse 420px 300px at 3% 8%,rgba(188,139,230,.34),transparent 72%),
+ radial-gradient(ellipse 460px 320px at 96% 22%,rgba(244,166,202,.30),transparent 72%),
+ radial-gradient(ellipse 390px 290px at 12% 48%,rgba(145,215,196,.29),transparent 72%),
+ radial-gradient(ellipse 480px 330px at 87% 72%,rgba(255,204,133,.27),transparent 72%),
+ radial-gradient(ellipse 380px 280px at 48% 98%,rgba(186,165,231,.30),transparent 72%),
+ linear-gradient(180deg,#fffafc,#fffdf9 50%,#fafffd)!important;background-attachment:fixed!important;background-repeat:no-repeat!important;background-size:cover!important;}
+body:before{content:""!important;position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important;opacity:1!important;background-image:
+ radial-gradient(ellipse 250px 140px at 8% 18%,rgba(177,126,220,.16),transparent 78%),
+ radial-gradient(ellipse 260px 150px at 92% 42%,rgba(121,197,181,.17),transparent 78%),
+ radial-gradient(ellipse 220px 140px at 28% 84%,rgba(231,151,189,.14),transparent 78%)!important;}
+body>*{position:relative;z-index:1}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
