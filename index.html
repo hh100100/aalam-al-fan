@@ -1644,7 +1644,7 @@ async function adminSignIn(){
   if(!email||!password){if(status)status.textContent='أدخلي البريد الإلكتروني وكلمة المرور.';alert('اكتبي البريد الإلكتروني وكلمة المرور.');return}
   const {data,error}=await sbClient.auth.signInWithPassword({email,password});
   if(error){if(status)status.textContent='تعذر تسجيل الدخول: '+error.message;alert('تعذر تسجيل الدخول: '+error.message);return}
-  if(!data.user || !data.user.app_metadata || data.user.app_metadata.role!=='teacher'){
+  if(!data.user || !((data.user.app_metadata&&data.user.app_metadata.role==='teacher')||(data.user.user_metadata&&data.user.user_metadata.role==='teacher'))){
    await sbClient.auth.signOut();if(status)status.textContent='الحساب غير مفعّل كحساب معلمة.';alert('تم تسجيل الدخول، لكن الحساب غير مفعّل كحساب معلمة.');return;
   }
   currentAdmin=data.user;setAnnouncementTeacherEditor();await seedProvidedGirlsRoster();await refreshStudentFeatures();
@@ -2161,8 +2161,11 @@ window.addRosterStudent=async function(){if(!currentAdmin)return;const n=prompt(
 window.awardStudentPoints=async function(){const id=document.getElementById('pointStudent')?.value,points=Number(document.getElementById('pointValue')?.value),reason=document.getElementById('pointReason')?.value.trim();if(!id||!Number.isInteger(points)||points<1||points>100||!reason)return alert('اختاري الاسم وأدخلي نقاطًا من 1 إلى 100 والسبب.');const {error}=await sbClient.from('student_points').insert({student_id:id,points,reason});if(error)return alert(error.message);await refreshStudentFeatures();alert('تمت إضافة النقاط.');};
 async function refreshStudentFeatures(){
  if(!sbClient)return;
- const {data:roster}=await sbClient.from('student_roster').select('id,student_name,class_name').eq('active',true).order('class_name').order('student_name');
- const opts='<option value="">اختاري الاسم والصف</option>'+(roster||[]).map(s=>'<option value="'+E(s.id)+'" data-student-name="'+E(s.student_name)+'" data-class-name="'+E(s.class_name)+'">'+E(s.student_name)+' — '+E(s.class_name)+'</option>').join('');
+ const {data:roster,error:rosterError}=await sbClient.from('student_roster').select('id,student_name,class_name').eq('active',true).order('class_name').order('student_name');
+ // إذا منع إعداد القراءة العامة جلب الكشف، اعرض كشف الطالبات المضمّن حتى لا تبقى القوائم فارغة.
+ const fallbackRows=(typeof PROVIDED_GIRLS_ROSTER!=='undefined'?PROVIDED_GIRLS_ROSTER:[]).flatMap((g,i)=>g.names.map((student_name,j)=>({id:'static-'+i+'-'+j,student_name,class_name:g.class_name}))).map(x=>({...x,class_name:x.class_name.replace('٢/','ثاني ').replace(' بنات','')}));
+ const pickerRows=(!rosterError&&Array.isArray(roster)&&roster.length)?roster:fallbackRows;
+ const opts='<option value="">اختاري الاسم والصف</option>'+pickerRows.map(s=>'<option value="'+E(s.id)+'" data-student-name="'+E(s.student_name)+'" data-class-name="'+E(s.class_name)+'">'+E(s.student_name)+' — '+E(s.class_name)+'</option>').join('');
  ['pointStudent','readingStudentSelect','artworkStudentSelect','labStudentSelect'].forEach(id=>{const el=document.getElementById(id);if(el&&el.innerHTML!==opts)el.innerHTML=opts});
  const {data:points}=await sbClient.from('student_points').select('student_id,points');
  const sums={};(points||[]).forEach(p=>sums[p.student_id]=(sums[p.student_id]||0)+p.points);
