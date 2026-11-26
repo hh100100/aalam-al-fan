@@ -2646,9 +2646,10 @@ document.addEventListener('DOMContentLoaded',function(){
 <script id="student-roster-step-picker">
 (function(){
  const classNames=['ثاني ١','ثاني ٢','ثاني ٣','ثاني ٤'];
+ let cachedRows=[];
  const norm=v=>String(v||'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\\sـ]+/g,' ').trim();
  const canon=v=>{const x=norm(v);const m=x.match(/٢\\s*[/／]\\s*([١٢٣٤1-4])/);if(m)return 'ثاني '+({'١':'١','٢':'٢','٣':'٣','٤':'٤','1':'١','2':'٢','3':'٣','4':'٤'}[m[1]]);return x.replace(/ بنات| بنين/g,'').replace(/^ثاني\\s*/,'ثاني ')};
- function rows(){const el=document.getElementById('myPointsStudent');return el?[...el.options].filter(o=>o.value).map(o=>({id:o.value,name:o.dataset.studentName||o.textContent.split(' — ')[0],cls:o.dataset.className||o.textContent.split(' — ').slice(1).join(' — ')})):[]}
+ function rows(){if(cachedRows.length)return cachedRows;const el=document.getElementById('myPointsStudent');return el?[...el.options].filter(o=>o.value).map(o=>({id:o.value,name:o.dataset.studentName||o.textContent.split(' — ')[0],cls:o.dataset.className||o.textContent.split(' — ').slice(1).join(' — ')})):[]}
  function girls(r){return /بنات/.test(norm(r.cls))||classNames.includes(canon(r.cls))&&String(r.id).startsWith('static-')}
  function ensureSelect(id,parent){
   let el=document.getElementById(id);if(!el){el=document.createElement('select');el.id=id;el.required=true}
