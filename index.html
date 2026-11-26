@@ -2655,9 +2655,10 @@ document.addEventListener('DOMContentLoaded',function(){
   el.innerHTML='<option value="">٣. اختاري الاسم</option>';el.style.cssText='width:100%;padding:11px;border:1px solid #d8c4e8;border-radius:12px;background:white;font:inherit';
   return el;
  }
- function mount(targetId,parentId,nameId,classId,keepExisting){
+ function mount(targetId,parentId,nameId,classId){
+  let target=document.getElementById(targetId);if(target?.dataset.pickerMounted)return;
   const parent=document.getElementById(parentId);if(!parent)return;
-  let target=document.getElementById(targetId);
+  target=document.getElementById(targetId);
   if(!target)target=ensureSelect(targetId,parent);
   const wrap=document.createElement('div');wrap.className='student-step-picker';wrap.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:9px;margin:10px 0';
   const gender=document.createElement('select'),cl=document.createElement('select');
@@ -2667,7 +2668,7 @@ document.addEventListener('DOMContentLoaded',function(){
   const name=document.getElementById(nameId)||document.createElement('input');name.type='hidden';name.id=nameId;
   const cls=document.getElementById(classId)||document.createElement('input');cls.type='hidden';cls.id=classId;
   if(target.parentElement)target.remove();
-  parent.insertBefore(wrap,parent.firstChild);wrap.append(gender,cl,target);
+  parent.insertBefore(wrap,parent.firstChild);wrap.append(gender,cl,target);target.dataset.pickerMounted='1';
   if(!name.parentElement)parent.append(name);if(!cls.parentElement)parent.append(cls);
   const reset=()=>{cl.innerHTML='<option value="">٢. اختاري الفصل</option>';target.innerHTML='<option value="">٣. اختاري الاسم</option>';name.value='';cls.value=''};
   gender.onchange=()=>{reset();if(!gender.value)return;classNames.forEach(c=>{const has=rows().some(r=>canon(r.cls)===c&&(gender.value==='girls'?girls(r):!girls(r)));const o=document.createElement('option');o.value=c;o.textContent=c;if(!has)o.disabled=true;cl.append(o)})};
