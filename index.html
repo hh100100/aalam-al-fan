@@ -2165,7 +2165,7 @@ window.refreshStudentFeatures=async function(){
  // إذا منع إعداد القراءة العامة جلب الكشف، اعرض كشف الطالبات المضمّن حتى لا تبقى القوائم فارغة.
  const fallbackRows=(typeof PROVIDED_GIRLS_ROSTER!=='undefined'?PROVIDED_GIRLS_ROSTER:[]).flatMap((g,i)=>g.names.map((student_name,j)=>({id:'static-'+i+'-'+j,student_name,class_name:g.class_name}))).map(x=>({...x,class_name:x.class_name.replace('٢/','ثاني ').replace(' بنات','')}));
  const pickerRows=(!rosterError&&Array.isArray(roster)&&roster.length)?roster:fallbackRows;
- window.__studentRosterPickerRows=pickerRows.map(s=>({id:s.id,name:s.student_name,cls:s.class_name}));
+ window.__studentRosterPickerRows=pickerRows.map(s=>({id:s.id,name:s.student_name,cls:s.class_name,gender:(/بنات/.test(String(s.class_name||''))||/بنات/.test(String(s.gender||s.sex||''))||String(s.id).startsWith('static-'))?'girls':(/بنين/.test(String(s.class_name||''))||/بنين/.test(String(s.gender||s.sex||'')))?'boys':(s.gender||s.sex||'')}));
  const opts='<option value="">اختاري الاسم والصف</option>'+pickerRows.map(s=>'<option value="'+E(s.id)+'" data-student-name="'+E(s.student_name)+'" data-class-name="'+E(s.class_name)+'">'+E(s.student_name)+' — '+E(s.class_name)+'</option>').join('');
  ['pointStudent','readingStudentSelect','artworkStudentSelect','labStudentSelect'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.pickerMounted&&el.innerHTML!==opts)el.innerHTML=opts});
  const {data:points}=await sbClient.from('student_points').select('student_id,points');
@@ -2656,7 +2656,7 @@ document.addEventListener('DOMContentLoaded',function(){
   const el=document.getElementById('myPointsStudent');
   return el?[...el.options].filter(o=>o.value).map(o=>({id:o.value,name:o.dataset.studentName||o.textContent.split(' — ')[0],cls:o.dataset.className||o.textContent.split(' — ').slice(1).join(' — ')})):[];
  }
- function girls(r){return /بنات/.test(norm(r.cls))||String(r.id).startsWith('static-')}
+ function girls(r){if(r.gender==='girls'||r.gender==='female'||r.gender==='بنات')return true;if(r.gender==='boys'||r.gender==='male'||r.gender==='بنين')return false;return /بنات/.test(norm(r.cls))||String(r.id).startsWith('static-')}
  function mount(targetId,parentId,nameId,classId,opts={}){
   let target=document.getElementById(targetId);if(target?.dataset.pickerMounted)return;
   const parent=document.getElementById(parentId);if(!parent)return;
