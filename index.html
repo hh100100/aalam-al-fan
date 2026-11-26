@@ -2174,9 +2174,11 @@ async function refreshStudentFeatures(){
  setBoostTeacherControls();
 }
 window.showMyPoints=async function(){
- const sel=document.getElementById('myPointsStudent'),out=document.getElementById('myPointsResult'),id=sel&&sel.value;
- if(!id){if(out)out.textContent='اختَر اسمك أولًا 🌷';return}
+ const sel=document.getElementById('myPointsStudent'),out=document.getElementById('myPointsResult');let id=sel&&sel.value;
+ if(!id){if(out)out.textContent='اختَر الجنس والفصل واسمك أولًا 🌷';return}
+ if(!sbClient){if(out)out.textContent='الاتصال بالخدمة غير متاح حاليًا. حاولي مرة أخرى.';return}
  out.textContent='جارٍ حساب نقاطك...';
+ if(String(id).startsWith('static-')){const chosen=sel.selectedOptions[0],studentName=chosen?.dataset.studentName,className=chosen?.dataset.className;const lookup=await sbClient.from('student_roster').select('id').eq('student_name',studentName).eq('class_name',className).maybeSingle();if(lookup.error||!lookup.data?.id){out.textContent='تم اختيار الاسم، لكن يلزم ربطه بكشف الطالبات في قاعدة البيانات حتى تظهر نقاطه. أبلغي المعلمة بمراجعة كشف الأسماء.';return}id=lookup.data.id}
  const {data,error}=await sbClient.from('student_points').select('points').eq('student_id',id);
  if(error){out.textContent='تعذر جلب نقاطك الآن، حاولي مرة أخرى.';return}
  const total=(data||[]).reduce((sum,row)=>sum+Number(row.points||0),0);
@@ -2669,15 +2671,15 @@ document.addEventListener('DOMContentLoaded',function(){
   if(name){name.type='hidden';name.id=nameId}
   if(cls){cls.type='hidden';cls.id=classId}
   const host=target.parentElement||parent;
-  if(target.parentElement)target.remove();
-  host.insertBefore(wrap,targetId==='myPointsStudent'?target:host.firstChild);
+  if(targetId==='myPointsStudent'&&target.parentElement){host.insertBefore(wrap,target);}
+  else {if(target.parentElement)target.remove();host.insertBefore(wrap,host.firstChild)}
   wrap.append(gender,cl);
   if(opts.label){const label=document.createElement('div');label.textContent=opts.label;label.style.cssText='grid-column:1/-1;font-weight:800;color:#65427e;margin-bottom:2px';wrap.insertBefore(label,gender)}
   wrap.append(target);target.dataset.pickerMounted='1';
   if(name&&!name.parentElement)host.append(name);if(cls&&!cls.parentElement)host.append(cls);
   const reset=()=>{cl.innerHTML='<option value="">٢. اختاري الفصل</option>';target.innerHTML='<option value="">٣. اختاري الاسم</option>';if(name)name.value='';if(cls)cls.value=''};
-  gender.addEventListener('change',()=>{reset();if(!gender.value)return;classNames.forEach(c=>{const has=rows().some(r=>canon(r.cls)===c&&(gender.value==='girls'?girls(r):!girls(r)));const o=document.createElement('option');o.value=c;o.textContent=c;if(!has)o.disabled=true;cl.append(o)})});
-  cl.addEventListener('change',()=>{target.innerHTML='<option value="">٣. اختاري الاسم</option>';if(name)name.value='';if(cls)cls.value=cl.value;const list=rows().filter(r=>canon(r.cls)===cl.value&&(gender.value==='girls'?girls(r):!girls(r))).sort((a,b)=>a.name.localeCompare(b.name,'ar'));list.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' — '+cl.value;o.dataset.studentName=r.name;o.dataset.className=cl.value;target.append(o)})});
+  gender.addEventListener('change',()=>{reset();if(!gender.value)return;classNames.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cl.append(o)})});
+  cl.addEventListener('change',()=>{target.innerHTML='<option value="">٣. اختاري الاسم</option>';if(name)name.value='';if(cls)cls.value=cl.value;const list=rows().filter(r=>canon(r.cls)===cl.value&&(gender.value==='girls'?girls(r):!girls(r))).sort((a,b)=>a.name.localeCompare(b.name,'ar'));if(!list.length){const empty=document.createElement('option');empty.value='';empty.textContent='لا توجد أسماء مسجلة لهذا الفصل حتى الآن';empty.disabled=true;target.append(empty)}list.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' — '+cl.value;o.dataset.studentName=r.name;o.dataset.className=cl.value;target.append(o)})});
   target.addEventListener('change',()=>{const o=target.selectedOptions[0];if(name)name.value=o?.dataset.studentName||'';if(cls)cls.value=o?.dataset.className||cl.value});
  }
  window.ensureStudentPickers=function(){
