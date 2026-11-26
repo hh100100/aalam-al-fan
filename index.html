@@ -2664,15 +2664,15 @@ document.addEventListener('DOMContentLoaded',function(){
  function girls(r){if(r.gender==='girls'||r.gender==='female'||r.gender==='بنات')return true;if(r.gender==='boys'||r.gender==='male'||r.gender==='بنين')return false;return /بنات/.test(norm(r.cls))||String(r.id).startsWith('static-')}
  function mount(targetId,parentId,nameId,classId,opts={}){
   let target=document.getElementById(targetId);if(target?.dataset.pickerMounted)return;
-  const parent=document.getElementById(parentId);if(!parent)return;
+  const parent=document.getElementById(parentId)||target?.parentElement;if(!parent)return;
   if(!target){target=document.createElement('select');target.id=targetId;target.required=true}
   target.style.cssText='width:100%;padding:11px;border:1px solid #d8c4e8;border-radius:12px;background:white;font:inherit';
   target.innerHTML='<option value="">٣. اختاري الاسم</option>';
-  const wrap=document.createElement('div');wrap.className='student-step-picker';wrap.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:9px;margin:10px 0';
+  const wrap=document.createElement('div');wrap.className='student-step-picker';wrap.style.cssText='display:flex;flex-direction:column;gap:10px;margin:12px 0';
   const gender=document.createElement('select'),cl=document.createElement('select');
   [gender,cl].forEach(x=>x.style.cssText='width:100%;padding:11px;border:1px solid #d8c4e8;border-radius:12px;background:white;font:inherit');
   gender.innerHTML='<option value="">١. اختاري بنين أو بنات</option><option value="boys">بنين</option><option value="girls">بنات</option>';
-  cl.innerHTML='<option value="">٢. اختاري الفصل</option>';
+  cl.innerHTML='<option value="">٢. اختاري الفصل</option>';cl.style.display='none';target.style.display='none';
   const name=nameId?(document.getElementById(nameId)||document.createElement('input')):null;
   const cls=classId?(document.getElementById(classId)||document.createElement('input')):null;
   if(name){name.type='hidden';name.id=nameId}
@@ -2684,9 +2684,9 @@ document.addEventListener('DOMContentLoaded',function(){
   if(opts.label){const label=document.createElement('div');label.textContent=opts.label;label.style.cssText='grid-column:1/-1;font-weight:800;color:#65427e;margin-bottom:2px';wrap.insertBefore(label,gender)}
   wrap.append(target);target.dataset.pickerMounted='1';
   if(name&&!name.parentElement)host.append(name);if(cls&&!cls.parentElement)host.append(cls);
-  const reset=()=>{cl.innerHTML='<option value="">٢. اختاري الفصل</option>';target.innerHTML='<option value="">٣. اختاري الاسم</option>';if(name)name.value='';if(cls)cls.value=''};
-  gender.addEventListener('change',()=>{reset();if(!gender.value)return;classNames.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cl.append(o)})});
-  cl.addEventListener('change',()=>{target.innerHTML='<option value="">٣. اختاري الاسم</option>';if(name)name.value='';if(cls)cls.value=cl.value;const list=rows().filter(r=>canon(r.cls)===cl.value&&(gender.value==='girls'?girls(r):!girls(r))).sort((a,b)=>a.name.localeCompare(b.name,'ar'));if(!list.length){const empty=document.createElement('option');empty.value='';empty.textContent='لا توجد أسماء مسجلة لهذا الفصل حتى الآن';empty.disabled=true;target.append(empty)}list.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' — '+cl.value;o.dataset.studentName=r.name;o.dataset.className=cl.value;target.append(o)})});
+  const reset=()=>{cl.innerHTML='<option value="">٢. اختاري الفصل</option>';cl.style.display='none';target.innerHTML='<option value="">٣. اختاري الاسم</option>';target.style.display='none';if(name)name.value='';if(cls)cls.value=''};
+  gender.addEventListener('change',()=>{reset();if(!gender.value)return;classNames.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cl.append(o)});cl.style.display='block'});
+  cl.addEventListener('change',()=>{target.innerHTML='<option value="">٣. اختاري الاسم</option>';target.style.display='none';if(name)name.value='';if(cls)cls.value=cl.value;if(!cl.value)return;const list=rows().filter(r=>canon(r.cls)===cl.value&&(gender.value==='girls'?girls(r):!girls(r))).sort((a,b)=>a.name.localeCompare(b.name,'ar'));if(!list.length){const empty=document.createElement('option');empty.value='';empty.textContent='لا توجد أسماء مسجلة لهذا الفصل حتى الآن';empty.disabled=true;target.append(empty)}list.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name;o.dataset.studentName=r.name;o.dataset.className=cl.value;target.append(o)});target.style.display='block'});
   target.addEventListener('change',()=>{const o=target.selectedOptions[0];if(name)name.value=o?.dataset.studentName||'';if(cls)cls.value=o?.dataset.className||cl.value});
  }
  window.ensureStudentPickers=function(){
