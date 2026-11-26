@@ -2166,10 +2166,10 @@ async function refreshStudentFeatures(){
  const fallbackRows=(typeof PROVIDED_GIRLS_ROSTER!=='undefined'?PROVIDED_GIRLS_ROSTER:[]).flatMap((g,i)=>g.names.map((student_name,j)=>({id:'static-'+i+'-'+j,student_name,class_name:g.class_name}))).map(x=>({...x,class_name:x.class_name.replace('٢/','ثاني ').replace(' بنات','')}));
  const pickerRows=(!rosterError&&Array.isArray(roster)&&roster.length)?roster:fallbackRows;
  const opts='<option value="">اختاري الاسم والصف</option>'+pickerRows.map(s=>'<option value="'+E(s.id)+'" data-student-name="'+E(s.student_name)+'" data-class-name="'+E(s.class_name)+'">'+E(s.student_name)+' — '+E(s.class_name)+'</option>').join('');
- ['pointStudent','readingStudentSelect','artworkStudentSelect','labStudentSelect'].forEach(id=>{const el=document.getElementById(id);if(el&&el.innerHTML!==opts)el.innerHTML=opts});
+ ['pointStudent','readingStudentSelect','artworkStudentSelect','labStudentSelect'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.pickerMounted&&el.innerHTML!==opts)el.innerHTML=opts});
  const {data:points}=await sbClient.from('student_points').select('student_id,points');
  const sums={};(points||[]).forEach(p=>sums[p.student_id]=(sums[p.student_id]||0)+p.points);
- const mySel=document.getElementById('myPointsStudent');if(mySel&&mySel.innerHTML!==opts)mySel.innerHTML=opts;
+ const mySel=document.getElementById('myPointsStudent');if(mySel&&!mySel.dataset.pickerMounted&&mySel.innerHTML!==opts)mySel.innerHTML=opts;
  await loadPublishedBoostBoard();
  setBoostTeacherControls();
 }
