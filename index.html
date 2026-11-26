@@ -2639,4 +2639,84 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 
+
+<script id="student-roster-step-picker">
+(function(){
+ const classes=[['ثاني ١','٢/١ بنات'],['ثاني ٢','٢/٢ بنات'],['ثاني ٣','٢/٣ بنات'],['ثاني ٤','٢/٤ بنات']];
+ const norm=v=>String(v||'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\\sـ]+/g,' ').trim();
+ function rosterRows(){
+  const sel=document.getElementById('myPointsStudent');
+  return sel?[...sel.options].filter(o=>o.value).map(o=>({id:o.value,name:o.dataset.studentName||o.textContent.split(' — ')[0],cls:o.dataset.className||o.textContent.split(' — ')[1]||''})):[]; 
+ }
+ function canonical(c){const x=norm(c);const m=x.match(/٢\\s*[/／]\\s*([١٢٣٤1-4])/);if(m)return 'ثاني '+({'١':'١','٢':'٢','٣':'٣','٤':'٤','1':'١','2':'٢','3':'٣','4':'٤'}[m[1]]);return x.replace(/ بنات| بنين/g,'').replace(/^ثاني\\s*/,'ثاني ')}
+ function isGirl(r){return classes.some(x=>norm(r.cls)===norm(x[1])||canonical(r.cls)===x[0])}
+ function makePicker(parent,nameId,classId,opts){
+  if(!parent)return null;
+  const wrap=document.createElement('div');wrap.className='student-step-picker';wrap.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0';
+  const gender=document.createElement('select'),cl=document.createElement('select'),student=document.createElement('select');
+  [gender,cl,student].forEach(x=>{x.required=true;x.style.cssText='width:100%;padding:11px;border:1px solid #d8c4e8;border-radius:12px;background:white;font:inherit'});
+  gender.innerHTML='<option value="">١. اختاري بنين أو بنات</option><option value="boys">بنين</option><option value="girls">بنات</option>';
+  cl.innerHTML='<option value="">٢. اختاري الفصل</option>';
+  student.innerHTML='<option value="">٣. اختاري الاسم</option>';
+  const hiddenName=document.getElementById(nameId)||document.createElement('input');hiddenName.type='hidden';hiddenName.id=nameId;
+  const hiddenClass=document.getElementById(classId)||document.createElement('input');hiddenClass.type='hidden';hiddenClass.id=classId;
+  if(!hiddenName.parentNode)parent.appendChild(hiddenName);if(!hiddenClass.parentNode)parent.appendChild(hiddenClass);
+  const refresh=()=>{
+   const all=rosterRows(),g=gender.value;
+   cl.innerHTML='<option value="">٢. اختاري الفصل</option>';
+   if(g)classes.forEach(([label])=>{const has=all.some(r=>canonical(r.cls)===label&&(g==='girls'?isGirl(r):!isGirl(r)));const op=document.createElement('option');op.value=label;op.textContent=label;cl.appendChild(op);if(g==='girls'&&!has)op.disabled=true});
+   student.innerHTML='<option value="">٣. اختاري الاسم</option>';
+   hiddenName.value='';hiddenClass.value='';
+  };
+  gender.addEventListener('change',refresh);
+  cl.addEventListener('change',()=>{
+   const g=gender.value,rows=rosterRows().filter(r=>canonical(r.cls)===cl.value&&(g==='girls'?isGirl(r):!isGirl(r)));
+   student.innerHTML='<option value="">٣. اختاري الاسم</option>';
+   rows.sort((a,b)=>a.name.localeCompare(b.name,'ar')).forEach(r=>{const op=document.createElement('option');op.value=r.id;op.textContent=r.name;op.dataset.name=r.name;student.appendChild(op)});
+   hiddenClass.value=cl.value;hiddenName.value='';
+  });
+  student.addEventListener('change',()=>{const o=student.selectedOptions[0];hiddenName.value=o?.dataset.name||'';hiddenClass.value=cl.value});
+  wrap.append(gender,cl,student);parent.insertBefore(wrap,parent.firstChild);return {gender,cl,student};
+ }
+ document.addEventListener('DOMContentLoaded',()=>{
+  const configs=[
+   ['readingStudentSelect','readingStudentName','readingClass','readingAnswersForm'],
+   ['artworkStudentSelect','artworkStudentName','artworkClassName','galleryCategoryPanel'],
+   [null,'askTeacherName','askTeacherClass','askTeacherName']
+  ];
+  configs.forEach(([oldId,n,c,formId])=>{
+   let old=document.getElementById(oldId||'');let parent=formId==='askTeacherName'?old?.parentElement:document.getElementById(formId);
+   if(!parent)return;
+   if(old)old.remove();
+   const nEl=document.getElementById(n),cEl=document.getElementById(c);
+   if(nEl)nEl.type='hidden';if(cEl)cEl.type='hidden';
+   makePicker(parent,n,c);
+  });
+  // نقاطي: نفس التسلسل قبل قائمة الاسم، مع الإبقاء على قيمة معرّف الطالبة المستخدمة لحساب النقاط.
+  const points=document.getElementById('myPointsStudent');
+  if(points&&points.parentElement&&!points.dataset.stepPicker){
+   points.dataset.stepPicker='1';
+   const host=document.createElement('div');host.className='student-step-picker';host.style.cssText='display:grid;gap:10px;margin:10px 0';
+   const g=document.createElement('select'),c=document.createElement('select');
+   [g,c].forEach(x=>x.style.cssText='padding:11px;border:1px solid #d8c4e8;border-radius:12px;font:inherit');
+   g.innerHTML='<option value="">١. اختاري بنين أو بنات</option><option value="boys">بنين</option><option value="girls">بنات</option>';
+   c.innerHTML='<option value="">٢. اختاري الفصل</option>';
+   const old=points;old.innerHTML='<option value="">٣. اختاري الاسم</option>';
+   g.onchange=()=>{c.innerHTML='<option value="">٢. اختاري الفصل</option>';old.innerHTML='<option value="">٣. اختاري الاسم</option>';if(g.value)classes.forEach(([label])=>{const op=document.createElement('option');op.value=label;op.textContent=label;c.appendChild(op)})};
+   c.onchange=()=>{const all=rosterRows().filter(r=>canonical(r.cls)===c.value&&(g.value==='girls'?isGirl(r):!isGirl(r)));old.innerHTML='<option value="">٣. اختاري الاسم</option>';all.sort((a,b)=>a.name.localeCompare(b.name,'ar')).forEach(r=>{const op=document.createElement('option');op.value=r.id;op.textContent=r.name;op.dataset.studentName=r.name;op.dataset.className=c.value;old.appendChild(op)})};
+   old.parentElement.insertBefore(host,old);host.append(g,c,old);
+  }
+  const lab=document.getElementById('labStudentSelect');
+  if(lab&&!lab.dataset.stepPicker){
+   lab.dataset.stepPicker='1';const host=document.createElement('div');host.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0';
+   const g=document.createElement('select'),c=document.createElement('select');[g,c].forEach(x=>x.style.cssText='padding:11px;border:1px solid #d8c4e8;border-radius:12px;font:inherit');
+   g.innerHTML='<option value="">١. اختاري بنين أو بنات</option><option value="boys">بنين</option><option value="girls">بنات</option>';c.innerHTML='<option value="">٢. اختاري الفصل</option>';
+   g.onchange=()=>{c.innerHTML='<option value="">٢. اختاري الفصل</option>';lab.innerHTML='<option value="">٣. اختاري الاسم</option>';classes.forEach(([label])=>{const o=document.createElement('option');o.value=label;o.textContent=label;c.append(o)})};
+   c.onchange=()=>{const all=rosterRows().filter(r=>canonical(r.cls)===c.value&&(g.value==='girls'?isGirl(r):!isGirl(r)));lab.innerHTML='<option value="">٣. اختاري الاسم</option>';all.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' — '+c.value;o.dataset.studentName=r.name;o.dataset.className=c.value;lab.append(o)})};
+   lab.parentElement.insertBefore(host,lab);host.append(g,c,lab);
+  }
+ });
+})();
+</script>
+
 </body></html>
