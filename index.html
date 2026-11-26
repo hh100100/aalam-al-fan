@@ -1647,7 +1647,7 @@ async function adminSignIn(){
   if(!data.user || !((data.user.app_metadata&&data.user.app_metadata.role==='teacher')||(data.user.user_metadata&&data.user.user_metadata.role==='teacher'))){
    await sbClient.auth.signOut();if(status)status.textContent='الحساب غير مفعّل كحساب معلمة.';alert('تم تسجيل الدخول، لكن الحساب غير مفعّل كحساب معلمة.');return;
   }
-  currentAdmin=data.user;setAnnouncementTeacherEditor();await window.seedProvidedGirlsRoster();await refreshStudentFeatures();
+  currentAdmin=data.user;setAnnouncementTeacherEditor();await window.seedProvidedGirlsRoster();await window.refreshStudentFeatures();
   document.getElementById('adminAuthBox').style.display='none';document.getElementById('adminTools').style.display='block';
   if(status)status.textContent='تم تسجيل الدخول. جارٍ تفعيل أدوات المعلمة...';
   await loadSectionsFromCloud();renderEnrichmentVideos();await enableInlineEditor();closeAdmin();
@@ -1837,7 +1837,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
    currentAdmin=session.user;
    setAnnouncementTeacherEditor();
    await seedProvidedGirlsRoster();
-   await refreshStudentFeatures();
+   await window.refreshStudentFeatures();
    document.getElementById('adminAuthBox').style.display='none';
    document.getElementById('adminTools').style.display='block';
    await loadSectionsFromCloud();
@@ -1851,7 +1851,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
  }else{
   updateDbStatus('بانتظار إضافة رابط Supabase ومفتاح Publishable لإتاحة الحفظ المشترك.');
  }
- await refreshStudentFeatures(); // تعبئة قائمة نقاطي وأسماء الطلاب والطالبات لجميع الزوار
+ await window.refreshStudentFeatures(); // تعبئة قائمة نقاطي وأسماء الطلاب والطالبات لجميع الزوار
  const pointsManager=document.getElementById('studentPointsTeacherManager');
  if(pointsManager)pointsManager.style.display=currentAdmin?'block':'none';
  renderCustomSections();renderAdminLists();loadPublishedArtworks();
@@ -2157,9 +2157,9 @@ window.seedProvidedGirlsRoster=async function(){
  return true;
 }
 
-window.addRosterStudent=async function(){if(!currentAdmin)return;const n=prompt('اسم الطالب أو الطالبة:');if(!n||!n.trim())return;const cl=prompt('الصف / الفصل:');if(!cl||!cl.trim())return;const {error}=await sbClient.from('student_roster').upsert({student_name:n.trim(),class_name:cl.trim(),active:true},{onConflict:'student_name,class_name'});if(error)return alert(error.message);await refreshStudentFeatures();alert('تمت إضافة الاسم.');};
-window.awardStudentPoints=async function(){const id=document.getElementById('pointStudent')?.value,points=Number(document.getElementById('pointValue')?.value),reason=document.getElementById('pointReason')?.value.trim();if(!id||!Number.isInteger(points)||points<1||points>100||!reason)return alert('اختاري الاسم وأدخلي نقاطًا من 1 إلى 100 والسبب.');const {error}=await sbClient.from('student_points').insert({student_id:id,points,reason});if(error)return alert(error.message);await refreshStudentFeatures();alert('تمت إضافة النقاط.');};
-async function refreshStudentFeatures(){
+window.addRosterStudent=async function(){if(!currentAdmin)return;const n=prompt('اسم الطالب أو الطالبة:');if(!n||!n.trim())return;const cl=prompt('الصف / الفصل:');if(!cl||!cl.trim())return;const {error}=await sbClient.from('student_roster').upsert({student_name:n.trim(),class_name:cl.trim(),active:true},{onConflict:'student_name,class_name'});if(error)return alert(error.message);await window.refreshStudentFeatures();alert('تمت إضافة الاسم.');};
+window.awardStudentPoints=async function(){const id=document.getElementById('pointStudent')?.value,points=Number(document.getElementById('pointValue')?.value),reason=document.getElementById('pointReason')?.value.trim();if(!id||!Number.isInteger(points)||points<1||points>100||!reason)return alert('اختاري الاسم وأدخلي نقاطًا من 1 إلى 100 والسبب.');const {error}=await sbClient.from('student_points').insert({student_id:id,points,reason});if(error)return alert(error.message);await window.refreshStudentFeatures();alert('تمت إضافة النقاط.');};
+window.refreshStudentFeatures=async function(){
  if(!sbClient)return;
  const {data:roster,error:rosterError}=await sbClient.from('student_roster').select('id,student_name,class_name').eq('active',true).order('class_name').order('student_name');
  // إذا منع إعداد القراءة العامة جلب الكشف، اعرض كشف الطالبات المضمّن حتى لا تبقى القوائم فارغة.
@@ -2276,7 +2276,7 @@ window.openKFolder=function(id){const s=sec('production-knowledge'),f=s&&s.cards
 document.addEventListener('DOMContentLoaded',()=>{
  const oldReading=document.getElementById('readingStudentName'),oldClass=document.getElementById('readingClass');if(oldReading&&oldClass){const sel=document.createElement('select');sel.id='readingStudentSelect';sel.required=true;sel.innerHTML='<option value="">اختاري الاسم والصف</option>';oldReading.replaceWith(sel);oldClass.remove();}
  const an=document.getElementById('artworkStudentName'),ac=document.getElementById('artworkClassName');if(an&&ac){const sel=document.createElement('select');sel.id='artworkStudentSelect';sel.required=true;sel.innerHTML='<option value="">اختاري الاسم والصف</option>';an.replaceWith(sel);ac.remove();}
- const w=()=>{if(sbClient)refreshStudentFeatures();else setTimeout(w,400)};w();
+ const w=()=>{if(sbClient)window.refreshStudentFeatures();else setTimeout(w,400)};w();
 });
 })();
 </script>
