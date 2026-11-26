@@ -2178,6 +2178,8 @@ window.refreshStudentFeatures=async function(){
  const mySel=document.getElementById('myPointsStudent');if(mySel&&!mySel.dataset.pickerMounted&&mySel.innerHTML!==opts)mySel.innerHTML=opts;
  await loadPublishedBoostBoard();
  setBoostTeacherControls();
+ // تأكد من تركيب اختيارات الجنس ثم الفصل ثم الاسم للطلاب والزوار بعد تحميل الكشف
+ if(window.ensureStudentPickers)window.ensureStudentPickers();
 }
 window.showMyPoints=async function(){
  const sel=document.getElementById('myPointsStudent'),out=document.getElementById('myPointsResult');let id=sel&&sel.value;
@@ -2675,8 +2677,8 @@ document.addEventListener('DOMContentLoaded',function(){
   cl.innerHTML='<option value="">٢. اختاري الفصل</option>';cl.style.display='none';target.style.display='none';
   const name=nameId?(document.getElementById(nameId)||document.createElement('input')):null;
   const cls=classId?(document.getElementById(classId)||document.createElement('input')):null;
-  if(name){name.type='hidden';name.id=nameId}
-  if(cls){cls.type='hidden';cls.id=classId}
+  if(name){name.type='hidden';name.id=nameId;if(name.labels)Array.from(name.labels).forEach(l=>l.style.display='none')}
+  if(cls){cls.type='hidden';cls.id=classId;if(cls.labels)Array.from(cls.labels).forEach(l=>l.style.display='none')}
   const host=target.parentElement||parent;
   if(targetId==='myPointsStudent'&&target.parentElement){host.insertBefore(wrap,target);}
   else {if(target.parentElement)target.remove();host.insertBefore(wrap,host.firstChild)}
