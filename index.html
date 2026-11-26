@@ -1836,6 +1836,8 @@ document.addEventListener('DOMContentLoaded',async()=>{
   if(session && session.user && session.user.app_metadata && session.user.app_metadata.role==='teacher'){
    currentAdmin=session.user;
    setAnnouncementTeacherEditor();
+   await seedProvidedGirlsRoster();
+   await refreshStudentFeatures();
    document.getElementById('adminAuthBox').style.display='none';
    document.getElementById('adminTools').style.display='block';
    await loadSectionsFromCloud();
