@@ -2142,10 +2142,18 @@ const PROVIDED_GIRLS_ROSTER=[
  {class_name:'٢/٤ بنات',names:['اكرام احمد يوس','ايناس محمد احمد','تالين علي قرشي','توليب عامر سعد','ثراء هاني سيف','جناء عبدالكريم السعدي','جنات عبدالله محمد','حلا خالد احمد','حنين علي يسلم','ذكرى محمد الشاعري','رفيف حسين الحكمي','رنيم عبدالعزيز صالح','ريتال اسماعيل محمد','ريهام محمد سلطان','سالي بسام اليافعي','سيرين عبدالله عبدالرحمن','غلا احمد باوزير','فرح فرحان احمد','لدن اسماعيل عبدالمحمود','لوله مصطفى سالم','ليان صلاح محمد','ماريا عمار المطري','ماسة محمد المكاوي','مرام احمد عبده','منار داهم بن مخاشن','نور محمد غيلان']}
 ];
 async function seedProvidedGirlsRoster(){
- if(!currentAdmin||!sbClient)return;
+ if(!currentAdmin||!sbClient)return false;
  const rows=PROVIDED_GIRLS_ROSTER.flatMap(group=>group.names.map(student_name=>({student_name,class_name:group.class_name,active:true})));
- const {error}=await sbClient.from('student_roster').upsert(rows,{onConflict:'student_name,class_name'});
- if(error){console.warn('تعذر إضافة كشف البنات:',error.message);updateDbStatus('تعذر حفظ كشف الأسماء: '+error.message);return false;}
+ const {data:existing,error:readError}=await sbClient.from('student_roster').select('student_name,class_name').eq('active',true);
+ if(readError){console.warn('تعذر قراءة كشف الطلاب:',readError.message);updateDbStatus('تعذر قراءة كشف الأسماء: '+readError.message);return false;}
+ const key=(n,c)=>String(n||'').trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\sـ]+/g,' ').toLowerCase()+'|'+String(c||'').trim();
+ const seen=new Set((existing||[]).map(r=>key(r.student_name,r.class_name)));
+ const missing=rows.filter(r=>!seen.has(key(r.student_name,r.class_name)));
+ if(missing.length){
+  const {error}=await sbClient.from('student_roster').insert(missing);
+  if(error){console.warn('تعذر إضافة كشف البنات:',error.message);updateDbStatus('تعذر حفظ كشف الأسماء: '+error.message);return false;}
+ }
+ updateDbStatus('تم حفظ كشف الطالبات وتحديث قوائم الاختيار.');
  return true;
 }
 
