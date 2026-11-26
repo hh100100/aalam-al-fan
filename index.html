@@ -1647,7 +1647,7 @@ async function adminSignIn(){
   if(!data.user || !data.user.app_metadata || data.user.app_metadata.role!=='teacher'){
    await sbClient.auth.signOut();if(status)status.textContent='الحساب غير مفعّل كحساب معلمة.';alert('تم تسجيل الدخول، لكن الحساب غير مفعّل كحساب معلمة.');return;
   }
-  currentAdmin=data.user;setAnnouncementTeacherEditor();
+  currentAdmin=data.user;setAnnouncementTeacherEditor();await seedProvidedGirlsRoster();
   document.getElementById('adminAuthBox').style.display='none';document.getElementById('adminTools').style.display='block';
   if(status)status.textContent='تم تسجيل الدخول. جارٍ تفعيل أدوات المعلمة...';
   await loadSectionsFromCloud();renderEnrichmentVideos();await enableInlineEditor();closeAdmin();
@@ -2132,6 +2132,21 @@ window.addKnowledgeItem=async function(parentId){
  }
  s.cards.push(c);try{await save();alert('تمت الإضافة والنشر.')}catch(e){alert('تعذر الحفظ: '+e.message)}
 };
+
+const PROVIDED_GIRLS_ROSTER=[
+ {class_name:'٢/١ بنات',names:['ايلان عبدالعزيز الرفاعي','ايلين عبدالمجيد الزهراني','تالا طارق بخاري','تاله فيصل سليماني','ترف فيصل الغامدي','جمانة طويهر المزروعي','جود نجيب الزهراني','جيان صالح البلادي','حنين ماجد المطيري','حور ابراهيم الجهني','حور رشاد المغربي','دارين احمد الزهراني','ديالا معتز المجلد','رغد عبدالرؤوف شيبان','سما فهد الغامدي','سوار عاطف اللبدي','كيان زاهر عسيري','لارا احمد السلمي','لانا مسفر المالكي','لورا احمد الغامدي','ليان مجدي منصري','مايا خالد السفري','ملكة خالد العمري','ميلاف علي الزهراني','نوف عبدالقادر سعد','هدى خالد سيد','همس عبدالله الشهري','وداد عبدالله الجهني','وصال مصطفى ادام','ولاء عواض الزهراني']},
+ {class_name:'٢/٢ بنات',names:['اسراء محمد خان','تالا شائف الحاصل','جود مجاهد التجاني','خديجة يسري يوسف','رفيف شاهد الجعدي','رهف علوي خضري','روان عمر همامي','سدن ثامر سعد','سهام سامي السيد','شذى محمد باوزير','شهد شائف الحاصل','طيف مهند سعيد','عهود عبدالباسط حيدره','غزل خالد بوزينه','فرح سليم السوسي','كيان عاصم حميد','كيان محمد الديني','كيان مصطفى علي','لجين محمد اسماعيل','ليليان شعبان بركه','ملك فهد باشويه','منار محمد باهيثم','ميرال سمير صديقي','ميراي محمد ناصر','ميلاف جمعه الخيبري','نايا حسان تيمور','نور رويس عولقي','نوراي محمد ناصر']},
+ {class_name:'٢/٣ بنات',names:['امنة يوسف صقر','ارزاق رضوان جميله','اسماء الشحات متولي','ايه سالم الحامدي','تالا محمد عقلان','جمانة اوسان عمر','خلود احمد حسن','خيرية احمد بابكر','رؤى عبدالرحمن باراس','رفيف سليمان بركه','رهف سرحان سرحان','ريتال نواف طلحه','سلطانه محمد سعيد','صمود علي بن محفوظ','عزة شوقي العدلاني','فلة فرج جون','ليان هلال عبدالرب','لين احمد شجاع','مكه محمد عطيه','منار هلال عبدالوهاب','منال غول','ميرا حاجي مبشر','ميرال سالم باظراح','ميلا بسام قوزي','نور محمد شقحان','نورة نور الاسلام محمد','نورة شهاب منصور','هنادي فوزي البرقوني','وئام محمد سعيد']},
+ {class_name:'٢/٤ بنات',names:['اكرام احمد يوس','ايناس محمد احمد','تالين علي قرشي','توليب عامر سعد','ثراء هاني سيف','جناء عبدالكريم السعدي','جنات عبدالله محمد','حلا خالد احمد','حنين علي يسلم','ذكرى محمد الشاعري','رفيف حسين الحكمي','رنيم عبدالعزيز صالح','ريتال اسماعيل محمد','ريهام محمد سلطان','سالي بسام اليافعي','سيرين عبدالله عبدالرحمن','غلا احمد باوزير','فرح فرحان احمد','لدن اسماعيل عبدالمحمود','لوله مصطفى سالم','ليان صلاح محمد','ماريا عمار المطري','ماسة محمد المكاوي','مرام احمد عبده','منار داهم بن مخاشن','نور محمد غيلان']}
+];
+async function seedProvidedGirlsRoster(){
+ if(!currentAdmin||!sbClient)return;
+ const rows=PROVIDED_GIRLS_ROSTER.flatMap(group=>group.names.map(student_name=>({student_name,class_name:group.class_name,active:true})));
+ const {error}=await sbClient.from('student_roster').upsert(rows,{onConflict:'student_name,class_name'});
+ if(error){console.warn('تعذر إضافة كشف البنات:',error.message);updateDbStatus('تعذر حفظ كشف الأسماء: '+error.message);return false;}
+ return true;
+}
+
 window.addRosterStudent=async function(){if(!currentAdmin)return;const n=prompt('اسم الطالب أو الطالبة:');if(!n||!n.trim())return;const cl=prompt('الصف / الفصل:');if(!cl||!cl.trim())return;const {error}=await sbClient.from('student_roster').upsert({student_name:n.trim(),class_name:cl.trim(),active:true},{onConflict:'student_name,class_name'});if(error)return alert(error.message);await refreshStudentFeatures();alert('تمت إضافة الاسم.');};
 window.awardStudentPoints=async function(){const id=document.getElementById('pointStudent')?.value,points=Number(document.getElementById('pointValue')?.value),reason=document.getElementById('pointReason')?.value.trim();if(!id||!Number.isInteger(points)||points<1||points>100||!reason)return alert('اختاري الاسم وأدخلي نقاطًا من 1 إلى 100 والسبب.');const {error}=await sbClient.from('student_points').insert({student_id:id,points,reason});if(error)return alert(error.message);await refreshStudentFeatures();alert('تمت إضافة النقاط.');};
 async function refreshStudentFeatures(){
