@@ -2141,9 +2141,14 @@ const PROVIDED_GIRLS_ROSTER=[
  {class_name:'٢/٣ بنات',names:['امنة يوسف صقر','ارزاق رضوان جميله','اسماء الشحات متولي','ايه سالم الحامدي','تالا محمد عقلان','جمانة اوسان عمر','خلود احمد حسن','خيرية احمد بابكر','رؤى عبدالرحمن باراس','رفيف سليمان بركه','رهف سرحان سرحان','ريتال نواف طلحه','سلطانه محمد سعيد','صمود علي بن محفوظ','عزة شوقي العدلاني','فلة فرج جون','ليان هلال عبدالرب','لين احمد شجاع','مكه محمد عطيه','منار هلال عبدالوهاب','منال غول','ميرا حاجي مبشر','ميرال سالم باظراح','ميلا بسام قوزي','نور محمد شقحان','نورة نور الاسلام محمد','نورة شهاب منصور','هنادي فوزي البرقوني','وئام محمد سعيد']},
  {class_name:'٢/٤ بنات',names:['اكرام احمد يوس','ايناس محمد احمد','تالين علي قرشي','توليب عامر سعد','ثراء هاني سيف','جناء عبدالكريم السعدي','جنات عبدالله محمد','حلا خالد احمد','حنين علي يسلم','ذكرى محمد الشاعري','رفيف حسين الحكمي','رنيم عبدالعزيز صالح','ريتال اسماعيل محمد','ريهام محمد سلطان','سالي بسام اليافعي','سيرين عبدالله عبدالرحمن','غلا احمد باوزير','فرح فرحان احمد','لدن اسماعيل عبدالمحمود','لوله مصطفى سالم','ليان صلاح محمد','ماريا عمار المطري','ماسة محمد المكاوي','مرام احمد عبده','منار داهم بن مخاشن','نور محمد غيلان']}
 ];
+const PROVIDED_BOYS_ROSTER=[
+ {class_name:'٢/١ بنين',names:['احمد محمد العولقي','ادم رائد ابو مائلة','اسيد حسن فطاني','الوليد صقر الوادعي','الياس حسام قندوان','بندر ثامر المالكي','تركي علاء بنجر','تركي محمود حبتور','جسار حسام الغامدي','حسين امين منصر','خالد عبدالله النجدي','سعود علي الشهراني','سعيد نائف بادبيس','سليمان عمرو ناظر','سيف مهند العبدالله','عامر ماطر البدري','عبدالرحمن علي خظمي','عبدالله سلطان الرشيدي','عزام عبدالقادر قدير','علي ابراهيم اليامي','عمران فهد بنقش','فراس يوسف الرشق','محمد عبده الشهري','محمد عطيه حمدي','معاذ محمد القحطاني','متعز زكي الاحمر','مهند صهيب الحسني','وليد خالد الشمراني']},
+ {class_name:'٢/٢ بنين',names:['اسر هتان الصيني','احمد خالد المالكي','اسعد ناصر الصومعي','خالد بندر العتيبي','راكان احمد الاسمري','ريان عبدالكريم حسن','زهران ياسر الزهراني','سالم سند عولقي','سعود عبدالستار سلكاوي','سليمان ادريس كعبي','صهيب عبدالفتاح دنديني','عاصم عبدالرحمن عثمان','عبدالاله فيصل الرويلي','عبدالعزيز صالح اليماني','عبدالله محمد قائد','عز فارس هزازي','عزام منير باطرفي','فارس صالح الحربي','كنان علاء الدين ابو سعيد','محمد طالب عشيم','محمد عبدالله المقحم','محمد نايف المصري','نادر سعيد الخيري','نايف محمد الغامدي','هتان سيف الزهراني','همام عبدالعزيز السلمي','ياسين محمد محمد','يعقوب احمد النمري']},
+ {class_name:'٢/٣ بنين',names:['امير رعد المعلم','ثامر محمد الشمراني','حامد طلال المحضار','خالد تركي الثبيتي','خالد محمد الغفيص','رويد عمر الحربي','سالم محمد باعثمان','سام صلاح الزهيري','طارق مخلد المالكي','عبدالرحمن وليد المقطري','عبدالله محمد القريعي','عبدالله مروان باوزير','علي فراس الغامدي','علي فهمي الجيلاني','عمر محمد محمد','عمر نصير احمد قدير','فراس عبدالرزاق الزبيدي','فهد احمد الشمراني','فهد ممدوح العيسوي','فيصل محمد عسيري','كرم غالب المخلافي','كنان عبدالرحمن باقلاقل','لؤي اسماعيل عبدالمحمود','مؤيد خميس ابوعلي','محمد اشرف عمر','محمد عبدالفتاح قايد','محمد عماد الدين حسن','محمد عمر حجاج','مراد احمد البيومي','معتز مهند بادخن','نواف عبدالله ابو زيد','يوسف محمد فضل']}
+];
 window.seedProvidedGirlsRoster=async function(){
  if(!currentAdmin||!sbClient)return false;
- const rows=PROVIDED_GIRLS_ROSTER.flatMap(group=>group.names.map(student_name=>({student_name,class_name:group.class_name,active:true})));
+ const rows=[...PROVIDED_GIRLS_ROSTER,...PROVIDED_BOYS_ROSTER].flatMap(group=>group.names.map(student_name=>({student_name,class_name:group.class_name,active:true})));
  const {data:existing,error:readError}=await sbClient.from('student_roster').select('student_name,class_name').eq('active',true);
  if(readError){console.warn('تعذر قراءة كشف الطلاب:',readError.message);updateDbStatus('تعذر قراءة كشف الأسماء: '+readError.message);return false;}
  const key=(n,c)=>String(n||'').trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[\sـ]+/g,' ').toLowerCase()+'|'+String(c||'').trim();
@@ -2153,7 +2158,7 @@ window.seedProvidedGirlsRoster=async function(){
   const {error}=await sbClient.from('student_roster').insert(missing);
   if(error){console.warn('تعذر إضافة كشف البنات:',error.message);updateDbStatus('تعذر حفظ كشف الأسماء: '+error.message);return false;}
  }
- updateDbStatus('تم حفظ كشف الطالبات وتحديث قوائم الاختيار.');
+ updateDbStatus('تم حفظ كشف الطلاب والطالبات وتحديث قوائم الاختيار.');
  return true;
 }
 
@@ -2163,7 +2168,7 @@ window.refreshStudentFeatures=async function(){
  if(!sbClient)return;
  const {data:roster,error:rosterError}=await sbClient.from('student_roster').select('id,student_name,class_name').eq('active',true).order('class_name').order('student_name');
  // إذا منع إعداد القراءة العامة جلب الكشف، اعرض كشف الطالبات المضمّن حتى لا تبقى القوائم فارغة.
- const fallbackRows=(typeof PROVIDED_GIRLS_ROSTER!=='undefined'?PROVIDED_GIRLS_ROSTER:[]).flatMap((g,i)=>g.names.map((student_name,j)=>({id:'static-'+i+'-'+j,student_name,class_name:g.class_name}))).map(x=>({...x,class_name:x.class_name.replace('٢/','ثاني ').replace(' بنات','')}));
+ const fallbackRows=[...(typeof PROVIDED_GIRLS_ROSTER!=='undefined'?PROVIDED_GIRLS_ROSTER:[]).map(g=>({...g,gender:'girls'})),...(typeof PROVIDED_BOYS_ROSTER!=='undefined'?PROVIDED_BOYS_ROSTER:[]).map(g=>({...g,gender:'boys'}))].flatMap((g,i)=>g.names.map((student_name,j)=>({id:'static-'+g.gender+'-'+i+'-'+j,student_name,class_name:g.class_name.replace('٢/','ثاني ').replace(/ بنات| بنين/g,''),gender:g.gender})));
  const pickerRows=(!rosterError&&Array.isArray(roster)&&roster.length)?roster:fallbackRows;
  window.__studentRosterPickerRows=pickerRows.map(s=>({id:s.id,name:s.student_name,cls:s.class_name,gender:(/بنات/.test(String(s.class_name||''))||/بنات/.test(String(s.gender||s.sex||''))||String(s.id).startsWith('static-'))?'girls':(/بنين/.test(String(s.class_name||''))||/بنين/.test(String(s.gender||s.sex||'')))?'boys':(s.gender||s.sex||'')}));
  const opts='<option value="">اختاري الاسم والصف</option>'+pickerRows.map(s=>'<option value="'+E(s.id)+'" data-student-name="'+E(s.student_name)+'" data-class-name="'+E(s.class_name)+'">'+E(s.student_name)+' — '+E(s.class_name)+'</option>').join('');
@@ -2179,7 +2184,7 @@ window.showMyPoints=async function(){
  if(!id){if(out)out.textContent='اختَر الجنس والفصل واسمك أولًا 🌷';return}
  if(!sbClient){if(out)out.textContent='الاتصال بالخدمة غير متاح حاليًا. حاولي مرة أخرى.';return}
  out.textContent='جارٍ حساب نقاطك...';
- if(String(id).startsWith('static-')){const chosen=sel.selectedOptions[0],studentName=chosen?.dataset.studentName,className=chosen?.dataset.className;const lookup=await sbClient.from('student_roster').select('id').eq('student_name',studentName).eq('class_name',className).maybeSingle();if(lookup.error||!lookup.data?.id){out.textContent='تم اختيار الاسم، لكن يلزم ربطه بكشف الطالبات في قاعدة البيانات حتى تظهر نقاطه. أبلغي المعلمة بمراجعة كشف الأسماء.';return}id=lookup.data.id}
+ if(String(id).startsWith('static-')){const chosen=sel.selectedOptions[0],studentName=chosen?.dataset.studentName,className=chosen?.dataset.className;const lookup=await sbClient.from('student_roster').select('id').eq('student_name',studentName).eq('class_name',className).maybeSingle();if(lookup.error||!lookup.data?.id){out.textContent='تم اختيار الاسم، لكن يلزم ربطه بكشف الطلاب في قاعدة البيانات حتى تظهر نقاطه. أبلغي المعلمة بمراجعة كشف الأسماء.';return}id=lookup.data.id}
  const {data,error}=await sbClient.from('student_points').select('points').eq('student_id',id);
  if(error){out.textContent='تعذر جلب نقاطك الآن، حاولي مرة أخرى.';return}
  const total=(data||[]).reduce((sum,row)=>sum+Number(row.points||0),0);
