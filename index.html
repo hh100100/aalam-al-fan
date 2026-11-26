@@ -1647,7 +1647,7 @@ async function adminSignIn(){
   if(!data.user || !data.user.app_metadata || data.user.app_metadata.role!=='teacher'){
    await sbClient.auth.signOut();if(status)status.textContent='الحساب غير مفعّل كحساب معلمة.';alert('تم تسجيل الدخول، لكن الحساب غير مفعّل كحساب معلمة.');return;
   }
-  currentAdmin=data.user;setAnnouncementTeacherEditor();await seedProvidedGirlsRoster();
+  currentAdmin=data.user;setAnnouncementTeacherEditor();await seedProvidedGirlsRoster();await refreshStudentFeatures();
   document.getElementById('adminAuthBox').style.display='none';document.getElementById('adminTools').style.display='block';
   if(status)status.textContent='تم تسجيل الدخول. جارٍ تفعيل أدوات المعلمة...';
   await loadSectionsFromCloud();renderEnrichmentVideos();await enableInlineEditor();closeAdmin();
